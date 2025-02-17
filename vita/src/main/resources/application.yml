@@ -2,16 +2,16 @@ spring:
   #데이터 베이스 연결을 위한 설정
   #데이터베이스 다중화
   datasource:
-    oracle: #메인 데이터베이스 (Oracle)
+    #oracle: #메인 데이터베이스 (Oracle)
       driver-class-name: oracle.jdbc.OracleDriver
       url: jdbc:oracle:thin:@localhost:1521/XEPDB1
-      username: oracle_user #설정 필요
-      password: oracle_password #설정 필요
-    postgres:  #보조 데이터베이스 (PostgreSQL)
-      driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5432/postgres_db
-      username: postgres_user #설정 필요
-      password: postgres_password #설정 필요
+      username: SPRING #설정 필요
+      password: SPRING #설정 필요
+#    postgres:  #보조 데이터베이스 (PostgreSQL)
+#      driver-class-name: org.postgresql.Driver
+#      url: jdbc:postgresql://localhost:5432/postgres_db
+#      username: postgres_user #설정 필요
+#      password: postgres_password #설정 필요
 
 #Spring-Data-JPA설정
   jpa:
