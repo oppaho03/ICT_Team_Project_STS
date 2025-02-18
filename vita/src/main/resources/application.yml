@@ -5,8 +5,13 @@ spring:
     #oracle: #메인 데이터베이스 (Oracle)
       driver-class-name: oracle.jdbc.OracleDriver
       url: jdbc:oracle:thin:@localhost:1521/XEPDB1
-      username: SPRING #설정 필요
-      password: SPRING #설정 필요
+      username: TEAM #설정 필요
+      password: TEAM #설정 필요
+      #스프링 부트의 디폴트 커넥션 풀인 Hikari 디폴트 설정
+      hikari:
+        auto-commit: true
+        connection-timeout: 30000 #1000분의 1초 단위
+        maximum-pool-size: 10
 #    postgres:  #보조 데이터베이스 (PostgreSQL)
 #      driver-class-name: org.postgresql.Driver
 #      url: jdbc:postgresql://localhost:5432/postgres_db
