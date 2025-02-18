@@ -16,19 +16,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-//@Table(name = "APP_TERMS") 
+//@Table(name = "APP_TERMS")
+@Entity 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 //[용어]
-public class Terms {
+public class TermsEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_TERMS_SEQ")
 	@SequenceGenerator(name = "APP_TERMS_SEQ",sequenceName = "APP_TERMS_SEQ",initialValue = 1,allocationSize = 1)
-	private int id; //PK  //PK타입을 int? long?
+	private long id; //PK  
 	
 	@NotBlank
 	private String name = ""; //용어 이름

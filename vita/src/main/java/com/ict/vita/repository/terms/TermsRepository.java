@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 //[용어 Repository]
-public interface TermsRepository extends JpaRepository<Terms, Integer>{
+public interface TermsRepository extends JpaRepository<TermsEntity, Integer>{
 
 }

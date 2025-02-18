@@ -22,6 +22,7 @@ spring:
   jpa:
     hibernate:
       #개발때는 update 하고 배포시에는 none 하자
+      #우리는 미리 테이블 생성하고 테스트하므로 update로 설정하자
       ddl-auto: update
       naming:
         #JPA 컬럼명 전략
