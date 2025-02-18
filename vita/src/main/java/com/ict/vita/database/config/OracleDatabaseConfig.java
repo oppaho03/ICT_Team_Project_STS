@@ -1,4 +1,4 @@
-//package com.ict.vita.config;
+//package com.ict.vita.database.config;
 //
 //import javax.sql.DataSource;
 //
@@ -20,23 +20,25 @@
 //@Configuration
 //@EnableJpaRepositories( //JPA 가 사용될 위치를 지정
 //		//basePackages에 리포지토리 인터페이스가 있는 패키지 지정
-//        basePackages = "com.ict.vita.repository.postgres", 
-//        entityManagerFactoryRef = "postgresEntityManagerFactory",
-//        transactionManagerRef = "postgresTransactionManager"
+//        basePackages = "com.ict.vita.repository.oracle", 
+//        entityManagerFactoryRef = "oracleEntityManagerFactory",
+//        transactionManagerRef = "oracleTransactionManager"
 //)
-////[포스트그레 DB 설정]
-//public class PostgresDatabaseConfig {
-//	//포스트그레 DB는 보조 데이터베이스라 @Primary 어노테이션 제외한다
+////[오라클 DB 설정]
+//public class OracleDatabaseConfig {
+//	//오라클 DB가 주 데이터베이스임을 명시하기 위해 @Primary 사용
 //	
-//	@Bean(name = "postgresDataSource")
+//	@Primary 
+//	@Bean(name = "oracleDataSource")
 //    @ConfigurationProperties(prefix = "spring.datasource")
 //    public DataSource dataSource() {
 //        return DataSourceBuilder.create().build();
 //    }
 //	
-//    @Bean(name = "postgresEntityManagerFactory")
+//	@Primary
+//    @Bean(name = "oracleEntityManagerFactory")
 //    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-//    	LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+//		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 //        em.setDataSource(dataSource());
 //        em.setPackagesToScan(new String[] {""});
 //        
@@ -48,7 +50,8 @@
 //        return em;
 //    }
 //
-//    @Bean(name = "postgresTransactionManager")
+//    @Primary
+//    @Bean(name = "oracleTransactionManager")
 //    public PlatformTransactionManager transactionManager() {
 //    	JpaTransactionManager transactionManager = new JpaTransactionManager();
 //        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
@@ -56,3 +59,6 @@
 //    }
 //
 //}
+package com;
+
+
