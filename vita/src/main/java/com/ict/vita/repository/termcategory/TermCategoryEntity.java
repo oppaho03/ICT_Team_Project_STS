@@ -30,27 +30,35 @@ import lombok.Setter;
 @AllArgsConstructor
 //[카테고리(텍소노미)]
 public class TermCategoryEntity {
+	/* 
+	 Long의 최대 자릿수가 19자리라서 NUMBER(19,0)로 자동 매핑됨
+	  --> NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
+	*/
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_TERM_CATEGORY_SEQ")
 	@SequenceGenerator(name = "APP_TERM_CATEGORY_SEQ",sequenceName = "APP_TERM_CATEGORY_SEQ",initialValue = 1,allocationSize = 1)
-	private long id; //PK
+	@Column(columnDefinition = "NUMBER(20,0)")
+	private Long id; //PK
 	
 	@OneToOne
 	@JoinColumn(name = "term_id",nullable = false) //테이블에서 FK명
 	@NotNull
+	//@Column(columnDefinition = "NUMBER(20,0)")
 	private TermsEntity termsEntity; //용어
 	
 	@NotNull
-	@Column(unique = true)
+	@Column(unique = true,length = 20) //String 타입은 기본적으로 VARCHAR2로 매핑
 	private String category; //카테고리명
 	
 	@Lob //데이터베이스의 BLOB, CLOB 타입과 매핑
 	private String description; //용어에 대한 설명
 	
 	@ColumnDefault(value = "0")
-	private int count = 0; //해당 용어에 속하는 데이터 갯수
+	@Column(columnDefinition = "NUMBER(20,0)") //NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
+	private long count; //해당 용어에 속하는 데이터 갯수
 	
 	@ColumnDefault(value = "0")
-	private int parent = 0; //부모 용어id(0이면 최상위 부모다)
+	@Column(columnDefinition = "NUMBER(20,0)") //NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
+	private long parent = 0; //부모 용어id(0이면 최상위 부모다)
 	
 }
