@@ -16,8 +16,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//@Table(name = "APP_TERMS")
-@Entity 
+
+@Table(name = "APP_TERMS")
+@Entity
 @Getter
 @Setter
 @Builder

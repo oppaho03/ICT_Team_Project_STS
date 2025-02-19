@@ -21,8 +21,12 @@ spring:
 #Spring-Data-JPA설정
   jpa:
     hibernate:
-      #개발때는 update 하고 배포시에는 none 하자
-      #우리는 미리 테이블 생성하고 테스트하므로 update로 설정하자
+      #[ jpa.hibernate.ddl-auto 속성 ]
+      #1.create : 엔티티와 매핑되는 테이블 자동 생성. 테이블이 이미 존재하면 기존 테이블 삭제하고 테이블 생성.
+      #2.create-drop : create와 같은데 추가적으로 애플리케이션 삭제될때 테이블 삭제함
+      #3.update : 기존 테이블이 없으면 새로 생성하고, 기존 테이블이 존재하면 테이블 컬럼을 변경.
+      #4.validate : 테이블을 생성,수정하지 않고 엔티티와 테이블이 정상적으로 매핑되는지만 검사. 매핑 안되면 에러
+      #5.none(default) : 아무일도 일어나지 않는다
       ddl-auto: update
       naming:
         #JPA 컬럼명 전략

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//@Table(name = "APP_TERM_CATEGORY")
+@Table(name = "APP_TERM_CATEGORY")
 @Entity
 @Getter
 @Setter
@@ -45,7 +45,6 @@ public class TermCategoryEntity {
 	private String category; //카테고리명
 	
 	@Lob //데이터베이스의 BLOB, CLOB 타입과 매핑
-	@Column(columnDefinition = "CLOB") //DB컬럼 타입이 CLOB
 	private String description; //용어에 대한 설명
 	
 	@ColumnDefault(value = "0")
