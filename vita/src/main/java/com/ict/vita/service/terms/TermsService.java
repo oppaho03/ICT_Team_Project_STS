@@ -12,5 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 //[용어 Service]
 public class TermsService {
+	//리포지토리 주입
 	private final TermsRepository termsRepository;
+	
+	
 }

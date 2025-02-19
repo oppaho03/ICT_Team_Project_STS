@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,13 +30,13 @@ public class TermsEntity {
 	@SequenceGenerator(name = "APP_TERMS_SEQ",sequenceName = "APP_TERMS_SEQ",initialValue = 1,allocationSize = 1)
 	private long id; //PK  
 	
-	@NotBlank
+	@NotNull
 	private String name = ""; //용어 이름
 	
-	@NotBlank
+	@NotNull
 	private String slug = ""; //용어 슬러그
 	
-	@NotBlank
+	@NotNull
 	@ColumnDefault(value = "0") //@ColumnDefault: DB테이블에 영향
 	private int group_number = 0; //용어 그룹번호
 	

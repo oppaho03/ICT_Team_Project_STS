@@ -20,7 +20,8 @@ public class TermsDto {
 	private String slug; //용어 슬러그
 	private int group_number; //용어 그룹번호
 	
-	//[Terms엔터티를 DTO로 변환하는 메서드]
+	
+	//[TermsDTO를 TermsEntity로 변환하는 메서드]
 	public TermsEntity toEntity() {
 		return TermsEntity.builder()
 				.id(id)
@@ -30,13 +31,13 @@ public class TermsDto {
 				.build();
 	}
 	
-	//[TermsDTO를 Terms엔터티로 변환하는 메서드]
-	public static TermsDto toDto(TermsEntity terms) {
+	//[TermsEntity를 TermsDTO로 변환하는 메서드]
+	public static TermsDto toDto(TermsEntity termsEntity) {
 		return TermsDto.builder()
-				.id(terms.getId())
-				.name(terms.getName())
-				.slug(terms.getSlug())
-				.group_number(terms.getGroup_number())
+				.id(termsEntity.getId())
+				.name(termsEntity.getName())
+				.slug(termsEntity.getSlug())
+				.group_number(termsEntity.getGroup_number())
 				.build();
 	}
 }
