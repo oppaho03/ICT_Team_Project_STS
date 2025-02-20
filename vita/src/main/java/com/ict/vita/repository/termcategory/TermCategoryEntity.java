@@ -30,10 +30,6 @@ import lombok.Setter;
 @AllArgsConstructor
 //[카테고리(텍소노미)]
 public class TermCategoryEntity {
-	/* 
-	 Long의 최대 자릿수가 19자리라서 NUMBER(19,0)로 자동 매핑됨
-	  --> NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
-	*/
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_TERM_CATEGORY_SEQ")
 	@SequenceGenerator(name = "APP_TERM_CATEGORY_SEQ",sequenceName = "APP_TERM_CATEGORY_SEQ",initialValue = 1,allocationSize = 1)

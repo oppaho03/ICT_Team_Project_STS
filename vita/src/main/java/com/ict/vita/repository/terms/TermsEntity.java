@@ -1,6 +1,7 @@
 package com.ict.vita.repository.terms;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,10 +27,6 @@ import lombok.Setter;
 @AllArgsConstructor
 //[용어]
 public class TermsEntity {
-	/* 
-	 Long의 최대 자릿수가 19자리라서 NUMBER(19,0)로 자동 매핑됨
-	  --> NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
-	*/
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_TERMS_SEQ")
 	@SequenceGenerator(name = "APP_TERMS_SEQ",sequenceName = "APP_TERMS_SEQ",initialValue = 1,allocationSize = 1)
@@ -37,15 +34,16 @@ public class TermsEntity {
 	private Long id; //PK  
 	
 	@NotNull
-	@Column(length = 200) //String 타입은 기본적으로 VARCHAR2로 매핑
+	@Column(columnDefinition = "NVARCHAR2(200)") //NVARCHAR2로 명시
 	private String name = ""; //용어 이름
 	
 	@NotNull
-	@Column(columnDefinition = "NVARCHAR2(200)") //NVARCHAR2로 명시
+	@Column(columnDefinition = "VARCHAR2(200 CHAR)") //VARCHAR2로 명시(200 CHAR 대신 200만 쓰면 200 Byte로 됨)
 	private String slug = ""; //용어 슬러그
 	
 	@NotNull
 	@ColumnDefault(value = "0") //@ColumnDefault: DB테이블에 영향
-	private int group_number = 0; //용어 그룹번호
+	@Column(columnDefinition = "NUMBER(20,0)")
+	private long group_number = 0; //용어 그룹번호
 	
 }

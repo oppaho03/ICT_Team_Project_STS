@@ -16,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 //[카테고리(텍소노미) DTO]
 public class TermCategoryDto {
-	private long id; //PK
+	private Long id; //PK
 	private TermsDto termsDto; //용어
 	private String category; //카테고리명
 	private String description; //용어에 대한 설명
@@ -36,14 +36,14 @@ public class TermCategoryDto {
 	}
 	
 	//[TermCategoryEntity를 TermCategoryDto로 변환하는 메서드]
-	public static TermCategoryDto toDto(TermCategoryEntity termCategoryEntity) {
+	public static TermCategoryDto toDto(TermCategoryEntity entity) {
 		return TermCategoryDto.builder()
-				.id(termCategoryEntity.getId())
-				.termsDto(TermsDto.toDto(termCategoryEntity.getTermsEntity()))
-				.category(termCategoryEntity.getCategory())
-				.description(termCategoryEntity.getDescription())
-				.count(termCategoryEntity.getCount())
-				.parent(termCategoryEntity.getParent())
+				.id(entity.getId())
+				.termsDto(TermsDto.toDto(entity.getTermsEntity()))
+				.category(entity.getCategory())
+				.description(entity.getDescription())
+				.count(entity.getCount())
+				.parent(entity.getParent())
 				.build();
 	}
 	

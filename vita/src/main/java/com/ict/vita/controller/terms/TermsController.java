@@ -1,12 +1,13 @@
 package com.ict.vita.controller.terms;
 
-import org.springframework.stereotype.Controller;
+
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.terms.TermsService;
 
 import lombok.RequiredArgsConstructor;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 //[용어 Controller]
 public class TermsController {

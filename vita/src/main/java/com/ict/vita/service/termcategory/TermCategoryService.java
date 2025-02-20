@@ -12,5 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 //[카테고리(텍소노미) Service]
 public class TermCategoryService {
+	//레포지토리 주입
 	private final TermCategoryRepository termCategoryRepository;
+	
+	
 }

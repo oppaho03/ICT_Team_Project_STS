@@ -15,10 +15,10 @@ import lombok.Setter;
 @AllArgsConstructor
 //[용어 DTO]
 public class TermsDto {
-	private long id; //PK 
+	private Long id; //PK 
 	private String name; //용어 이름
 	private String slug; //용어 슬러그
-	private int group_number; //용어 그룹번호
+	private long group_number; //용어 그룹번호
 	
 	
 	//[TermsDTO를 TermsEntity로 변환하는 메서드]
@@ -32,12 +32,12 @@ public class TermsDto {
 	}
 	
 	//[TermsEntity를 TermsDTO로 변환하는 메서드]
-	public static TermsDto toDto(TermsEntity termsEntity) {
+	public static TermsDto toDto(TermsEntity entity) {
 		return TermsDto.builder()
-				.id(termsEntity.getId())
-				.name(termsEntity.getName())
-				.slug(termsEntity.getSlug())
-				.group_number(termsEntity.getGroup_number())
+				.id(entity.getId())
+				.name(entity.getName())
+				.slug(entity.getSlug())
+				.group_number(entity.getGroup_number())
 				.build();
 	}
 }
