@@ -1,0 +1,37 @@
+spring:
+  #데이터 베이스 연결을 위한 설정
+  #데이터베이스 다중화
+  datasource:
+    #oracle: #메인 데이터베이스 (Oracle)
+      driver-class-name: oracle.jdbc.OracleDriver
+      url: jdbc:oracle:thin:@localhost:1521/XEPDB1
+      username: TEAM #설정 필요
+      password: TEAM #설정 필요
+      #스프링 부트의 디폴트 커넥션 풀인 Hikari 디폴트 설정
+      hikari:
+        auto-commit: true
+        connection-timeout: 30000 #1000분의 1초 단위
+        maximum-pool-size: 10
+#    postgres:  #보조 데이터베이스 (PostgreSQL)
+#      driver-class-name: org.postgresql.Driver
+#      url: jdbc:postgresql://localhost:5432/postgres_db
+#      username: postgres_user #설정 필요
+#      password: postgres_password #설정 필요
+
+#Spring-Data-JPA설정
+  jpa:
+    hibernate:
+      #[ jpa.hibernate.ddl-auto 속성 ]
+      #1.create : 엔티티와 매핑되는 테이블 자동 생성. 테이블이 이미 존재하면 기존 테이블 삭제하고 테이블 생성.
+      #2.create-drop : create와 같은데 추가적으로 애플리케이션 삭제될때 테이블 삭제함
+      #3.update : 기존 테이블이 없으면 새로 생성하고, 기존 테이블이 존재하면 테이블 컬럼을 변경.
+      #4.validate : 테이블을 생성,수정하지 않고 엔티티와 테이블이 정상적으로 매핑되는지만 검사. 매핑 안되면 에러
+      #5.none(default) : 아무일도 일어나지 않는다
+      ddl-auto: update
+      naming:
+        #JPA 컬럼명 전략
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #클래스명,필드명 그대로 사용
+    properties:
+      hibernate:
+        format_sql: true #DDL문 가독성 있게 표시
+    show-sql: true #JPA 쿼리 로그 확인용.(이 설정을 해야 sql문 볼 수 있음)		
