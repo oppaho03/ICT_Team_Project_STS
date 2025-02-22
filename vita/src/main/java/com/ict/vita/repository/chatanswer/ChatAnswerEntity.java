@@ -32,7 +32,7 @@ public class ChatAnswerEntity {
 	private Long id; //PK 
 	
 	@NotNull
-	@Column(length = 20)
+	@Column(columnDefinition = "NVARCHAR2(20)")
 	private String file_name; //파일이름
 	
 	@Lob

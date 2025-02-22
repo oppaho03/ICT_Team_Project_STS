@@ -48,7 +48,7 @@ public class KeywordCountingEntity {
 	
 	@NotNull
 //	@ColumnDefault(value = "19700101")
-	@Column(columnDefinition = "VARCHAR2(10 CHAR) DEFAULT '19700101'") //VARCHAR2로 명시
+	@Column(columnDefinition = "VARCHAR2(10) DEFAULT '19700101'") //VARCHAR2로 명시
 	private String searched_at = "19700101"; //검색날짜(월간/일간)
 	
 }

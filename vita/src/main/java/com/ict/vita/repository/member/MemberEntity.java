@@ -3,6 +3,10 @@ package com.ict.vita.repository.member;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
+
 import com.ict.vita.repository.terms.TermsEntity;
 
 import jakarta.persistence.Column;
@@ -34,35 +38,53 @@ public class MemberEntity {
 	@Column(columnDefinition = "NUMBER(20,0)")
 	private Long id; //PK
 	
-	@Column(columnDefinition = "VARCHAR2(255 CHAR)",unique = true)
+	@Column(columnDefinition = "VARCHAR2(255)",unique = true)
 	@NotNull
 	private String email; //이메일
 	
-	@Column(columnDefinition = "VARCHAR2(255 CHAR)")
+	@Column(columnDefinition = "VARCHAR2(255)")
 	@NotNull
 	private String password; //비밀번호
 	
-	@Column(columnDefinition = "VARCHAR2(20 CHAR)")
+	@Column(columnDefinition = "VARCHAR2(20)")
+	@ColumnDefault("USER")
 	@NotNull
-	private String role; //역할
+	private String role = "USER"; //역할
 	
+	@Column(columnDefinition = "NVARCHAR2(100)")
 	private String name; //이름
 	
+	@Column(columnDefinition = "NVARCHAR2(255)")
+	@NotNull
 	private String nickname; //닉네임
 	
+	@Column(columnDefinition = "DATE")
 	private LocalDate birth; //생년월일
 	
+	@Column(columnDefinition = "CHAR(1)")
 	private char gender; //성별
 	
+	@Column(columnDefinition = "VARCHAR2(20)")
 	private String contact; //전화번호
 	
+	@Column(columnDefinition = "NVARCHAR2(500)")
 	private String address; //주소
 	
-	private String token; //활성화 토큰
+	@Column(columnDefinition = "VARCHAR2(255)")
+	@ColumnDefault("")
+	private String token = ""; //활성화 토큰
 	
+	@Column(columnDefinition = "TIMESTAMP")
+	@ColumnDefault("SYSDATE")
+	@CreationTimestamp //생성될때 현재 날짜로
+	@NotNull
 	private LocalDateTime created_at; //가입일
 	
+	@Column(columnDefinition = "TIMESTAMP")
+	@NotNull
 	private LocalDateTime updated_at; //수정일
 	
+	@NotNull
+	@Column(columnDefinition = "NUMBER(1,0)")
 	private long status; //상태(가입/탈퇴)
 }

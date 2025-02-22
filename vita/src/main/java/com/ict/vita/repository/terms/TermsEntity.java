@@ -38,7 +38,7 @@ public class TermsEntity {
 	private String name = ""; //용어 이름
 	
 	@NotNull
-	@Column(columnDefinition = "VARCHAR2(200 CHAR)") //VARCHAR2로 명시(200 CHAR 대신 200만 쓰면 200 Byte로 됨)
+	@Column(columnDefinition = "VARCHAR2(200)") //VARCHAR2로 명시
 	private String slug = ""; //용어 슬러그
 	
 	@NotNull
