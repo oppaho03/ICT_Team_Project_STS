@@ -1,10 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>index.html</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #121212; /* 어두운 배경 색 */
+        }
+
+        .container {
+            display: flex;
+            width: 70%;
+            height: 80%;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .left {
+            flex: 1;
+            background: #FF6347; /* 강렬한 토마토 색 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 5rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 3px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .left:hover {
+            background: #FF4500; /* 마우스 오버 시 더욱 강렬한 색 */
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+        }
+
+        .right {
+            flex: 1;
+            background: #1E90FF; /* 강렬한 파란색 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 5rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 3px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .right:hover {
+            background: #4682B4; /* 마우스 오버 시 강렬한 파란색 */
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.5);
+        }
+    </style>
 </head>
 <body>
-
+    <div class="left" onclick="window.location.href='/yw'">YW</div>
+    <div class="right" onclick="window.location.href='/dh'">DH</div>
 </body>
 </html>
