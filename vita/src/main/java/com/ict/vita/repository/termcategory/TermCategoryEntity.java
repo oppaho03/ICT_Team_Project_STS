@@ -43,7 +43,7 @@ public class TermCategoryEntity {
 	private TermsEntity termsEntity; //용어
 	
 	@NotNull
-	@Column(unique = true,columnDefinition = "VARCHAR2(20)") 
+	@Column(columnDefinition = "VARCHAR2(20)") 
 	private String category; //카테고리명
 	
 	@Lob //데이터베이스의 BLOB, CLOB 타입과 매핑
