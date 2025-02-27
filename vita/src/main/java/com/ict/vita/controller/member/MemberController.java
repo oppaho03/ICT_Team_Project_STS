@@ -25,7 +25,6 @@ public class MemberController {
 	//서비스 주입
 	private final MemberService memberService;
 	
-	//테스트
 	/**
 	 * 회원가입
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함
