@@ -1,4 +1,4 @@
-package com.ict.vita.jwt.util;
+package com.ict.vita.util.jwt;
 
 import java.security.Key;
 import java.util.Date;

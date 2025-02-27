@@ -1,4 +1,4 @@
-package com.ict.vita.jwt.controller;
+package com.ict.vita.controller.jwt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ict.vita.jwt.util.JwtUtil;
+import com.ict.vita.util.jwt.JwtUtil;
 
 
 /**

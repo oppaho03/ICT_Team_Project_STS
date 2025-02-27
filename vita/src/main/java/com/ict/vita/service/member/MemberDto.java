@@ -30,8 +30,8 @@ public class MemberDto {
 	private String contact; //전화번호
 	private String address; //주소
 	private String token = ""; //활성화 토큰
-	private LocalDateTime created_at; //가입일
-	private LocalDateTime updated_at; //수정일
+	private LocalDateTime created_at = LocalDateTime.now(); //가입일
+	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
 	private long status; //상태(가입/탈퇴)
 	
 	//[MemberDto를 MemberEntity로 변환하는 메서드]

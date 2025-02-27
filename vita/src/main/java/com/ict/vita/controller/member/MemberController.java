@@ -1,11 +1,16 @@
 package com.ict.vita.controller.member;
 
+<<<<<<< HEAD
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+=======
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+>>>>>>> branch 'master' of https://github.com/oppaho03/ICT_Team_Project_STS.git
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +32,7 @@ public class MemberController {
 	
 	/**
 	 * 회원가입
+<<<<<<< HEAD
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함
 	 */
 	@PostMapping("/member")
@@ -50,4 +56,15 @@ public class MemberController {
 		
 	}
 	
+=======
+	 * @param member 회원정보를 담은 객체
+	 * @param errors
+	 * @return
+	 */
+	@PostMapping("member")
+	public ResponseEntity<Object> join(@RequestBody MemberDto member){
+		//회원가입 테스트!!!!
+		return null;
+	}
+>>>>>>> branch 'master' of https://github.com/oppaho03/ICT_Team_Project_STS.git
 }
