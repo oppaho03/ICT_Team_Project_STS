@@ -16,11 +16,21 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	
 	//이메일 중복 여부 판단
+	/**
+	 * 
+	 * @param email 입력된 이메일 주소
+	 * @return 가입된 이메일이 존재하는지 여부
+	 */
 	public boolean isExistsEmail(String email) {
 		return memberRepository.existsByEmail(email);
 	}
 	
 	////전화번호 중복 여부 판단
+	/**
+	 * 
+	 * @param contact 입력된 전화번호
+	 * @return 가입된 전화번호가 존재하는지 여부
+	 */
 	public boolean isExistsContact(String contact) {
 		return memberRepository.existsByContact(contact);
 	}
