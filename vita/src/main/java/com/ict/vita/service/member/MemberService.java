@@ -25,10 +25,8 @@ public class MemberService {
 	public boolean isExistsEmail(String email) {
 		return memberRepository.existsByEmail(email);
 	}
-	/** 
-=======
+
 	/**
->>>>>>> branch 'master' of https://github.com/oppaho03/ICT_Team_Project_STS.git
 	 * 전화번호 중복 여부 판단
 	 * @param contact 입력된 전화번호
 	 * @return 가입된 전화번호가 존재하는지 여부

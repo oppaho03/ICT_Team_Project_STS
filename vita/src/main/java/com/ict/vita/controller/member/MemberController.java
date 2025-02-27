@@ -48,7 +48,7 @@ public class MemberController {
 		}
 		//회원가입 가능한 경우
 		//서비스 호출
-		memberService.signup(member);
+		memberService.signup(member); // ***
 		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
 		
 	}
