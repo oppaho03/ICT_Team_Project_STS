@@ -1,16 +1,47 @@
 package com.ict.vita.controller.member;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class MemberController {
 	//서비스 주입
 	private final MemberService memberService;
 	
+	//테스트
+	/**
+	 * 회원가입
+	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함
+	 */
+	@PostMapping("/member")
+	public ResponseEntity<?> join(@Valid @RequestBody MemberDto member,Errors errors){
+		//DTO 객체 필드의 유효성 검증 실패시
+		if(errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필드 유효성 검증 실패");
+		}
+		////DTO 객체 필드의 유효성 검증 성공시
+		//서비스 호출
+		//회원가입이 불가능한 경우(이메일이나 전화번호가 이미 존재하는 경우)
+		if(memberService.isExistsEmail(member.getEmail()) || memberService.isExistsContact(member.getContact())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("회원가입 불가");
+		}
+		//회원가입 가능한 경우
+		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
+		
+	}
 	
 }

@@ -15,9 +15,8 @@ public class MemberService {
 	//리포지토리 주입
 	private final MemberRepository memberRepository;
 	
-	//이메일 중복 여부 판단
-	/**
-	 * 
+	/** 
+	 * 이메일 중복 여부 판단
 	 * @param email 입력된 이메일 주소
 	 * @return 가입된 이메일이 존재하는지 여부
 	 */
@@ -25,9 +24,8 @@ public class MemberService {
 		return memberRepository.existsByEmail(email);
 	}
 	
-	////전화번호 중복 여부 판단
-	/**
-	 * 
+	/** 
+	 * 전화번호 중복 여부 판단
 	 * @param contact 입력된 전화번호
 	 * @return 가입된 전화번호가 존재하는지 여부
 	 */
