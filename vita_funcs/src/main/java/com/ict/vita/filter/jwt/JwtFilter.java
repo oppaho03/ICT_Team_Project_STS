@@ -1,10 +1,10 @@
-package com.ict.vita.jwt.filter;
+package com.ict.vita.filter.jwt;
 
 import java.io.IOException;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ict.vita.jwt.util.JwtUtil;
+import com.ict.vita.util.jwt.JwtUtil;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
