@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.Result;
+import com.ict.vita.util.ResultUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,26 +46,31 @@ public class MemberController {
 			System.out.println("회원가입 유효성 검증 실패: "+bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining(",")));
 			Map<String, String> errors = new HashMap<>();
 			bindingResult.getFieldErrors().stream().map(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage())).count();
-			for(String errorField : errors.keySet()) {
-				System.out.println(String.format("검증실패 필드:%s,에러메세지:%s", errorField,errors.get(errorField)));
+			
+			StringBuffer buffer = new StringBuffer("");
+			for(FieldError e : bindingResult.getFieldErrors()) {
+				System.out.println(String.format("%s:%s", e.getField(),e.getDefaultMessage()));
+				String errorMessage = String.format("%s:%s", e.getField(),e.getDefaultMessage());
+				buffer.append(errorMessage);
 			}
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); //"필드 유효성 검증 실패"
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(buffer.toString())); 
 		}
 		//DTO 객체 필드의 유효성 검증 성공시
 		//회원가입이 불가능한 경우
 		if(memberService.isExistsEmail(joinDto.getEmail())) 
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일 이미 존재");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 이메일입니다");
 		//회원가입이 가능한 경우
 		if(Commons.isNull(joinDto.getContact())) {
 			memberService.join(joinDto);
-			return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
+			return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다");
 		}
 		//회원가입이 불가능한 경우
 		if(memberService.isExistsContact(joinDto.getContact()))
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("전화번호 이미 존재");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 전화번호입니다");
 		//회원가입이 가능한 경우
 		memberService.join(joinDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
+		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다");
 	}
 
 }
