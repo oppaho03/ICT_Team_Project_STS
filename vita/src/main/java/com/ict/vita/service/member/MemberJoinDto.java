@@ -27,7 +27,6 @@ public class MemberJoinDto {
 	@NotNull
 	private String password; //비밀번호
 	
-	@ColumnDefault("USER")
 	@NotNull
 	private String role = "USER"; //역할
 	

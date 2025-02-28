@@ -32,7 +32,7 @@ public class MemberDto {
 	private String token = ""; //활성화 토큰
 	private LocalDateTime created_at = LocalDateTime.now(); //가입일
 	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
-	private long status; //상태(가입/탈퇴/대기)
+	private long status; //상태(1:가입/0:탈퇴/9:대기)
 	
 	//[MemberDto를 MemberEntity로 변환하는 메서드]
 	public MemberEntity toEntity() {

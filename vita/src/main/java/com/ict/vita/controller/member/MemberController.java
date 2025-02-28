@@ -48,16 +48,19 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필드 유효성 검증 실패");
 		}
 		//DTO 객체 필드의 유효성 검증 성공시
-		//회원가입이 불가능한 경우(이메일이나 전화번호가 이미 존재하는 경우)
+		//회원가입이 불가능한 경우
 		if(memberService.isExistsEmail(joinDto.getEmail())) 
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일 이미 존재");
-		
-		if(Commons.isNull(joinDto.getContact())) 
+		//회원가입이 가능한 경우
+		if(Commons.isNull(joinDto.getContact())) {
+			memberService.join(joinDto);
 			return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
-		
+		}
+		//회원가입이 불가능한 경우
 		if(memberService.isExistsContact(joinDto.getContact()))
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("전화번호 이미 존재");
-		
+		//회원가입이 가능한 경우
+		memberService.join(joinDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
 	}
 

@@ -41,97 +41,49 @@ public class MemberService {
 	 * @param member 회원정보를 담은 객체
 	 * @return
 	 */
-	public MemberDto join(MemberJoinDto member) {	
-
-		//[회원가입 처리]
+	public MemberDto join(MemberJoinDto joinDto) {	
 		String nickname = "";
-
 		//<닉네임 미입력시>
-		if(member.getNickname() == null || member.getNickname().isBlank()) { //닉네임을 입력 안 한 경우
-			nickname = member.getNickname().substring(0, member.getNickname().indexOf("@")); //@ 전까지를 닉네임으로 지정
+		if(joinDto.getNickname() == null || joinDto.getNickname().isBlank()) { 
+			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); //이메일에서 @ 전까지를 닉네임으로 지정
 			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
 			//회원 저장
 			MemberEntity entity = memberRepository.save(MemberEntity.builder()
-								.email(member.getEmail())
-								.password(member.getPassword())
-								.role(member.getRole())
-								.name(member.getName())
+								.email(joinDto.getEmail())
+								.password(joinDto.getPassword())
+								.role(joinDto.getRole())
+								.name(joinDto.getName())
 								.nickname(nickname)
-								.birth(member.getBirth())
-								.gender(member.getGender())
-								.contact(member.getContact())
-								.address(member.getAddress())
-								.token(member.getToken())
-								.created_at(member.getCreated_at())
-								.updated_at(member.getUpdated_at())
-								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
+								.birth(joinDto.getBirth())
+								.gender(joinDto.getGender())
+								.contact(joinDto.getContact())
+								.address(joinDto.getAddress())
+								.token(joinDto.getToken())
+								.created_at(joinDto.getCreated_at())
+								.updated_at(joinDto.getUpdated_at())
+								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
 								.build());
 			return MemberDto.toDto(entity);
 		}
 		//<닉네임 입력시>
 		//회원 저장
 		MemberEntity entity = memberRepository.save(MemberEntity.builder()
-								.email(member.getEmail())
-								.password(member.getPassword())
-								.role(member.getRole())
-								.name(member.getName())
-								.nickname(member.getNickname())
-								.birth(member.getBirth())
-								.gender(member.getGender())
-								.contact(member.getContact())
-								.address(member.getAddress())
-								.token(member.getToken())
-								.created_at(member.getCreated_at())
-								.updated_at(member.getUpdated_at())
-								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
+								.email(joinDto.getEmail())
+								.password(joinDto.getPassword())
+								.role(joinDto.getRole())
+								.name(joinDto.getName())
+								.nickname(joinDto.getNickname())
+								.birth(joinDto.getBirth())
+								.gender(joinDto.getGender())
+								.contact(joinDto.getContact())
+								.address(joinDto.getAddress())
+								.token(joinDto.getToken())
+								.created_at(joinDto.getCreated_at())
+								.updated_at(joinDto.getUpdated_at())
+								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
 								.build());
 		return MemberDto.toDto(entity);
 
-		//회원 저장
-		//닉네임을 입력 안 한 경우
-//		if(dto.getNickname() == null || dto.getNickname().trim().length() == 0) { 
-//			nickname = dto.getEmail().substring(0, dto.getEmail().indexOf("@")); //이메일의 @ 전까지를 닉네임으로 지정
-//			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
-//			MemberEntity entity = MemberEntity.builder()
-//					.email(dto.getEmail())
-//					.password(dto.getPassword())
-//					.name(dto.getName())
-//					.nickname(nickname)
-//					.birth(dto.getBirth())
-//					.gender(dto.getGender())
-//					.contact(dto.getContact())
-//					.address(dto.getAddress())
-//					.token("test토큰입니다") //테스트용 토큰
-//					.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-//					.role(dto.getRole())
-//					.created_at(LocalDateTime.now())
-//					.updated_at(dto.getUpdated_at())
-//					.build();
-//			//entity.setUpdated_at(entity.getCreated_at());
-//			memberRepository.save(entity);
-//			return MemberDto.toDto(entity);
-//		}
-//		//닉네임을 입력한 경우
-//		else {
-//			MemberEntity entity = MemberEntity.builder()
-//					.email(dto.getEmail())
-//					.password(dto.getPassword())
-//					.name(dto.getName())
-//					.nickname(dto.getNickname())
-//					.birth(dto.getBirth())
-//					.gender(dto.getGender())
-//					.contact(dto.getContact())
-//					.address(dto.getAddress())
-//					.token("test토큰입니다") //테스트용 토큰
-//					.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-//					.role(dto.getRole())
-//					.created_at(LocalDateTime.now())
-//					.updated_at(dto.getUpdated_at())
-//					.build();
-//			//entity.setUpdated_at(entity.getCreated_at());
-//			memberRepository.save(entity);
-//			return MemberDto.toDto(entity);
-//		}
 	}
 	
 }
