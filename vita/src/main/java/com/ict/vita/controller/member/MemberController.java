@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.Commons;
+import com.ict.vita.util.Result;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +47,7 @@ public class MemberController {
 			for(String errorField : errors.keySet()) {
 				System.out.println(String.format("검증실패 필드:%s,에러메세지:%s", errorField,errors.get(errorField)));
 			}
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필드 유효성 검증 실패");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); //"필드 유효성 검증 실패"
 		}
 		//DTO 객체 필드의 유효성 검증 성공시
 		//회원가입이 불가능한 경우
