@@ -30,7 +30,7 @@ public class MemberController {
 	
 	/**
 	 * 회원가입
-	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함
+	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
 	@PostMapping("/member")
 	public ResponseEntity<Object> join(@RequestBody @Valid MemberDto member,BindingResult bindingResult){
@@ -52,15 +52,5 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
 		
 	}
-	
-	/**
-	 * @param member 회원정보를 담은 객체
-	 * @param errors
-	 * @return
-	 */
-	@PostMapping("member")
-	public ResponseEntity<Object> join(@RequestBody MemberDto member){
-		//회원가입 테스트!!!!
-		return null;
-	}
+
 }
