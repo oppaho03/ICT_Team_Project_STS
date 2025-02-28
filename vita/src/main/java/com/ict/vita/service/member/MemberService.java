@@ -41,7 +41,7 @@ public class MemberService {
 	 * @param member 회원정보를 담은 객체
 	 * @return
 	 */
-	public MemberDto signup(MemberDto member) {	
+	public MemberDto join(MemberJoinDto member) {	
 
 		//[회원가입 처리]
 		String nickname = "";
