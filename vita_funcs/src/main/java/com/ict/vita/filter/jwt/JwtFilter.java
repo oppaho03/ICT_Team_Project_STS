@@ -23,6 +23,12 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtil jwtutil;
 	
 	
+	 /**
+     * `JwtFilter`의 생성자
+     * `JwtUtil`을 주입받아 JWT 검증에 활용
+     * `JwtFilter`는 Spring Bean이 아니므로, `@Autowired` 대신 생성자 주입 방식을 사용해야 함
+     *  `SecurityConfig.java`에서 `new JwtFilter(jwtUtil)` 형태로 수동 생성하여 등록
+     */
 	public JwtFilter(JwtUtil jwtutil) {
 		this.jwtutil = jwtutil;
 	}
@@ -37,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
      * @param response 서버의 HTTP 응답 객체
      * @param filterChain 필터 체인 (다음 필터로 요청을 넘기기 위해 필요)
      * @throws ServletException 필터 처리 중 발생하는 예외
-     * @throws IOException      입출력 예외 처리
+     * @throws IOException     입출력 예외 처리
      */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

@@ -17,7 +17,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-	private static final String SECRET_KEY = "This-is-a-secret-key-used-for-jwt-authentication";
+	private static final String SECRET_KEY = "this-is-a-very-secure-and-long-secret-key-used-for-jwt-authentication";
 	
 	private static final long EXPIRATION_TIME = 900000;
 	
@@ -32,7 +32,7 @@ public class JwtUtil {
 	
 	public String CreateToken(String username, Map<String, Object> claims) {
 		
-		return "Bearer" +Jwts.builder()
+		return  Jwts.builder()
 				.setClaims(claims)
 				.setSubject(username)
 				.setIssuedAt(new Date())
