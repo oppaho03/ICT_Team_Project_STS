@@ -9,4 +9,5 @@ public class Commons {
 	public static boolean isNull(String string) {
 		return ( string == null || string.isEmpty() || string.trim().length() == 0 ) ? true : false;
 	}
+	
 }

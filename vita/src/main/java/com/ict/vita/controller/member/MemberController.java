@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.util.Commons;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,17 +48,17 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필드 유효성 검증 실패");
 		}
 		//DTO 객체 필드의 유효성 검증 성공시
-		//서비스 호출
 		//회원가입이 불가능한 경우(이메일이나 전화번호가 이미 존재하는 경우)
+		if(memberService.isExistsEmail(joinDto.getEmail())) 
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일 이미 존재");
 		
-		if(memberService.isExistsEmail(joinDto.getEmail()) || (joinDto.getContact() != null && memberService.isExistsContact(joinDto.getContact()))) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("회원가입 불가");
-		}
-		//회원가입 가능한 경우
-		//서비스 호출
-		memberService.join(joinDto); // ***
+		if(Commons.isNull(joinDto.getContact())) 
+			return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
+		
+		if(memberService.isExistsContact(joinDto.getContact()))
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("전화번호 이미 존재");
+		
 		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
-		
 	}
 
 }

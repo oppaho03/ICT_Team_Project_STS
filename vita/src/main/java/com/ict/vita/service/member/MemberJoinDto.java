@@ -49,5 +49,5 @@ public class MemberJoinDto {
 	
 	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
 	
-	private long status; //상태(가입/탈퇴)
+	private long status; //상태(가입/탈퇴/대기)
 }
