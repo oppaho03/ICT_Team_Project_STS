@@ -6,6 +6,7 @@ import com.ict.vita.repository.terms.TermsEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,14 +37,13 @@ public class TermCategoryEntity {
 	@Column(columnDefinition = "NUMBER(20,0)")
 	private Long id; //PK
 	
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_id",nullable = false) //테이블에서 FK명
 	@NotNull
-	//@Column(columnDefinition = "NUMBER(20,0)")
 	private TermsEntity termsEntity; //용어
 	
 	@NotNull
-	@Column(unique = true,length = 20) //String 타입은 기본적으로 VARCHAR2로 매핑
+	@Column(columnDefinition = "VARCHAR2(20)") 
 	private String category; //카테고리명
 	
 	@Lob //데이터베이스의 BLOB, CLOB 타입과 매핑

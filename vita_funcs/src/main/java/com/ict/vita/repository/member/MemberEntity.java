@@ -42,7 +42,7 @@ public class MemberEntity {
 	
 	@Column(columnDefinition = "VARCHAR2(255)",unique = true)
 	@NotNull
-	@Email(message = "올바른 이메일 주소를 입력해주세요.") //이메일 형식에 맞는지 검사
+	@Email //이메일 형식에 맞는지 검사
 	private String email; //이메일
 	
 	@Column(columnDefinition = "VARCHAR2(255)")
@@ -89,5 +89,5 @@ public class MemberEntity {
 	
 	@NotNull
 	@Column(columnDefinition = "NUMBER(1,0)")
-	private long status; //상태(가입/탈퇴)
+	private long status; //상태(1:가입/0:탈퇴/9:대기)
 }
