@@ -1,31 +1,25 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index Page</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #121212; /* 어두운 배경 색 */
-        }
-
         .container {
             display: flex;
-            width: 70%;
-            height: 80%;
             border-radius: 15px;
             overflow: hidden;
+            flex-direction: column;
         }
 
-        .left {
+		.leftAndRight {
+			display: flex;
+			border-radius: 15px;
+	        overflow: hidden;
+	        flex-direction: row;
+		}
+        .left, .right {
             flex: 1;
-            background: #FF6347; /* 강렬한 토마토 색 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,6 +31,10 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        .left {
+            background: #FF6347; /* 강렬한 토마토 색 */
         }
 
         .left:hover {
@@ -45,29 +43,50 @@
         }
 
         .right {
-            flex: 1;
             background: #1E90FF; /* 강렬한 파란색 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 5rem;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 3px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
         .right:hover {
             background: #4682B4; /* 마우스 오버 시 강렬한 파란색 */
             box-shadow: 0 0 20px rgba(70, 130, 180, 0.5);
         }
+
     </style>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" th:src="@{/smarteditor/js/HuskyEZCreator.js}" charset="UTF-8"></script>    
 </head>
 <body>
-    <div class="left" onclick="window.location.href='/yw'">YW</div>
-    <div class="right" onclick="window.location.href='/dh'">DH</div>
+    <div class="container">
+		<div class = "leftAndRight">
+	        <div class="left" onclick="window.location.href='/yw'">YW</div>
+	        <div class="right" onclick="window.location.href='/dh'">DH</div>
+        </div>
+    </div>
+    
+	<form action="insertStudentInfoForm" method="post">
+		<div id="smarteditor">
+			<textarea name="editorTxt" id="editorTxt"
+			rows="40" cols="10"
+			placeholder="내용을 입력해주세요."
+			style="width: 858px"></textarea>
+		</div>
+        <input type="button" value="등록" onclick="submitPost()"/>
+	</form>
+
+    <script type="text/javascript" th:src="@{/js/article.js}" charset="UTF-8"></script>
+	<script>
+		function submitPost() {
+		    oEditors.getById["editorTxt"].exec("UPDATE_CONTENTS_FIELD", [])
+		    let content = document.getElementById("editorTxt").value
+
+		    if (content == '<p>&nbsp;</p>') {
+		        alert("내용을 입력해주세요.");
+		        oEditors.getById["editorTxt"].exec("FOCUS");
+		        return;
+		    } else {
+		        console.log(content)
+		    }
+		}
+	</script>
 </body>
 </html>

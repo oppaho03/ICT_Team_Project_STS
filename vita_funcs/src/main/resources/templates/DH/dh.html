@@ -1,11 +1,35 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DH Page</title>
-</head>
-<body>
-    <h1>Welcome to DH Page!</h1>
-</body>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>DH Page</title>
+	</head>
+	<body>
+	    <div class="container">
+				<div class="container-fluid">
+					<!-- 컨텐츠 시작 -->
+					<div class="p-5 bg-warning text-white">
+						<h1>Welcome to DH Page!</h1>
+					</div>
+					<fieldset class="border rounded-3 p-3">
+						<legend class="float-none w-auto px-3">로그인</legend>
+						<form method="post" th:action = "@{/auth/login}">
+							<div class="row">
+								<div class="col-4">
+									<input type="text" class="form-control" placeholder="Enter username!" name="username" />
+								</div>
+								<div class="col-4">
+									<input type="password" class="form-control" placeholder="Enter password" name="password" />
+								</div>						
+								<div class="col-1">
+									<button class="btn btn-success">로그인</button>
+								</div>
+							</div>
+						</form>
+					</fieldset>
+					<!-- 컨텐츠 끝 -->
+				</div><!-- container-fluid -->
+			</div><!-- container -->
+	</body>
 </html>
