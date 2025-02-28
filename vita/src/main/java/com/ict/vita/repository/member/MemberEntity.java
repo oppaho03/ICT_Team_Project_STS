@@ -89,5 +89,5 @@ public class MemberEntity {
 	
 	@NotNull
 	@Column(columnDefinition = "NUMBER(1,0)")
-	private long status; //상태(가입/탈퇴)
+	private long status; //상태(가입/탈퇴/대기)
 }
