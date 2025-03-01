@@ -41,11 +41,9 @@ public class MemberController {
 	 */
 	@PostMapping("/member")
 	public ResponseEntity<Object> join(@RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
-		//DTO 객체 필드의 유효성 검증 실패시
+		//<DTO 객체 필드의 유효성 검증 실패시>
 		if(bindingResult.hasErrors()) {
 			System.out.println("회원가입 유효성 검증 실패: "+bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining(",")));
-			Map<String, String> errors = new HashMap<>();
-			bindingResult.getFieldErrors().stream().map(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage())).count();
 			
 			StringBuffer buffer = new StringBuffer("");
 			for(FieldError e : bindingResult.getFieldErrors()) {
@@ -56,21 +54,21 @@ public class MemberController {
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(buffer.toString())); 
 		}
-		//DTO 객체 필드의 유효성 검증 성공시
-		//회원가입이 불가능한 경우
+		//<DTO 객체 필드의 유효성 검증 성공시>
+		//회원가입에 실패한 경우
 		if(memberService.isExistsEmail(joinDto.getEmail())) 
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 이메일입니다");
-		//회원가입이 가능한 경우
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 이메일입니다")); 
+		//회원가입에 성공한 경우
 		if(Commons.isNull(joinDto.getContact())) {
-			memberService.join(joinDto);
-			return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다");
+			MemberDto memberDto = memberService.join(joinDto);
+			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 		}
-		//회원가입이 불가능한 경우
+		//회원가입에 실패한 경우
 		if(memberService.isExistsContact(joinDto.getContact()))
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 전화번호입니다");
-		//회원가입이 가능한 경우
-		memberService.join(joinDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 전화번호입니다"));
+		//회원가입에 성공한 경우
+		MemberDto memberDto = memberService.join(joinDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 	}
 
 }
