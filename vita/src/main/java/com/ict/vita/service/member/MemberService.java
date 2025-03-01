@@ -38,14 +38,15 @@ public class MemberService {
 
 	/**
 	 * 회원가입 처리
-	 * @param member 회원정보를 담은 객체
+	 * @param joinDto 회원이 입력한 정보를 담은 DTO 객체
 	 * @return
 	 */
 	public MemberDto join(MemberJoinDto joinDto) {	
 		String nickname = "";
 		//<닉네임 미입력시>
 		if(joinDto.getNickname() == null || joinDto.getNickname().isBlank()) { 
-			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); //이메일에서 @ 전까지를 닉네임으로 지정
+			//이메일에서 @ 전까지를 닉네임으로 지정
+			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); 
 			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
 			//회원 저장
 			MemberEntity entity = memberRepository.save(MemberEntity.builder()

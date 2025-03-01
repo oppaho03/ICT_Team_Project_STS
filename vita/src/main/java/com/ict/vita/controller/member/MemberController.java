@@ -37,6 +37,7 @@ public class MemberController {
 	
 	/**
 	 * 회원가입
+	 * @param joinDto(회원가입 요청 DTO) bindingResult(앞의 DTO객체의 유효성 검증 실패시 담기는 에러)
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
 	@PostMapping("/member")

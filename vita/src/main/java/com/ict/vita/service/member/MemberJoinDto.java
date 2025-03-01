@@ -18,7 +18,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//[회원 로그인용 DTO]
+//[회원 회원가입용 DTO]
 public class MemberJoinDto {
 	@NotNull
 	@Email(message = "올바른 이메일 주소를 입력해주세요.") //이메일 형식에 맞는지 검사
