@@ -18,7 +18,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	
 	/**
-	 * 이메일 중복 여부 판단
+	 * [이메일 중복 여부 판단]
 	 * @param email 입력된 이메일 주소
 	 * @return 가입된 이메일이 존재하는지 여부
 	 */
@@ -27,7 +27,7 @@ public class MemberService {
 	}
 
 	/**
-	 * 전화번호 중복 여부 판단
+	 * [전화번호 중복 여부 판단]
 	 * @param contact 입력된 전화번호
 	 * @return 가입된 전화번호가 존재하는지 여부
 	 */
@@ -37,7 +37,7 @@ public class MemberService {
 	
 
 	/**
-	 * 회원가입 처리
+	 * [회원가입 처리]
 	 * @param joinDto 회원이 입력한 정보를 담은 DTO 객체
 	 * @return
 	 */
@@ -99,7 +99,30 @@ public class MemberService {
 		if(findedMember != null)
 			return MemberDto.toDto(findedMember);
 		return null;
-
 	}
 	
+	/**
+	 * [id(PK)로 회원 찾기]
+	 * @param memberDto 찾기 바라는 회원 DTO객체
+	 * @return 찾은 회원 DTO객체
+	 */
+	public MemberDto findMemberById(MemberDto memberDto) {
+		//회원을 찾으면 찾은 회원 Entity객체를,
+		// 일치하는 회원이 존재하지 않으면 null을 반환
+		MemberEntity findedMember = memberRepository.findById(memberDto.getId()).orElse(null);
+		if(findedMember != null) {
+			return MemberDto.toDto(findedMember);
+		}
+		return null;
+	}
+	
+	/**
+	 * [회원정보 수정]
+	 * @param memberDto 수정할 회원 DTO 객체
+	 * @return 수정된 회원 DTO 객체
+	 */
+	public MemberDto updateMember(MemberDto memberDto) {
+		MemberEntity memberEntity = memberRepository.save(memberDto.toEntity());
+		return MemberDto.toDto(memberEntity);
+	}
 }

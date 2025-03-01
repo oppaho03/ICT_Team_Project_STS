@@ -89,8 +89,11 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("아이디 또는 비밀번호 불일치"));
 		}
 		//<회원인 경우>
-		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMember));
+		//회원의 token필드(JWT) 설정
+		findedMember.setToken("testToken"); // * 임시로 테스트용 토큰 넣어놓음!!!! *
+		//회원 정보 수정
+		MemberDto updatedDto = memberService.updateMember(findedMember);
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedDto));
 	}
 
 }
