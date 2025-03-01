@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Result클래스의 response 필드값 설정 클래스
+ * Result클래스의 response 필드값 설정 클래스로
+ * 컨트롤러 요청 처리를 성공했을때와 실패했을때에 반환하는 결과 객체(Result)의 response필드에 담을 데이터를 다르게 하기 위함
  */
 public class ResultUtil {
 

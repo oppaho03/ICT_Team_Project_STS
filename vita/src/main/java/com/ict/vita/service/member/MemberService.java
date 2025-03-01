@@ -84,6 +84,21 @@ public class MemberService {
 								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
 								.build());
 		return MemberDto.toDto(entity);
+	}////
+	
+	/**
+	 * [direct 로그인 시]
+	 * 아이디 및 비밀번호 검증
+	 * @param loginDto
+	 * @return
+	 */
+	public MemberDto validateLogin(MemberLoginDto loginDto) {
+		//리포지토리 호출해서 이메일과 비밀번호가 일치하면 해당하는 DTO를,
+		// 일치하는 회원이 존재하지 않으면 null을 반환
+		MemberEntity findedMember = memberRepository.findByEmailIsAndPasswordIs(loginDto.getEmail(), loginDto.getPassword()).orElse(null);
+		if(findedMember != null)
+			return MemberDto.toDto(findedMember);
+		return null;
 
 	}
 	

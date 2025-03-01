@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.ColumnDefault;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,16 +19,16 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//[회원 회원가입용 DTO]
+//[회원 direct 회원가입용 DTO]
 public class MemberJoinDto {
-	@NotNull
-	@Email(message = "올바른 이메일 주소를 입력해주세요.") //이메일 형식에 맞는지 검사
+	@NotBlank(message = "이메일을 입력하세요")
+	@Email(message = "올바른 이메일 주소를 입력하세요.") //이메일 형식에 맞는지 검사
 	private String email; //이메일
 	
-	@NotNull
+	@NotBlank(message = "비밀번호를 입력하세요")
 	private String password; //비밀번호
 	
-	@NotNull
+	@NotBlank(message = "role을 지정하세요")
 	private String role = "USER"; //역할
 	
 	private String name; //이름

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
+import com.ict.vita.service.member.MemberLoginDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.Result;
@@ -38,10 +39,11 @@ public class MemberController {
 	/**
 	 * 회원가입
 	 * @param joinDto(회원가입 요청 DTO) bindingResult(앞의 DTO객체의 유효성 검증 실패시 담기는 에러)
-	 * @return ResponseEntity(사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
+	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
+	 * @return ResponseEntity(사용자의 HttpRequest에 대한 HTTP 응답을 감싸는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
 	@PostMapping("/member")
-	public ResponseEntity<Object> join(@RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
+	public ResponseEntity<?> join(@RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
 		//<DTO 객체 필드의 유효성 검증 실패시>
 		if(bindingResult.hasErrors()) {
 			System.out.println("회원가입 유효성 검증 실패: "+bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining(",")));
@@ -49,7 +51,7 @@ public class MemberController {
 			StringBuffer buffer = new StringBuffer("");
 			for(FieldError e : bindingResult.getFieldErrors()) {
 				System.out.println(String.format("%s:%s", e.getField(),e.getDefaultMessage()));
-				String errorMessage = String.format("%s:%s", e.getField(),e.getDefaultMessage());
+				String errorMessage = String.format("%s:%s\r\n", e.getField(),e.getDefaultMessage());
 				buffer.append(errorMessage);
 			}
 			
@@ -70,6 +72,25 @@ public class MemberController {
 		//회원가입에 성공한 경우
 		MemberDto memberDto = memberService.join(joinDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
+	}
+	
+	/**
+	 * direct 로그인 처리
+	 * @param loginDto 로그인 요청 객체
+	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
+	 * @return
+	 */
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody @Valid MemberLoginDto loginDto,BindingResult bindingResult){
+		//[이메일과 비밀번호가 일치하는 회원 조회]
+		MemberDto findedMember = memberService.validateLogin(loginDto);
+		//<회원이 아닌 경우>
+		if(findedMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("아이디 또는 비밀번호 불일치"));
+		}
+		//<회원인 경우>
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMember));
 	}
 
 }
