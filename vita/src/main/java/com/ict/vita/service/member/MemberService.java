@@ -18,6 +18,36 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	
 	/**
+	 * [id(PK)로 회원 찾기]
+	 * @param memberDto 찾을 회원 DTO객체
+	 * @return 찾은 회원 DTO객체
+	 */
+	public MemberDto findMemberById(MemberDto memberDto) {
+		//회원을 찾으면 찾은 회원 Entity객체를,
+		// 일치하는 회원이 존재하지 않으면 null을 반환
+		MemberEntity findedMember = memberRepository.findById(memberDto.getId()).orElse(null);
+		if(findedMember != null) {
+			return MemberDto.toDto(findedMember);
+		}
+		return null;
+	}
+	
+	/**
+	 * [토큰값으로 회원 찾기]
+	 * @param token 찾을 토큰값
+	 * @return 찾은 회원 DTO객체
+	 */
+	public MemberDto findMemberByToken(String token) {
+		//회원을 찾으면 찾은 회원 Entity객체를,
+		// 일치하는 회원이 존재하지 않으면 null을 반환
+		MemberEntity findedMember = memberRepository.findByToken(token).orElse(null);
+		if(findedMember != null) {
+			return MemberDto.toDto(findedMember);
+		}
+		return null;
+	}
+	
+	/**
 	 * [이메일 중복 여부 판단]
 	 * @param email 입력된 이메일 주소
 	 * @return 가입된 이메일이 존재하는지 여부
@@ -102,21 +132,6 @@ public class MemberService {
 	}
 	
 	/**
-	 * [id(PK)로 회원 찾기]
-	 * @param memberDto 찾기 바라는 회원 DTO객체
-	 * @return 찾은 회원 DTO객체
-	 */
-	public MemberDto findMemberById(MemberDto memberDto) {
-		//회원을 찾으면 찾은 회원 Entity객체를,
-		// 일치하는 회원이 존재하지 않으면 null을 반환
-		MemberEntity findedMember = memberRepository.findById(memberDto.getId()).orElse(null);
-		if(findedMember != null) {
-			return MemberDto.toDto(findedMember);
-		}
-		return null;
-	}
-	
-	/**
 	 * [회원정보 수정]
 	 * @param memberDto 수정할 회원 DTO 객체
 	 * @return 수정된 회원 DTO 객체
@@ -125,4 +140,5 @@ public class MemberService {
 		MemberEntity memberEntity = memberRepository.save(memberDto.toEntity());
 		return MemberDto.toDto(memberEntity);
 	}
+	
 }

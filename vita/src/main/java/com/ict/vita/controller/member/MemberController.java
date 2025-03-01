@@ -78,7 +78,7 @@ public class MemberController {
 	 * direct 로그인 처리
 	 * @param loginDto 로그인 요청 객체
 	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
-	 * @return
+	 * @return ResponseEntity
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid MemberLoginDto loginDto,BindingResult bindingResult){
@@ -92,8 +92,29 @@ public class MemberController {
 		//회원의 token필드(JWT) 설정
 		findedMember.setToken("testToken"); // * 임시로 테스트용 토큰 넣어놓음!!!! *
 		//회원 정보 수정
-		MemberDto updatedDto = memberService.updateMember(findedMember);
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedDto));
+		MemberDto updatedMember = memberService.updateMember(findedMember);
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedMember));
 	}
 
+	/**
+	 * [로그아웃 처리]
+	 * @param token 회원의 토큰값(JWT)
+	 * @return ResponseEntity
+	 */
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(@RequestBody String token){
+		//[토큰값으로 회원 조회]
+		MemberDto findedMember = memberService.findMemberByToken(token);
+		//<찾은 회원이 존재하는 경우>
+		if(findedMember != null) {
+			findedMember.setToken(null);
+			MemberDto updatedMember = memberService.updateMember(findedMember);
+			System.out.println("!!!!!!토큰값 null로 수정!!!!!!");
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+		}
+		//<찾은 회원이 존재하지 않는 경우>
+		// 토큰값과 일치하는 회원이 없더라도 로그아웃 처리는 완료됨
+		System.out.println("+++++++++++++++");
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+	}
 }
