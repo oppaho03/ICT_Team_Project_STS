@@ -15,6 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -102,8 +103,11 @@ public class MemberController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(@RequestBody String token){
+	//public ResponseEntity<?> logout(@RequestBody Map<String, String> token){
+	public ResponseEntity<?> logout(@RequestHeader(name = "authorization") String token){
+		System.out.println("token:"+token+"/");
 		//[토큰값으로 회원 조회]
+		//MemberDto findedMember = memberService.findMemberByToken(token.get("token"));
 		MemberDto findedMember = memberService.findMemberByToken(token);
 		//<찾은 회원이 존재하는 경우>
 		if(findedMember != null) {
