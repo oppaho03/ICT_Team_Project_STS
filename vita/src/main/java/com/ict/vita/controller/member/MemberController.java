@@ -27,6 +27,12 @@ import com.ict.vita.util.Commons;
 import com.ict.vita.util.Result;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -43,6 +49,56 @@ public class MemberController {
 	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 HTTP 응답을 감싸는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
+	@Operation( summary = "회원가입", description = "회원가입 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "400-회원가입 실패",
+			description = "FAIL(유효성 검증 실패)",
+			content = @Content(	
+				examples = @ExampleObject(
+					value = "{ \"success\": 0, \"response\": { \"message\": \"email:올바른 이메일 주소를 입력하세요.\"  } }" 
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "201-회원가입 성공",
+			description = "SUCCESS(사용중인 이메일이 아니면서 전화번호 미입력시)",
+			content = @Content(	
+				schema = @Schema(implementation = MemberDto.class),
+				examples = @ExampleObject(
+					value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "201-회원가입 성공",
+				description = "SUCCESS(입력한 이메일과 전화번호가 사용중이지 않은 경우)",
+				content = @Content(	
+					schema = @Schema(implementation = MemberDto.class),
+					examples = @ExampleObject(
+						value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
+					)
+				) 
+			),
+		@ApiResponse( 
+			responseCode = "409-회원가입 실패",
+			description = "FAIL(이미 이메일이 사용중인 경우)", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{ \"success\": 0, \"response\": { \"message\": \"이미 사용 중인 이메일입니다\"  } }" 
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "409-회원가입 실패",
+				description = "FAIL(이미 전화번호가 사용중인 경우)", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{ \"success\": 0, \"response\": { \"message\": \"이미 사용 중인 전화번호입니다\"  } }" 
+					)
+				) 
+			)
+	})
 	@PostMapping("/members")
 	public ResponseEntity<?> join(@RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
 		//<DTO 객체 필드의 유효성 검증 실패시>
@@ -81,6 +137,28 @@ public class MemberController {
 	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "로그인 (direct)", description = "다이렉트 로그인 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-로그인 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = MemberDto.class),
+				examples = @ExampleObject(
+					value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-로그인 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{ \"success\": 0, \"response\": { \"message\": \"아이디 또는 비밀번호 불일치.\"  } }" 
+				)
+			) 
+		)
+	})
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid MemberLoginDto loginDto,BindingResult bindingResult){
 		//[이메일과 비밀번호가 일치하는 회원 조회]
@@ -102,6 +180,18 @@ public class MemberController {
 	 * @param token 회원의 토큰값(JWT)
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "로그아웃", description = "로그아웃 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-로그아웃 성공",
+			description = "SUCCESS", 
+			content = @Content(	
+				examples = @ExampleObject(
+					value = "{ \"success\": 1, \"response\": { \"data\": null  } }" 
+				)
+			) 
+		)
+	})
 	@PostMapping("/logout")
 	//public ResponseEntity<?> logout(@RequestBody Map<String, String> token){
 	public ResponseEntity<?> logout(@RequestHeader(name = "authorization") String token){
