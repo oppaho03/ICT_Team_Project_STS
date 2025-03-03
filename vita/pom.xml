@@ -118,6 +118,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- SpringDoc API 자동화 문서 (Swagger) -->
+		<dependency>
+		   <groupId>org.springdoc</groupId>
+		   <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		   <version>2.6.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
