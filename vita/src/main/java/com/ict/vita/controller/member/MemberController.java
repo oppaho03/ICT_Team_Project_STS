@@ -43,7 +43,7 @@ public class MemberController {
 	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 HTTP 응답을 감싸는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
-	@PostMapping("/member")
+	@PostMapping("/members")
 	public ResponseEntity<?> join(@RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
 		//<DTO 객체 필드의 유효성 검증 실패시>
 		if(bindingResult.hasErrors()) {
