@@ -7,6 +7,6 @@ import io.swagger.v3.oas.annotations.info.Info;
 @OpenAPIDefinition(
   info = @Info(title = "API", description = "VITA RESTfull API Document (Spring)", version = "V1.0")
 )
-@Configuration
+@Configuration 
 public class SwaggerConfig {
 }
