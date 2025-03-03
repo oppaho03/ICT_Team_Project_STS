@@ -34,7 +34,6 @@ public class ChatAnswerController {
 		System.out.println("===== 답변 검색 테스트 =====");
 		//사용자가 입력한 키워드들
 		String keywords = searchRequest.getKeywords().stream().map(keyword -> keyword.toString()).collect(Collectors.joining(" OR "));
-//		String keywords = searchRequest.getData().stream().map(keyword -> keyword.getKeyword()).collect(Collectors.joining(" OR "));
 		System.out.println("사용자 입력 키워드들:"+keywords);
 		//키워드로 검색한 답변 결과들
 		List<ChatAnswerDto> answerList = chatanswerService.findAnswerByKeywords(keywords);
