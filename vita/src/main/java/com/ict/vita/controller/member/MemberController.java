@@ -113,12 +113,12 @@ public class MemberController {
 		if(findedMember != null) {
 			findedMember.setToken(null);
 			MemberDto updatedMember = memberService.updateMember(findedMember);
-			System.out.println("!!!!!!토큰값 null로 수정!!!!!!");
+			System.out.println("[로그아웃]찾은 회원의 토큰값을 null 로 설정");
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		}
 		//<찾은 회원이 존재하지 않는 경우>
 		// 토큰값과 일치하는 회원이 없더라도 로그아웃 처리는 완료됨
-		System.out.println("+++++++++++++++");
+		System.out.println("[로그아웃]찾은 회원은 없지만 로그아웃 처리 완");
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 	}
 }
