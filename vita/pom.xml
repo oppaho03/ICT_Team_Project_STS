@@ -90,12 +90,13 @@
 			<scope>runtime</scope>
 		</dependency>
 		
+		
 		<!-- 포스트그레 -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency> 
 		
 		<!-- 반복적인 코드를 줄여주는 라이브러리로 
 		어노테이션을 이용해 Getter/Setter,생성자 등을 자동으로 생성 -->

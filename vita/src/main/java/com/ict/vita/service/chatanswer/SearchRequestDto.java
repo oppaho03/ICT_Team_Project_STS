@@ -29,7 +29,7 @@ public class SearchRequestDto {
 	@Setter
 	@AllArgsConstructor
 	@NoArgsConstructor
-	public static class Keyword{ //내부클래스 static으로 안 하면 에러남
+	public static class Keyword{ //내부클래스 static으로 안 하면 에러남(static 사용하면 내부 클래스를 독립적으로 사용 가능)
 		String keyword;
 	}
 }
