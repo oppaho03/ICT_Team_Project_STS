@@ -34,12 +34,20 @@ public class Commons {
 	 * @return 
 	 */
 	public static String formatBindingResultHasError( BindingResult bindResult, String message) {
-		if ( Commons.isNull(message) ) message = "Invalid Error";
+		if ( isNull(message) ) message = "Invalid Error";
 		return bindResult.hasErrors() ? String.format( 
 			"%s : "
 			+ bindResult.getAllErrors().stream().map( e -> e.getDefaultMessage() ).collect( Collectors.joining(",") )
 			, message
 		) : null;
 	}
+
+
+	/**
+	 * HTTP Header 파서(Parser)
+	 * @param toekn String 
+	 * @return 
+	 */
+	public static String parseHTTPHeaderToken( String token ) { return isNull(token) ? null : token.replace("Bearer", ""); }
 	
 }
