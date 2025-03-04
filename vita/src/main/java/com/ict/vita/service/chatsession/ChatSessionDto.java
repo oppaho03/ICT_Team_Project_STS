@@ -22,10 +22,10 @@ import lombok.Setter;
 public class ChatSessionDto {
 	private Long id; //PK
 	private MemberDto memberDto; //회원
-	private LocalDateTime created_at = LocalDateTime.now(); //생성일
-	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
-	private long status; //상태(공개/비공개)
-	private long count = 0; //카운트(공개상태일때 외부인이 조회한 횟수)
+	private LocalDateTime created_at; //생성일
+	private LocalDateTime updated_at; //수정일
+	private long status; //상태(공개(0) / 비공개(1)(디폴트))
+	private long count; //카운트(공개상태일때 외부인이 조회한 횟수)
 	
 	//[ChatSessionDto를 ChatSessionEntity로 변환하는 메서드]
 	public ChatSessionEntity toEntity() {
