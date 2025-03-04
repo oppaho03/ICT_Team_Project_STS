@@ -24,4 +24,14 @@ public class ChatSessionService {
 		return chatSessionRepository.existsById(sid);
 	}
 	
+	/**
+	 * [세션 생성]
+	 * @param sessionDto 
+	 * @return ChatSessionDto객체
+	 */
+	public ChatSessionDto createSession(ChatSessionDto sessionDto) {
+		ChatSessionEntity sessionEntity = chatSessionRepository.save(sessionDto.toEntity());
+		return ChatSessionDto.toDto(sessionEntity);
+	}
+	
 }
