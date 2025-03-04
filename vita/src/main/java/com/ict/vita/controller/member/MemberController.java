@@ -178,7 +178,7 @@ public class MemberController {
 		 * 회원의 token필드(JWT) 설정
 		 * id, email -> JWT token 생성 및 업데이트 
 		 * - jwtutil.ParseToken(String token) 을 사용해 Map<String, Object> 반환 
-		 * - 예 { sub=1, iat=1741051044, exp=1741051944 ... }
+		 * - 예 { sub=1, iat=1741051044, exp=1741051944 } 
 		 */	
 		try {
 			Map<String, Object> claims = new HashMap<>();
@@ -193,7 +193,6 @@ public class MemberController {
 					.status(HttpStatus.UNAUTHORIZED)
 					.body(ResultUtil.fail("토큰 생성 실패"));
 		}
-	
 		
 		//회원 정보 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
