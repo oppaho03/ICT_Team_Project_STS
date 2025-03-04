@@ -26,8 +26,8 @@ public class ChatSessionService {
 	
 	/**
 	 * [세션 생성]
-	 * @param sessionDto 
-	 * @return ChatSessionDto객체
+	 * @param sessionDto 세션 정보를 담아 요청하는 DTO객체
+	 * @return ChatSessionDto 생성된 세션 DTO 객체
 	 */
 	public ChatSessionDto createSession(ChatSessionDto sessionDto) {
 		ChatSessionEntity sessionEntity = chatSessionRepository.save(sessionDto.toEntity());

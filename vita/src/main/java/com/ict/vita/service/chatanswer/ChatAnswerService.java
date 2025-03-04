@@ -24,7 +24,7 @@ public class ChatAnswerService {
 	 * @return List<ChatAnswerDto> 키워드로 검색한 답변 결과값들
 	 */
 	public List<ChatAnswerDto> findAnswerByKeywords(String keywords) {
-		List<ChatAnswerEntity> answerEntityList = chatAnswerRepository.findAnswerByKeywords(keywords);
+		List<ChatAnswerEntity> answerEntityList = chatAnswerRepository.findAnswerByKeywords(keywords); //결과 없을시 빈 리스트 반환
 		return answerEntityList.stream().map(entity -> ChatAnswerDto.toDto(entity)).collect(Collectors.toList());
 	}
 }

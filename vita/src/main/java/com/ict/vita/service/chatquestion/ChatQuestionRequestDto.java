@@ -16,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 //[질문 요청 DTO]
 public class ChatQuestionRequestDto {
-	@NotNull
+	@NotNull(message = "질문 내용을 입력하세요")
 	private String content; //내용
 	
 	@NotNull

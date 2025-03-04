@@ -58,7 +58,7 @@ public class ChatSessionEntity {
 	
 	@NotNull
 	@Column(columnDefinition = "NUMBER(1,0)")
-	private long status; //상태(공개/비공개)
+	private long status; //상태(공개(0) / 비공개(1)(디폴트))
 	
 	@NotNull
 	@Column(columnDefinition = "NUMBER(20,0)")
