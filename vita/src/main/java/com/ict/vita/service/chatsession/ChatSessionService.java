@@ -34,4 +34,19 @@ public class ChatSessionService {
 		return ChatSessionDto.toDto(sessionEntity);
 	}
 	
+	/**
+	 * [세션 id(PK)로 검색]
+	 * @param id 세션id(PK)
+	 * @return ChatSessionDto 찾은 세션 DTO 객체
+	 */
+	public ChatSessionDto findById(Long id) {
+		ChatSessionEntity sessionEntity = chatSessionRepository.findById(id).orElse(null);
+		//세션을 찾은 경우
+		if(sessionEntity != null) {
+			return ChatSessionDto.toDto(sessionEntity);
+		}
+		//세션을 못 찾은 경우
+		return null;
+	}
+	
 }

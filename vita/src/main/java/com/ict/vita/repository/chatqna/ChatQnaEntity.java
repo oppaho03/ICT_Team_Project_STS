@@ -55,5 +55,5 @@ public class ChatQnaEntity {
 	
 	@NotNull
 	@Column(columnDefinition = "NUMBER(1,0)")
-	private long is_matched; //매칭여부
+	private long is_matched; //매칭여부(1:매칭됨,0:매칭X)
 }

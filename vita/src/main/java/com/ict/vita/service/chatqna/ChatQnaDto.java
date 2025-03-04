@@ -22,7 +22,7 @@ public class ChatQnaDto {
 	private ChatSessionDto chatSessionDto; //세션
 	private ChatQuestionDto chatQuestionDto; //질문
 	private ChatAnswerDto chatAnswerDto; //답변
-	private long is_matched; //매칭여부
+	private long is_matched; //매칭여부(1:매칭됨,0:매칭X)
 	
 	//[ChatQnaDto를 ChatQnaEntity로 변환하는 메서드]
 	public ChatQnaEntity toEntity() {
