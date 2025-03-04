@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberLoginDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.Commons;
+import com.ict.vita.util.JwtUtil;
 import com.ict.vita.util.Result;
 import com.ict.vita.util.ResultUtil;
 
@@ -43,6 +45,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	//서비스 주입
 	private final MemberService memberService;
+	
+	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	
 	/**
 	 * 회원가입
@@ -168,9 +172,29 @@ public class MemberController {
 		if(findedMember == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("아이디 또는 비밀번호 불일치"));
 		}
-		//<회원인 경우>
-		//회원의 token필드(JWT) 설정
-		findedMember.setToken("testToken"); // * 임시로 테스트용 토큰 넣어놓음!!!! *
+		
+		/*
+		 * <회원인 경우>
+		 * 회원의 token필드(JWT) 설정
+		 * id, email -> JWT token 생성 및 업데이트 
+		 * - jwtutil.ParseToken(String token) 을 사용해 Map<String, Object> 반환 
+		 * - 예 { sub=1, iat=1741051044, exp=1741051944 ... }
+		 */	
+		try {
+			Map<String, Object> claims = new HashMap<>();
+			claims.put( "email" , findedMember.getEmail());
+			claims.put( "role" , findedMember.getRole());
+			
+			String token = jwtutil.CreateToken(findedMember.getId().toString(), claims);			
+			findedMember.setToken(token); 
+		}
+		catch( Exception ex ) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body(ResultUtil.fail("토큰 생성 실패"));
+		}
+	
+		
 		//회원 정보 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedMember));
