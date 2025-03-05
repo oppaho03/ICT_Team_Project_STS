@@ -2,8 +2,10 @@ package com.ict.vita.service.terms;
 
 import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -315,7 +317,31 @@ public class TermsService {
 			// PostsEntity -> PostsDto
 			PostsDto postsDto = PostsDto.toDto(postsEntity.get());
 
-			// < 카테고리 TermCategory > 유효성 검사 및 관계 등록
+			// < 현재 포스트  >
+			List<PostCategoryRelationshipsEntity> rels = relPostCategoryRepository.findByPostId( post_id );
+
+			List<Long> olds = new ArrayList<>();
+			olds.add(709L);
+			olds.add(710L);
+			olds.add(713L);
+			olds.add(714L);
+
+			// 공통 요소 (겹치는 값)
+			Set<Long> intersection = new HashSet<>(cids);
+			intersection.retainAll(olds);
+
+			System.out.println( intersection );
+
+			// listA에만 있는 값
+			Set<Long> onlyInA = new HashSet<>(cids);
+			onlyInA.removeAll(olds);
+
+			System.out.println( onlyInA );
+			/////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////
+			
+			// < 카테고리 TermCategory 유효성 검사 및 관계 등록 >
 			for( Long cid : cids ) {
 				Optional<TermCategoryEntity> termCategoryEntity = termCategoryRepository.findById(cid);
 
@@ -327,19 +353,20 @@ public class TermsService {
 
 				PostCategoryRelationshipsDto relPostCategoryDto = PostCategoryRelationshipsDto.builder().postsDto(postsDto).termCategoryDto(termCategoryDto).build();
 
-				if ( relPostCategoryRepository.save( relPostCategoryDto.toEntity() ) == null ) {
-					result = false;
-					break;
-				}
+				result = relPostCategoryRepository.save( relPostCategoryDto.toEntity() ) == null ? false : true;
+
+				if ( result == false ) break; 
 			} // 
 		}
 
-		if ( result == false ) 
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // Rollback
+		if ( result == false ) TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // Rollback
+
+		
+		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // Rollback
 		
 		return result;
 	} /// savePostCategories (...)
 
 }
-	
+
 

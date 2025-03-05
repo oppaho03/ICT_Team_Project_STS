@@ -262,9 +262,12 @@ public class TermsController {
 		}
 		
 		
-		termsService.savePostCategories(dto);
+		if ( termsService.savePostCategories(dto) ) {
 
+		}
+		else {
 
+		}
 
 		return null;
 	}
