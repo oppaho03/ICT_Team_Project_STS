@@ -4,7 +4,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.validation.BindingResult;
 
+import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberService;
+
 public class Commons {
+	
 	/**
 	 * 문자열이 null 또는 빈문자열인지 판단하는 함수
 	 * @param string 받은 문자열
@@ -49,5 +53,20 @@ public class Commons {
 	 * @return 
 	 */
 	public static String parseHTTPHeaderToken( String token ) { return isNull(token) ? null : token.replace("Bearer", ""); }
+	
+	/**
+	 * [토큰값으로 회원 조회]
+	 * @param token 서버로 넘어온 토큰값
+	 * @param memberService 토큰값으로 회원을 찾기 위한 회원 서비스
+	 * @return MemberDto 토큰이 유효하면 MemberDto를, 유효하지 않으면 null 반환
+	 */
+	public static MemberDto findMemberByToken(String token,MemberService memberService) {
+		MemberDto findedMember = memberService.findMemberByToken(parseHTTPHeaderToken(token));
+		//<찾은 회원이 존재하는 경우>
+		if(findedMember != null)
+			return findedMember;
+		//<찾은 회원이 존재하지 않는 경우>
+		return null;
+	}
 	
 }
