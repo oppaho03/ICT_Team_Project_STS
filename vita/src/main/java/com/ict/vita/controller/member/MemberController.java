@@ -236,8 +236,35 @@ public class MemberController {
 		
 	}
 	
+	/**
+	 * [회원정보 수정]
+	 * @param updateDto 수정 정보가 들어있는 수정 요청 객체
+	 * @param token 로그인한 회원의 토큰값
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "수정", description = "수정 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-수정 성공",
+			description = "SUCCESS", 
+			content = @Content(	
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":31,\"email\":\"hahaha12@naver.com\",\"password\":\"newPwd\",\"role\":\"USER\",\"name\":\"개명홍길동\",\"nickname\":\"홍홍\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":\"0202\",\"address\":\"\",\"token\":\"tokenString\",\"created_at\":\"2025-02-28T20:16:05.570502\",\"updated_at\":\"2025-02-28T20:16:05.549038\",\"status\":9}}}" 
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-수정 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"유효하지않은토큰입니다\"}}"
+				)
+			) 
+		)
+	})
 	@PutMapping("/members")
-	public ResponseEntity<?> update(@RequestBody MemberUpdateDto updateDto,@RequestHeader(name = "authorization") String token){
+	public ResponseEntity<?> update(@Parameter(description = "수정 요청 객체") @RequestBody MemberUpdateDto updateDto,@RequestHeader(name = "authorization") String token){
 		//<찾은 회원이 존재하는 경우>
 		if(Commons.findMemberByToken(token, memberService) != null) {
 			MemberDto findedMember = Commons.findMemberByToken(token, memberService);
