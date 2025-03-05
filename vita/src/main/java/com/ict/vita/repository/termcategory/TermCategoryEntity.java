@@ -51,10 +51,10 @@ public class TermCategoryEntity {
 	
 	@ColumnDefault(value = "0")
 	@Column(columnDefinition = "NUMBER(20,0)") //NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
-	private long count; //해당 용어에 속하는 데이터 갯수
+	private Long count = 0L; //해당 용어에 속하는 데이터 갯수
 	
 	@ColumnDefault(value = "0")
 	@Column(columnDefinition = "NUMBER(20,0)") //NUMBER(20,0)을 명확하게 설정하려면 @Column의 columnDefinition에 명시해야 함
-	private long parent = 0; //부모 용어id(0이면 최상위 부모다)
+	private Long parent = 0L; //부모 용어id(0이면 최상위 부모다)
 	
 }

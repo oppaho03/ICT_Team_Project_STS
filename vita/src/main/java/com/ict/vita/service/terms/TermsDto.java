@@ -18,7 +18,7 @@ public class TermsDto {
 	private Long id; //PK 
 	private String name; //용어 이름
 	private String slug; //용어 슬러그
-	private long group_number; //용어 그룹번호
+	private Long group_number; //용어 그룹번호
 	
 	
 	//[TermsDTO를 TermsEntity로 변환하는 메서드]

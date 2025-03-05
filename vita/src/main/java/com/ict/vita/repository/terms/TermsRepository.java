@@ -16,8 +16,4 @@ public interface TermsRepository extends JpaRepository<TermsEntity, Long>{
 	List<TermsEntity> findAll( Sort sort );
 	List<TermsEntity> findAllByName(String name, Sort sort); 
 	
-	
-//	@Query("SELECT m FROM Member m LEFT JOIN FETCH m.orders")
-//	List
-	
 }
