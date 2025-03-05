@@ -40,4 +40,5 @@ public class PostCategoryRelationshipsEntity {
 	@JoinColumn(name = "term_category_id") //DB에서 외래키명 설정
 	@ManyToOne(fetch = FetchType.LAZY)
 	private TermCategoryEntity termCategoryEntity; //카테고리
+
 }
