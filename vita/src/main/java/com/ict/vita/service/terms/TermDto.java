@@ -17,9 +17,9 @@ public class TermDto {
     @Schema(description = "ID", example = "0")	
     @NotBlank(message = "")
     private Long id; // APP_TERM_CATEGORY.id
-    @Schema(description = "Term ID", example = "0")	
-    @NotBlank(message = "")
-    private Long term_id; // APP_TERM.id
+    // @Schema(description = "Term ID", example = "0")	
+    // @NotBlank(message = "")
+    // private Long term_id; // APP_TERM.id
     @Schema(description = "이름", example = "")	
     private String name; // APP_TERM.name
     @Schema(description = "슬러그", example = "")

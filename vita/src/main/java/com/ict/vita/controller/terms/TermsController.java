@@ -24,6 +24,7 @@ import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.EmptyTermDto;
+import com.ict.vita.service.terms.EmptyTermRelDto;
 import com.ict.vita.service.terms.TermDto;
 import com.ict.vita.service.terms.TermsDto;
 import com.ict.vita.service.terms.TermsService;
@@ -51,6 +52,7 @@ public class TermsController {
 	//서비스 주입
 	private final TermsService termsService;
 	private final TermCategoryService termCategoryService;
+
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	
 	/**
@@ -102,7 +104,7 @@ public class TermsController {
 	 * @param taxonomy 카테고리명
 	 * @return TermDto 배열 반환
 	 */	
-	@Operation( summary = "카테고리(Taxonomy) 검색 ", description = "카테고리(Taxonomy) 검색" )
+	@Operation( summary = "카테고리(Taxonomy) 검색", description = "카테고리(Taxonomy) 검색" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":714,\"term_id\":686,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"))),
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[]}}")))
@@ -120,10 +122,10 @@ public class TermsController {
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":null}}")))
 	})
 	@GetMapping("/{id}") 
-	public ResponseEntity<?> getById(@Parameter(description = "Term ID") @PathVariable Long id ) { return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findById( id ) )); }
+	public ResponseEntity<?> getById(@Parameter(description = "카테고리 ID") @PathVariable Long id ) { return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findById( id ) )); }
 
 	/**
-	 * 검색 : 슬러그 또는 부모 Term ID
+	 * 검색 : 슬러그 또는 부모 TermCategory ID
 	 * @param slug 
 	 * @param category
 	 * @return TermDto 또는 Null 또는 List 반환
@@ -139,7 +141,7 @@ public class TermsController {
 	public ResponseEntity<?> getBySlug( 
 		@Parameter(description = "슬러그") @RequestParam(required = false, defaultValue = "") String slug, 
 		@Parameter(description = "카테고리(Taxonomy)") @RequestParam(required = false, defaultValue = "") String category,
-		@Parameter(description = "부모 Term ID") @RequestParam(required = false, defaultValue = "-1") Long parent
+		@Parameter(description = "부모 TermCategory ID") @RequestParam(required = false, defaultValue = "-1") Long parent
 	) { 
 
 		if ( ! Commons.isNull(slug) && ! Commons.isNull(category) ) {
@@ -155,7 +157,8 @@ public class TermsController {
 			}
 		}
 		else if ( parent >= 0 ) {
-			// << 검색 2. 부모 Term Id >>
+			// << 검색 2. 부모 카테고리 Id >>
+			// - 카테고리 ID -> Term ID 로 변환
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findByParent( parent ) )); 
 		}
 		
@@ -163,17 +166,17 @@ public class TermsController {
 	}
 
 	/**
-	 * 새 Term 등록
+	 * 새 Term, TermCategory 등록
 	 * @param dto FindTermDto
 	 * @return TermDto 또는 오류 메시지 반환
 	 */
-	@Operation( summary = "새 Term 등록", description = "새 Term 등록" )
+	@Operation( summary = "새 Term, TermCategory 등록", description = "새 Term, TermCategory 등록" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1537,\"term_id\":1511,\"name\":\"테스트질병\",\"slug\":\"%ED%85%8C%EC%8A%A4%ED%8A%B8+%EC%A7%88%EB%B3%91\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}}}"))),
 		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
 	})
 	@PostMapping("/new")
-	public ResponseEntity<?> add( @Parameter( description = "Term 데이터") @RequestBody @Valid EmptyTermDto dto, BindingResult bindingResult ) {
+	public ResponseEntity<?> add( @Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, BindingResult bindingResult ) {
 
 		/* CHECKE AUTH *** */
 		
@@ -229,21 +232,42 @@ public class TermsController {
 	} /// add
 
 	/**
-	 * Term 변경
+	 * Term, TermCategory 변경
 	 * @param dto FindTermDto
 	 * @return TermDto 또는 오류 메시지 반환
 	 */
-	@Operation(summary = "Term 변경", description = "Term 변경")
+	@Operation(summary = "Term, TermCategory 변경", description = "Term, TermCategory 변경")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1537,\"term_id\":1511,\"name\":\"테스트질병\",\"slug\":\"%ED%85%8C%EC%8A%A4%ED%8A%B8+%EC%A7%88%EB%B3%91\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}}}"))),
 		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
 	})
 	@PutMapping("/edit")
-	public ResponseEntity<?> edit( @Parameter( description = "Term 데이터") @RequestBody @Valid EmptyTermDto dto, BindingResult bindingResult ) {
-		if ( dto.getTerm_id() == null || dto.getTerm_id() == 0 ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "용어를 수정할 수 없습니다. Term ID is Null." ));
+	public ResponseEntity<?> edit( @Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, BindingResult bindingResult ) {
+		if ( dto.getTerm_id() == null || dto.getTerm_id() == 0 ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "용어를 수정할 수 없습니다. TermCategory ID is Null." ));
 		else return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.update(dto) ));
 	}
 
 
+	/**
+	 * 기본 컨텐츠 (글, 미디어 파일 등등) 관계 등록
+	 * @param dto EmptyTermRelDto
+	 * @return TermDto 또는 오류 메시지 반환
+	 */
+	@PostMapping("/post")
+	public ResponseEntity<?> setPostCategories(@Parameter( description = "관계 데이터") @RequestBody EmptyTermRelDto dto ) {
+		/* CHECKE AUTH *** */
+
+		if ( dto.getId() == 0 ) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "카테고리를 등록할 수 없습니다." ));
+		}
+		
+		
+		termsService.savePostCategories(dto);
+
+
+
+		return null;
+	}
+	
 }
 

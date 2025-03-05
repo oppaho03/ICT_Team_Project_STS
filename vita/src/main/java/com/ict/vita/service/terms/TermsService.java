@@ -11,15 +11,23 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import com.ict.vita.repository.postcategoryrelationships.PostCategoryRelationshipsRepository;
+import com.ict.vita.repository.posts.PostsEntity;
+import com.ict.vita.repository.posts.PostsRepository;
 import com.ict.vita.repository.termcategory.TermCategoryEntity;
 import com.ict.vita.repository.termcategory.TermCategoryRepository;
 import com.ict.vita.repository.terms.TermsEntity;
 import com.ict.vita.repository.terms.TermsRepository;
+import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
+import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.util.Commons;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -96,7 +104,7 @@ public class TermsService {
 				.category(mdto.getCategory())
 				.count(mdto.getCount())
 				.parent(mdto.getParent())
-				.term_id(sdto.getId())
+				// .term_id(sdto.getId())
 				.name(sdto.getName())
 				.slug(sdto.getSlug())
 				.group_number(sdto.getGroup_number())		
@@ -135,17 +143,19 @@ public class TermsService {
 
 	/**
 	 * ID 검색 
-	 * @param id Terms Id
+	 * @param id 카테고리 Id
 	 * @return
 	 */
 	public TermDto findById ( Long id ) {  
-		// find TermsEntity 
-		TermsEntity entity = termsRepository.findById( id ).orElse(null);
-		if ( entity != null ) {
-			// TermsEntity -> TermCategoryEntity -> TermDto
-			return toTermDto( termCategoryRepository.findByTermsEntity(entity).orElse(null) );
-		}
-		else return null;
+		TermCategoryEntity entity = termCategoryRepository.findById( id ).orElse(null);
+		return entity != null ? toTermDto( entity ) : null;
+		// // find TermsEntity 
+		// TermsEntity entity = termsRepository.findById( id ).orElse(null);
+		// if ( entity != null ) {
+		// 	// TermsEntity -> TermCategoryEntity -> TermDto
+		// 	return toTermDto( termCategoryRepository.findByTermsEntity(entity).orElse(null) );
+		// }
+		// else return null;
 	}
 
 	/**
@@ -160,15 +170,25 @@ public class TermsService {
 	}
 
 	/**
-	 * 검색 : 부모 Term ID
+	 * 검색 : 부모 카테고리 ID
 	 * @param slug 
 	 * @param taxonomy 
 	 * @return
 	 */
-	public List<TermDto> findByParent ( Long id ) { return toTermDtoList( termCategoryRepository.findByParent( id ) ); }
+	public List<TermDto> findByParent ( Long id ) { 
+		if ( id > 0 ) {
+			TermCategoryEntity entity = termCategoryRepository.findById( id ).orElse(null);
+			
+			if ( entity == null) 
+				return toTermDtoList(null);
+
+			id = TermCategoryDto.toDto(entity).getTermsDto().getId(); 
+		}
+		return toTermDtoList( termCategoryRepository.findByParent( id ) ); 
+	}
 
 	/**
-	 * 새 Term 등록
+	 * 새 Term, TermCategory 등록
 	 * @param dto 
 	 * @return
 	 */
@@ -213,7 +233,7 @@ public class TermsService {
 	}
 	
 	/**
-	 * Term 변경
+	 * Term, TermCategory 변경
 	 * @param dto 
 	 * @return
 	 */
@@ -269,6 +289,47 @@ public class TermsService {
 	}
 
 
+	private final PostsRepository postsRepository;
+	private final PostCategoryRelationshipsRepository relPostCategoryRepository;
 
+	/**
+	 * 기본 컨텐츠 (글, 미디어 파일 등등) 관계 등록
+	 * @param dto EmptyTermRelDto
+	 * @return TermDto 또는 오류 메시지 반환
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public Object savePostCategories( EmptyTermRelDto dto ) {
+
+		Long post_id = dto.getId();
+		List<Long> cids = dto.getCids();
+
+		// < 기본 컨텐츠 (글, 미디어 파일 등등) 유효성 검사 >
+		Optional<PostsEntity> postsEntity = postsRepository.findById(post_id);
+		if( ! postsEntity.isPresent() || (cids == null || cids.size() == 0) ) {
+
+			return null;
+		}
+		else {
+			// PostsEntity -> PostsDto
+			PostsDto postsDto = PostsDto.toDto(postsEntity.get());
+
+			// // < 카테고리 TermCategory > 유효성 검사 및 관계 등록
+			// for( Long cid : cids ) {
+			// 	Optional<TermCategoryEntity> termCategoryEntity = termCategoryRepository.findById(cid);
+
+			// 	if ( ! termCategoryEntity.isPresent() ) continue;
+
+			// 	TermCategoryDto termCategoryDto = 
+			// 		TermCategoryDto.toDto(termCategoryEntity.get());
+
+			// 	PostCategoryRelationshipsDto relPostCategoryDto = PostCategoryRelationshipsDto.builder().postsDto(postsDto).termCategoryDto(termCategoryDto).build();
+
+			// 	relPostCategoryRepository.save( relPostCategoryDto.toEntity() );
+			// }
+		}
+
+		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // Rollback
+		return null;
+	} /// savePostCategories (...)
 
 }
