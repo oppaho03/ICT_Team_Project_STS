@@ -1,5 +1,6 @@
 package com.ict.vita.controller.member;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,7 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberLoginDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.member.MemberUpdateDto;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.JwtUtil;
 import com.ict.vita.util.Result;
@@ -105,7 +108,7 @@ public class MemberController {
 			)
 	})
 	@PostMapping("/members")
-	public ResponseEntity<?> join(@RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
+	public ResponseEntity<?> join(@Parameter(description = "회원가입 요청 객체") @RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
 		//<DTO 객체 필드의 유효성 검증 실패시>
 		if(bindingResult.hasErrors()) {
 			System.out.println("회원가입 유효성 검증 실패: "+bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining(",")));
@@ -165,7 +168,7 @@ public class MemberController {
 		)
 	})
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody @Valid MemberLoginDto loginDto,BindingResult bindingResult){
+	public ResponseEntity<?> login(@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,BindingResult bindingResult){
 		//[이메일과 비밀번호가 일치하는 회원 조회]
 		MemberDto findedMember = memberService.validateLogin(loginDto);
 		//<회원이 아닌 경우>
@@ -218,7 +221,7 @@ public class MemberController {
 		)
 	})
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(@RequestHeader(name = "authorization") String token){
+	public ResponseEntity<?> logout(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader(name = "authorization") String token){
 		//<찾은 회원이 존재하는 경우>
 		if(Commons.findMemberByToken(token, memberService) != null) {
 			MemberDto findedMember = Commons.findMemberByToken(token, memberService);
@@ -230,6 +233,26 @@ public class MemberController {
 		//<찾은 회원이 존재하지 않는 경우>
 		System.out.println("[로그아웃]찾은 회원은 없지만 로그아웃 처리 완");
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+		
+	}
+	
+	@PutMapping("/members")
+	public ResponseEntity<?> update(@RequestBody MemberUpdateDto updateDto,@RequestHeader(name = "authorization") String token){
+		//<찾은 회원이 존재하는 경우>
+		if(Commons.findMemberByToken(token, memberService) != null) {
+			MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+			//변경한 회원정보로 기존 회원 dto 수정
+			findedMember.setPassword(updateDto.getPassword());
+			findedMember.setName(updateDto.getName());
+			findedMember.setNickname(updateDto.getNickname());
+			findedMember.setContact(updateDto.getContact());
+			findedMember.setAddress(updateDto.getAddress());
+			//변경된 회원 정보로 회원 수정
+			MemberDto updatedMember = memberService.updateMember(findedMember);
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedMember));
+		}
+		//<찾은 회원이 존재하지 않는 경우>
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("유효하지 않은 토큰입니다"));
 		
 	}
 }
