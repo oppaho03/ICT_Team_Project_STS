@@ -1,5 +1,6 @@
 package com.ict.vita.service.postcategoryrelationships;
 
+import com.ict.vita.repository.postcategoryrelationships.PostCategory;
 import com.ict.vita.repository.postcategoryrelationships.PostCategoryRelationshipsEntity;
 import com.ict.vita.service.anc.AncDto;
 import com.ict.vita.service.chatanswer.ChatAnswerDto;
@@ -24,7 +25,13 @@ public class PostCategoryRelationshipsDto {
 	
 	//[PostCategoryRelationshipsDto를 PostCategoryRelationshipsEntity로 변환하는 메서드]
 	public PostCategoryRelationshipsEntity toEntity() {
+		// 복합키(PostCategory) 생성
+        PostCategory postCategoryId = new PostCategory();
+        postCategoryId.setPost_id(postsDto.getId()); // post_id 설정
+        postCategoryId.setTerm_category_id(termCategoryDto.getId()); // term_category_id 설정
+		
 		return PostCategoryRelationshipsEntity.builder()
+				.id(postCategoryId) //복합키 설정
 				.postsEntity(postsDto.toEntity())
 				.termCategoryEntity(termCategoryDto.toEntity())
 				.build();
