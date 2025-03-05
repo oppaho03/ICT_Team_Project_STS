@@ -187,6 +187,7 @@ public class MemberController {
 			
 			String token = jwtutil.CreateToken(findedMember.getId().toString(), claims);			
 			findedMember.setToken(token); 
+			System.out.println("[로그인]토큰:"+token);
 		}
 		catch( Exception ex ) {
 			return ResponseEntity
@@ -230,19 +231,5 @@ public class MemberController {
 		System.out.println("[로그아웃]찾은 회원은 없지만 로그아웃 처리 완");
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		
-		/*
-		//[토큰값으로 회원 조회]
-		MemberDto findedMember = memberService.findMemberByToken(token);
-		//<찾은 회원이 존재하는 경우>
-		if(findedMember != null) {
-			findedMember.setToken(null);
-			MemberDto updatedMember = memberService.updateMember(findedMember);
-			System.out.println("[로그아웃]찾은 회원의 토큰값을 null 로 설정");
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
-		}
-		//<찾은 회원이 존재하지 않는 경우>
-		// 토큰값과 일치하는 회원이 없더라도 로그아웃 처리는 완료됨
-		System.out.println("[로그아웃]찾은 회원은 없지만 로그아웃 처리 완");
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null)); */
 	}
 }
