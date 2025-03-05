@@ -1,7 +1,6 @@
 package com.ict.vita.service.termcategory;
 
 import com.ict.vita.repository.termcategory.TermCategoryEntity;
-import com.ict.vita.service.terms._TermAddDto;
 import com.ict.vita.service.terms.TermsDto;
 
 import jakarta.validation.Valid;
@@ -48,10 +47,5 @@ public class TermCategoryDto {
 				.parent(entity.getParent())
 				.build();
 	}
-
-    public TermCategoryDto addTerm(_TermAddDto data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addTerm'");
-    }
 	
 }
