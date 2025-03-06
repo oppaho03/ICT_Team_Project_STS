@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.chatanswer.ChatAnswerDto;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberLoginDto;
@@ -248,6 +249,7 @@ public class MemberController {
 			responseCode = "200-수정 성공",
 			description = "SUCCESS", 
 			content = @Content(	
+				schema = @Schema(implementation = MemberDto.class),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":{\"id\":31,\"email\":\"hahaha12@naver.com\",\"password\":\"newPwd\",\"role\":\"USER\",\"name\":\"개명홍길동\",\"nickname\":\"홍홍\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":\"0202\",\"address\":\"\",\"token\":\"tokenString\",\"created_at\":\"2025-02-28T20:16:05.570502\",\"updated_at\":\"2025-02-28T20:16:05.549038\",\"status\":9}}}" 
 				)
