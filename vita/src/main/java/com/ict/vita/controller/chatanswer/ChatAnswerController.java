@@ -15,6 +15,11 @@ import com.ict.vita.service.chatanswer.ChatAnswerService;
 import com.ict.vita.service.chatanswer.SearchRequestDto;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,6 +34,27 @@ public class ChatAnswerController {
 	 * @param searchRequest 사용자가 입력한 키워드(JSON형식)
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "키워드 검색", description = "답변에서 키워드로 검색 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-검색 결과 조회",
+			description = "SUCCESS", 
+			content = @Content(	
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는~~\",\"body\":\"HIV는주로~~\",\"conclusion\":\"HIV감염을예방하기위해서는~~\"},{\"id\":17,\"file_name\":\"HC-A-06128457000017\",\"intro\":\"HIV감염검진은~~\",\"body\":\"HIV감염검진은~~~\",\"conclusion\":\"HIV감염검진은~~~\"}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "200-검색 결과 없음",
+			description = "SUCCESS", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":null}}"
+				)
+			) 
+		)
+	})
 	@PostMapping("/answers/search")
 	public ResponseEntity<?> searchKeywords(@RequestBody SearchRequestDto searchRequest){
 		System.out.println("===== 답변 검색 테스트 =====");
@@ -39,7 +65,7 @@ public class ChatAnswerController {
 		List<ChatAnswerDto> answerList = chatanswerService.findAnswerByKeywords(keywords);
 		//<검색 결과가 없는 경우>
 		if(answerList.size() == 0) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResultUtil.success(answerList));
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		}
 		
 		//<검색 결과가 존재하는 경우>
