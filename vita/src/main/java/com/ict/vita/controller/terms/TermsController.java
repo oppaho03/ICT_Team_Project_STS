@@ -246,31 +246,5 @@ public class TermsController {
 		if ( dto.getTerm_id() == null || dto.getTerm_id() == 0 ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "용어를 수정할 수 없습니다. TermCategory ID is Null." ));
 		else return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.update(dto) ));
 	}
-
-
-	/**
-	 * 기본 컨텐츠 (글, 미디어 파일 등등) 관계 등록
-	 * @param dto EmptyTermRelDto
-	 * @return TermDto 또는 오류 메시지 반환
-	 */
-	@PostMapping("/post")
-	public ResponseEntity<?> setPostCategories(@Parameter( description = "관계 데이터") @RequestBody EmptyTermRelDto dto ) {
-		/* CHECKE AUTH *** */
-
-		if ( dto.getId() == 0 ) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "카테고리를 등록할 수 없습니다." ));
-		}
-		
-		
-		if ( termsService.savePostCategories(dto) ) {
-
-		}
-		else {
-
-		}
-
-		return null;
-	}
-	
 }
 

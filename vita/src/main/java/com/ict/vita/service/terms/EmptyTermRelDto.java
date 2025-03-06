@@ -19,5 +19,5 @@ public class EmptyTermRelDto {
     private Long id = 0L; 
 
     @Schema(description = "카테고리 ID 리스트", example = "null")	
-    private List<Long> cids = null; 
+    private List<Long> categories = null; 
 }
