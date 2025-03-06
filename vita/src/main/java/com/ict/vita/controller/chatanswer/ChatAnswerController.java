@@ -29,7 +29,7 @@ public class ChatAnswerController {
 	 * @param searchRequest 사용자가 입력한 키워드(JSON형식)
 	 * @return ResponseEntity
 	 */
-	@PostMapping("/posts/search")
+	@PostMapping("/answers/search")
 	public ResponseEntity<?> searchKeywords(@RequestBody SearchRequestDto searchRequest){
 		System.out.println("===== 답변 검색 테스트 =====");
 		//사용자가 입력한 키워드들
