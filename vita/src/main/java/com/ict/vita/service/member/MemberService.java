@@ -1,12 +1,14 @@
 package com.ict.vita.service.member;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.vita.repository.member.MemberEntity;
 import com.ict.vita.repository.member.MemberRepository;
+import com.ict.vita.util.Commons;
 
 import lombok.RequiredArgsConstructor;
 
@@ -65,7 +67,40 @@ public class MemberService {
 		return memberRepository.existsByContact(contact);
 	}
 	
-
+	/**
+	 * [임시 회원가입]
+	 * @param tempJoinDto 회원가입 임시 요청 DTO
+	 * @return MemberDto 임시 회원가입 된 회원 DTO
+	 */
+	public MemberDto tempJoin(MemberJoinDto tempJoinDto) {
+		String password = tempJoinDto.getPassword();
+		String nickname = tempJoinDto.getNickname();
+		//임시 회원이 비밀번호를 입력하지 않은 경우
+		if(Commons.isNull(tempJoinDto.getPassword())) {
+			password = "TEMPORARY"; //임시 비밀번호 지정
+		}
+		//닉네임 미입력시
+		if(Commons.isNull(nickname)) {
+			nickname = "TEMPORARY";
+		}
+		//회원 저장
+		MemberEntity entity = memberRepository.save(MemberEntity.builder()
+								.email(tempJoinDto.getEmail())
+								.password(password)
+								.role(tempJoinDto.getRole())
+								.name(tempJoinDto.getName())
+								.nickname(nickname)
+								.birth(tempJoinDto.getBirth())
+								.gender(tempJoinDto.getGender())
+								.contact(tempJoinDto.getContact())
+								.address(tempJoinDto.getAddress())
+								.created_at(tempJoinDto.getCreated_at())
+								.updated_at(tempJoinDto.getUpdated_at())
+								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
+								.build());
+		return MemberDto.toDto(entity);
+	}
+	
 	/**
 	 * [회원가입 처리] - 최종 회원가입 처리
 	 * @param joinDto 회원이 입력한 정보를 담은 DTO 객체
@@ -74,7 +109,7 @@ public class MemberService {
 	public MemberDto join(MemberJoinDto joinDto) {	
 		String nickname = "";
 		//<닉네임 미입력시>
-		if(joinDto.getNickname() == null || joinDto.getNickname().isBlank()) { 
+		if(Commons.isNull(joinDto.getNickname())) { 
 			//이메일에서 @ 전까지를 닉네임으로 지정
 			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); 
 			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
@@ -126,7 +161,7 @@ public class MemberService {
 		//리포지토리 호출해서 이메일과 비밀번호가 일치하면 해당하는 DTO를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
 		MemberEntity findedMember = memberRepository.findByEmailIsAndPasswordIs(loginDto.getEmail(), loginDto.getPassword()).orElse(null);
-		if(findedMember != null)
+		if(findedMember != null && findedMember.getStatus() == 1)
 			return MemberDto.toDto(findedMember);
 		return null;
 	}

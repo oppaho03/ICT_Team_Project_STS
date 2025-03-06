@@ -53,15 +53,48 @@ public class MemberController {
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	
 	
+	/**
+	 * [임시 회원가입] - 임시 회원가입시 회원의 status는 9(대기)
+	 * @param joinDto 회원가입 임시 요청 DTO
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "임시 회원가입", description = "임시 회원가입 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "201-임시 회원가입 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = MemberJoinDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":36,\"email\":\"abcde@naver.com\",\"password\":\"TEMPORARY\",\"role\":\"USER\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "400-임시 회원가입 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"이메일을입력하세요\"}}"
+				)
+			) 
+		)
+	})
 	@PostMapping("/temp_members")
-	public ResponseEntity<?> tempJoin(){
-		
+	public ResponseEntity<?> tempJoin(@Parameter(description = "임시 회원가입 요청 객체") @RequestBody MemberJoinDto tempJoinDto){
+		//<회원이 이메일을 입력하지 않은 경우>
+		if(Commons.isNull(tempJoinDto.getEmail())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("이메일을 입력하세요"));
+		}
+		//<회원이 이메일을 입력한 경우>
+		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(tempJoinedMember));
 	}
 	
 	/**
-	 * [회원가입] - 최종 회원가입 처리
-	 * @param joinDto(회원가입 요청 DTO) bindingResult(앞의 DTO객체의 유효성 검증 실패시 담기는 에러)
-	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
+	 * [회원가입] - 최종 회원가입 처리 -> 최종 회원가입시 회원의 status는 1(일반)
+	 * @param joinDto(회원가입 요청 DTO) 
+	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체(앞의 DTO객체의 유효성 검증 실패시 담기는 에러)
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 HTTP 응답을 감싸는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
 	@Operation( summary = "회원가입", description = "회원가입 API" )
