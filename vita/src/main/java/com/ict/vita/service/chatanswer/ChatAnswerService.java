@@ -19,6 +19,14 @@ public class ChatAnswerService {
 	private final ChatAnswerRepository chatAnswerRepository;
 	
 	/**
+	 * 답변 테이블 ID 검색
+	 * @param keywords
+	 * @return
+	 */
+	public ChatAnswerDto findById(Long id) { return ChatAnswerDto.toDto(chatAnswerRepository.findById(id).get()); }
+	
+
+	/**
 	 * 답변 테이블에서 키워드로 검색하기
 	 * @param keywords 사용자가 입력한 검색어들
 	 * @return List<ChatAnswerDto> 키워드로 검색한 답변 결과값들

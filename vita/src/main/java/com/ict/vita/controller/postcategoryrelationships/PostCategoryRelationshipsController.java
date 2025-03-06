@@ -162,8 +162,7 @@ public class PostCategoryRelationshipsController {
 		if ( dels.size() > 0 ) postCategoryRelService.delete( postsDto, dels.stream().toList() );
 
 		relDtos = postCategoryRelService.findAllByPostId(id);
-		System.out.println(relDtos);
-
+		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( relDtos.stream().map(dto->TermDto.toDto(dto.getTermCategoryDto().toEntity())).toList() ));
 	}
 

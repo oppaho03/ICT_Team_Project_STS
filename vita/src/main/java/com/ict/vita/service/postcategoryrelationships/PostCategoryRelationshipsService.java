@@ -56,8 +56,6 @@ public class PostCategoryRelationshipsService {
 		return relEntities.stream().map( entity -> PostCategoryRelationshipsDto.toDto(entity) ).toList();
 	}
 
-
-
 	
 	/**
 	 * 포스트 + 카테고리 관계 등록
