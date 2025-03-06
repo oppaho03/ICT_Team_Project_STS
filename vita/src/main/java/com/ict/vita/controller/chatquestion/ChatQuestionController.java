@@ -27,6 +27,7 @@ import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -84,7 +85,7 @@ public class ChatQuestionController {
 		)
 	})
 	@PostMapping("/chatquestions")
-	public ResponseEntity<?> createQuestionWithSession(@RequestBody ChatQuestionWithSessionRequestDto qwsDto,@RequestHeader(name = "Authorization") String token){
+	public ResponseEntity<?> createQuestionWithSession(@Parameter(description = "질문과 세션에 대한 정보") @RequestBody ChatQuestionWithSessionRequestDto qwsDto,@Parameter(description = "회원의 토큰값") @RequestHeader(name = "Authorization") String token){
 		//회원의 토큰값 조회
 		MemberDto findedMember = memberService.findMemberByToken(token);
 		//<회원 토큰값이 존재하지 않는 경우>

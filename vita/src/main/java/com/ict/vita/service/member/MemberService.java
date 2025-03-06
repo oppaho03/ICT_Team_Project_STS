@@ -67,7 +67,7 @@ public class MemberService {
 	
 
 	/**
-	 * [회원가입 처리]
+	 * [회원가입 처리] - 최종 회원가입 처리
 	 * @param joinDto 회원이 입력한 정보를 담은 DTO 객체
 	 * @return
 	 */
@@ -92,7 +92,7 @@ public class MemberService {
 								.token(joinDto.getToken())
 								.created_at(joinDto.getCreated_at())
 								.updated_at(joinDto.getUpdated_at())
-								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
+								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
 								.build());
 			return MemberDto.toDto(entity);
 		}
@@ -111,7 +111,7 @@ public class MemberService {
 								.token(joinDto.getToken())
 								.created_at(joinDto.getCreated_at())
 								.updated_at(joinDto.getUpdated_at())
-								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
+								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
 								.build());
 		return MemberDto.toDto(entity);
 	}////

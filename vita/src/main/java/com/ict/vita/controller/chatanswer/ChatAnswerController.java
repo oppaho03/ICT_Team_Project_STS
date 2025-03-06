@@ -17,6 +17,7 @@ import com.ict.vita.service.chatqna.ChatQnaDto;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,7 +60,7 @@ public class ChatAnswerController {
 		)
 	})
 	@PostMapping("/answers/search")
-	public ResponseEntity<?> searchKeywords(@RequestBody SearchRequestDto searchRequest){
+	public ResponseEntity<?> searchKeywords(@Parameter(description = "사용자가 입력한 키워드") @RequestBody SearchRequestDto searchRequest){
 		System.out.println("===== 답변 검색 테스트 =====");
 		//사용자가 입력한 키워드들
 		String keywords = searchRequest.getKeywords().stream().map(keyword -> keyword.toString()).collect(Collectors.joining(" OR "));

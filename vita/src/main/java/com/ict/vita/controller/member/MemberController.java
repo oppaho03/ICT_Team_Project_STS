@@ -52,8 +52,14 @@ public class MemberController {
 	
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	
+	
+	@PostMapping("/temp_members")
+	public ResponseEntity<?> tempJoin(){
+		
+	}
+	
 	/**
-	 * 회원가입
+	 * [회원가입] - 최종 회원가입 처리
 	 * @param joinDto(회원가입 요청 DTO) bindingResult(앞의 DTO객체의 유효성 검증 실패시 담기는 에러)
 	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 HTTP 응답을 감싸는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)

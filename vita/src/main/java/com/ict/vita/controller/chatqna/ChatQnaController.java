@@ -19,6 +19,7 @@ import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -63,7 +64,7 @@ public class ChatQnaController {
 		)
 	})
 	@GetMapping("/sessions")
-	public ResponseEntity<?> getQna(@RequestHeader(name = "Authorization") String token, @RequestParam Long sid) {
+	public ResponseEntity<?> getQna(@Parameter(description = "회원의 토큰값") @RequestHeader(name = "Authorization") String token,@Parameter(description = "세션 아이디") @RequestParam Long sid) {
 		//<찾은 회원이 존재하지 않는 경우>
 		if(Commons.findMemberByToken(token, memberService) == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("유효하지 않은 토큰입니다"));
