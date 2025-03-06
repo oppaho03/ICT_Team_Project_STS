@@ -26,6 +26,12 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -45,6 +51,38 @@ public class ChatQuestionController {
 	 * @param token 로그인한 회원의 토큰값
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "질문&세션 생성", description = "질문&세션 생성 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-답변 검색 결과가 없음",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = MemberDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":null}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "201-질문&세션 생성 성공",
+				description = "SUCCESS",
+				content = @Content(	
+					schema = @Schema(implementation = ChatQuestionWithSessionResponseDto.class),
+					examples = @ExampleObject(
+						value = "{\"success\":1,\"response\":{\"data\":{\"sid\":43,\"answers\":[{\"id\":394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는~~\",\"body\":\"HIV는~~\",\"conclusion\":\"HIV감염을~~\"}]}}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+			responseCode = "401-질문&세션 생성 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{ \"success\": 0, \"response\": { \"message\": \"유효하지 않은 토큰입니다\"  } }" 
+				)
+			) 
+		)
+	})
 	@PostMapping("/chatquestions")
 	public ResponseEntity<?> createQuestionWithSession(@RequestBody ChatQuestionWithSessionRequestDto qwsDto,@RequestHeader(name = "Authorization") String token){
 		//회원의 토큰값 조회
