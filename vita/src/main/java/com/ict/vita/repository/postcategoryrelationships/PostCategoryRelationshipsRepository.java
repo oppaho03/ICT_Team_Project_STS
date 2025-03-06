@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostCategoryRelationshipsRepository extends JpaRepository<PostCategoryRelationshipsEntity, PostCategory> {
 
-    // List<PostCategoryRelationshipsEntity> findAllByPostEntity(PostsEntity postsEntity);
-
     @Query(value="""
 		SELECT * FROM APP_POST_CATEGORY_RELATIONSHIPS m
 		WHERE m.post_id = :post_id 
@@ -21,6 +19,14 @@ public interface PostCategoryRelationshipsRepository extends JpaRepository<PostC
 		nativeQuery = true )
     // AND m.term_category_id = :term_category_id
     List<PostCategoryRelationshipsEntity> findByPostId( @Param("post_id") Long post_id );
+
+    @Query(value="""
+		SELECT * FROM APP_POST_CATEGORY_RELATIONSHIPS m
+		WHERE m.term_category_id = :term_category_id 
+		""", 
+		nativeQuery = true )
+    List<PostCategoryRelationshipsEntity> findByTermCategoryId( @Param("term_category_id") Long term_category_id );
+
 
 
 }
