@@ -23,7 +23,8 @@ public class ChatAnswerService {
 	 * @param keywords
 	 * @return
 	 */
-	public ChatAnswerDto findById(Long id) { return ChatAnswerDto.toDto(chatAnswerRepository.findById(id).get()); }
+	public ChatAnswerDto findById(Long id) { 
+		return chatAnswerRepository.findById(id).isPresent() ? ChatAnswerDto.toDto(chatAnswerRepository.findById(id).get()) : null; }
 	
 
 	/**
