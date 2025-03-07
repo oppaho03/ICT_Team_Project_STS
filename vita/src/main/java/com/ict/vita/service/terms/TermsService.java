@@ -2,13 +2,18 @@ package com.ict.vita.service.terms;
 
 import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,6 +131,28 @@ public class TermsService {
 	 * @return
 	 */
 	public List<TermDto> findAll() { return toTermDtoList( termsRepository.findAll( Sort.by(Sort.Order.asc("id")) ) ); } 
+
+	/**
+	 * 모두 검색 - 페이지 
+	 * @param p : 페이지
+	 * @param ol : 출력 개수 제한
+	 * @return
+	 */
+	public List<TermDto> findAll(int p, int ol) { 
+
+		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("id")) );
+		Page page = termsRepository.findAll(pageable);
+
+		/*
+		Map<String, Object> result = new HashMap<>();
+		result.put("page", p );
+		result.put("total_pages", page.getTotalPages() );
+		result.put("total_count", page.getTotalElements() );
+		result.put("data", toTermDtoList( page.getContent() ));
+		*/
+		
+		return toTermDtoList( page.getContent() );
+	} 
 
 	/**
 	 * 이름 검색 

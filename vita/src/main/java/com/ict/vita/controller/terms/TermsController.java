@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
+import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.EmptyTermDto;
@@ -50,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //[용어 Controller]
 public class TermsController {
 	//서비스 주입
+	private final MemberService memberService;
 	private final TermsService termsService;
 	private final TermCategoryService termCategoryService;
 
@@ -81,10 +84,18 @@ public class TermsController {
 			)
 		) 
 	})
-	@GetMapping("/")
-	public ResponseEntity<?> getAll(){
+	@GetMapping("/")		
+	public ResponseEntity<?> getAll( 
+		@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+		@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol ){
 		// (@RequestHeader(value = "Authorization", required = true) String authHeader)
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findAll() ));
+		
+		List<TermDto> result = null;
+
+		if ( p > 0 ) result = termsService.findAll(p, ol);
+		else result = termsService.findAll();
+
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
 	} /// findAll()
 	
 	/**
@@ -176,8 +187,16 @@ public class TermsController {
 		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
 	})
 	@PostMapping("/new")
-	public ResponseEntity<?> add( @Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, BindingResult bindingResult ) {
+	public ResponseEntity<?> add( 
+		@Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, 
+		@RequestHeader(value = "Authorization", required = true) String token,
+		BindingResult bindingResult 
+	) {
 
+		MemberDto user = Commons.findMemberByToken(token, memberService);
+		if ( user ) {
+			
+		}
 		/* CHECKE AUTH *** */
 		
 		// < DTO 객체 필드의 유효성 검증 실패시 >

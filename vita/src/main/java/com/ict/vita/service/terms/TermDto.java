@@ -38,7 +38,7 @@ public class TermDto {
     private Long count = 0L; // APP_TERM_CATEGORY.count
     @Schema(description = "소속된 컨텐츠 수", example = "0")
 	private Long parent = 0L; // APP_TERM.id
-
+    
     //[TermsEntity를 TermsDTO로 변환하는 메서드]
 	public static TermDto toDto(TermCategoryEntity entity) {
 		return TermDto.builder()
