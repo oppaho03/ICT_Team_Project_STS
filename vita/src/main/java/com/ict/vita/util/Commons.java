@@ -12,6 +12,9 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 
 public class Commons {
+	
+	//임시로 저장할때 사용하는 값
+	public static final String TEMPORARY = "TEMPORARY";
 
 	/**
 	 * 문자열이 null 또는 빈문자열인지 판단하는 함수
