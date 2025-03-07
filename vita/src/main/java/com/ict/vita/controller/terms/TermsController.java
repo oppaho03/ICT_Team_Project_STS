@@ -4,9 +4,11 @@ package com.ict.vita.controller.terms;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,9 +57,10 @@ public class TermsController {
 	private final MemberService memberService;
 	private final TermsService termsService;
 	private final TermCategoryService termCategoryService;
+	private final MessageSource messageSource;
 
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
-	
+
 	/**
 	 * 모두 검색 
 	 * @return TermDto 배열 반환
@@ -188,15 +191,18 @@ public class TermsController {
 	})
 	@PostMapping("/new")
 	public ResponseEntity<?> add( 
-		@Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, 
 		@RequestHeader(value = "Authorization", required = true) String token,
+		@Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, 		
 		BindingResult bindingResult 
 	) {
 
 		MemberDto user = Commons.findMemberByToken(token, memberService);
-		if ( user ) {
-			
+		if ( user == null ) {
+			return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
+		
 		/* CHECKE AUTH *** */
 		
 		// < DTO 객체 필드의 유효성 검증 실패시 >
@@ -261,7 +267,18 @@ public class TermsController {
 		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
 	})
 	@PutMapping("/edit")
-	public ResponseEntity<?> edit( @Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, BindingResult bindingResult ) {
+	public ResponseEntity<?> edit( 
+		@RequestHeader(value = "Authorization", required = true) String token,
+		@Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, 
+		BindingResult bindingResult ) {
+
+		MemberDto user = Commons.findMemberByToken(token, memberService);
+		if ( user == null ) {
+			return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		}
+
 		if ( dto.getTerm_id() == null || dto.getTerm_id() == 0 ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "용어를 수정할 수 없습니다. TermCategory ID is Null." ));
 		else return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.update(dto) ));
 	}
