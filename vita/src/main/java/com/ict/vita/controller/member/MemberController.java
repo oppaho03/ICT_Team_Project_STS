@@ -164,11 +164,16 @@ public class MemberController {
 		}
 		//<DTO 객체 필드의 유효성 검증 성공시>
 		//입력한 이메일로 회원 조회
-		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail());
+		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
 		//<이미 회원가입된 경우 - status가 1>
 		if(findedMember.getStatus() == 1) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 가입된 회원입니다")); 
 		}
+		//<이메일 인증이 안 된 경우>
+		if(joinDto.getIsEmailAuth() != 1) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("이메일 인증이 안 됐습니다")); 
+		}
+		//<이메일 인증이 된 경우>
 		//<회원가입이 안 되어 있는 경우 - status가 1이 아님>
 		//회원가입에 실패한 경우
 		if(memberService.isExistsEmail(joinDto.getEmail())) 
@@ -184,14 +189,14 @@ public class MemberController {
 			findedMember.setContact(joinDto.getContact());
 			findedMember.setAddress(joinDto.getAddress());
 			
-			MemberDto memberDto = memberService.join(joinDto);
+			MemberDto memberDto = memberService.join(findedMember);
 			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 		}
 		//회원가입에 실패한 경우
 		if(memberService.isExistsContact(joinDto.getContact()))
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 전화번호입니다"));
 		//회원가입에 성공한 경우
-		MemberDto memberDto = memberService.join(joinDto);
+		MemberDto memberDto = memberService.join(findedMember);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 	}
 	

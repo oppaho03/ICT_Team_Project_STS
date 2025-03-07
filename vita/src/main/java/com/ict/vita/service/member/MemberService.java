@@ -121,7 +121,7 @@ public class MemberService {
 	 * @param joinDto 회원이 입력한 정보를 담은 DTO 객체
 	 * @return
 	 */
-	public MemberDto join(MemberJoinDto joinDto) {	
+	public MemberDto join(MemberDto joinDto) {	
 		String nickname = "";
 		//<닉네임 미입력시>
 		if(Commons.isNull(joinDto.getNickname())) { 
