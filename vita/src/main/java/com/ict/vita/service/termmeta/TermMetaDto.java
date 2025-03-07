@@ -28,20 +28,20 @@ public class TermMetaDto {
 	//[TermMetaDto를 TermMetaEntity로 변환하는 메서드]
 	public TermMetaEntity toEntity() {
 		return TermMetaEntity.builder()
-				.meta_id(meta_id)
+				.metaId(meta_id)
 				.termsEntity(termsDto.toEntity())
-				.meta_key(meta_key)
-				.meta_value(meta_value)
+				.metaKey(meta_key)
+				.metaValue(meta_value)
 				.build();
 	}
 	
 	//[TermMetaEntity를 TermMetaDto로 변환하는 메서드]
 	public static TermMetaDto toDto(TermMetaEntity entity) {
 		return TermMetaDto.builder()
-				.meta_id(entity.getMeta_id())
+				.meta_id(entity.getMetaId())
 				.termsDto(TermsDto.toDto(entity.getTermsEntity()))
-				.meta_key(entity.getMeta_key())
-				.meta_value(entity.getMeta_value())
+				.meta_key(entity.getMetaKey())
+				.meta_value(entity.getMetaValue())
 				.build();
 	}
 }

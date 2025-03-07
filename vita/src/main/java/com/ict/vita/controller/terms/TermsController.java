@@ -190,7 +190,7 @@ public class TermsController {
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1537,\"term_id\":1511,\"name\":\"테스트질병\",\"slug\":\"%ED%85%8C%EC%8A%A4%ED%8A%B8+%EC%A7%88%EB%B3%91\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}}}"))),
 		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
 	})
-	@PostMapping("/new")
+	@PostMapping("/")
 	public ResponseEntity<?> add( 
 		@RequestHeader(value = "Authorization", required = true) String token,
 		@Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, 		

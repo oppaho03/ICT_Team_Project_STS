@@ -33,8 +33,8 @@ public class TermMetaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_TERM_META_SEQ")
 	@SequenceGenerator(name = "APP_TERM_META_SEQ",sequenceName = "APP_TERM_META_SEQ",initialValue = 1,allocationSize = 1)
-	@Column(columnDefinition = "NUMBER(20,0)",name = "meta_id")
-	private Long meta_id; //PK
+	@Column(columnDefinition = "NUMBER(20,0)", name = "meta_id")
+	private Long metaId; //PK
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_id",nullable = false) //테이블에서 FK명
@@ -42,10 +42,10 @@ public class TermMetaEntity {
 	private TermsEntity termsEntity; //용어
 	
 	@NotNull
-	@Column(columnDefinition = "VARCHAR2(255)")
-	private String meta_key; //메타 키
+	@Column( name = "meta_key", columnDefinition = "VARCHAR2(255)")
+	private String metaKey; //메타 키
 	
 	@Lob
-	@Column(columnDefinition = "CLOB DEFAULT EMPTY_CLOB()")
-	private String meta_value; //메타 값
+	@Column( name = "meta_value", columnDefinition = "CLOB DEFAULT EMPTY_CLOB()")
+	private String metaValue; //메타 값
 }
