@@ -372,9 +372,10 @@ public class MemberController {
 	@PutMapping("/members")
 	public ResponseEntity<?> update(@Parameter(description = "수정 요청 객체") @RequestBody MemberUpdateDto updateDto,@RequestHeader(name = "authorization") String token){
 		//<찾은 회원이 존재하는 경우>
+		//토큰값으로 회원 조회
 		if(Commons.findMemberByToken(token, memberService) != null) {
 			MemberDto findedMember = Commons.findMemberByToken(token, memberService);
-			//변경한 회원정보로 기존 회원 dto 수정
+			//변경한 회원정보로 기존 회원 dto 수정 (회원정보 수정은 비밀번호,이름,닉네임,전화번호,주소 만 수정 가능)
 			findedMember.setPassword(updateDto.getPassword());
 			findedMember.setName(updateDto.getName());
 			findedMember.setNickname(updateDto.getNickname());
@@ -386,6 +387,5 @@ public class MemberController {
 		}
 		//<찾은 회원이 존재하지 않는 경우>
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("유효하지 않은 토큰입니다"));
-		
 	}
 }
