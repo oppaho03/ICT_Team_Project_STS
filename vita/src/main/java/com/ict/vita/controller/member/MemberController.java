@@ -162,6 +162,7 @@ public class MemberController {
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(buffer.toString())); 
 		}
+		
 		//<DTO 객체 필드의 유효성 검증 성공시>
 		//입력한 이메일로 회원 조회
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원

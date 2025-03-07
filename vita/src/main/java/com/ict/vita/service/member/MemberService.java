@@ -118,7 +118,7 @@ public class MemberService {
 	
 	/**
 	 * [회원가입 처리] - 최종 회원가입 처리
-	 * @param joinDto 회원이 입력한 정보를 담은 DTO 객체
+	 * @param joinDto 임시 저장된 회원 DTO 객체
 	 * @return
 	 */
 	public MemberDto join(MemberDto joinDto) {	
