@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.controller.termcategory.TermCategoryController;
 import com.ict.vita.repository.posts.PostsRepository;
+import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
 import com.ict.vita.service.posts.PostsDto;
@@ -14,6 +16,7 @@ import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.terms.EmptyTermRelDto;
 import com.ict.vita.service.terms.TermDto;
 import com.ict.vita.service.terms.TermsService;
+import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,14 +31,17 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -44,9 +50,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/postcategories")
 public class PostCategoryRelationshipsController {
 	//서비스 주입	
-	
+	private final MessageSource messageSource;
+
 	private final PostCategoryRelationshipsService postCategoryRelService;
 	private final PostsService postsService;
+	private final MemberService memberService;
 
 	private final TermsService termsService;
 	
@@ -104,10 +112,17 @@ public class PostCategoryRelationshipsController {
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[]}}")))
 	})
 	@GetMapping("/category/{id}")
-	public ResponseEntity<?> findPosts(@Parameter(description = "카테고리 ID") @PathVariable Long id) {
+	public ResponseEntity<?> findPosts(
+		@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+		@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol,
+		@Parameter(description = "카테고리 ID") @PathVariable Long id		
+	) {
 
 		// 대상 ID 로 관계 검색 
-		List<PostCategoryRelationshipsDto> relDtos = postCategoryRelService.findAllByTermCategoryId(id);
+		List<PostCategoryRelationshipsDto> relDtos = null;
+
+		if ( p > 0 ) relDtos = postCategoryRelService.findAllByTermCategoryId(id, p, ol); 
+		else relDtos = postCategoryRelService.findAllByTermCategoryId(id);
 
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
 			
@@ -130,8 +145,17 @@ public class PostCategoryRelationshipsController {
 		@ApiResponse(responseCode = "400", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid Values...\"}}")))
 	})
 	@PostMapping("/")
-	public ResponseEntity<?> addCategories(@Parameter( description = "관계 데이터") @RequestBody EmptyTermRelDto reldto ) {
-		/* CHECKE AUTH *** */
+	public ResponseEntity<?> addCategories(
+		@RequestHeader(value = "Authorization", required = true) String token,
+		@Parameter( description = "관계 데이터") @RequestBody EmptyTermRelDto reldto 
+	) {
+		// < JWT Token 유효성 검사 >
+		MemberDto user = Commons.findMemberByToken(token, memberService);
+		if ( user == null ) {
+			return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		}
 
 		Long id = reldto.getId();
 		List<Long> categories = reldto.getCategories();

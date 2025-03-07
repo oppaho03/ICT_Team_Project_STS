@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -55,6 +59,25 @@ public class PostCategoryRelationshipsService {
 		if ( relEntities.isEmpty() ) return null;
 		return relEntities.stream().map( entity -> PostCategoryRelationshipsDto.toDto(entity) ).toList();
 	}
+
+	/**
+	 * 포스트 목록 가져오기
+	 * @param id 카테고리 ID
+	 * @param p 페이지
+	 * @param ol 출력 개수 제한
+	 * @return
+	 */
+	public List<PostCategoryRelationshipsDto> findAllByTermCategoryId( Long id, int p, int ol ) {
+
+		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("term_category_id")) );
+		Page page = postCategoryRelationshipsRepository.findByTermCategoryId(id, pageable);
+
+		if ( page.isEmpty() || page.getContent().isEmpty() ) return null;
+		
+		List<PostCategoryRelationshipsEntity> relEntities = page.getContent();
+		return relEntities.stream().map( entity -> PostCategoryRelationshipsDto.toDto(entity) ).toList();
+	}
+
 
 	
 	/**

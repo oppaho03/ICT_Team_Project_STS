@@ -54,12 +54,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 //[용어 Controller]
 public class TermsController {
 	//서비스 주입
-	private final MemberService memberService;
-	private final TermsService termsService;
-	private final TermCategoryService termCategoryService;
 	private final MessageSource messageSource;
 
+	private final TermsService termsService;	
+	private final MemberService memberService;
+	
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
+	
 
 	/**
 	 * 모두 검색 
@@ -196,6 +197,7 @@ public class TermsController {
 		BindingResult bindingResult 
 	) {
 
+		// < JWT Token 유효성 검사 >
 		MemberDto user = Commons.findMemberByToken(token, memberService);
 		if ( user == null ) {
 			return ResponseEntity
@@ -203,7 +205,6 @@ public class TermsController {
 				.body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
-		/* CHECKE AUTH *** */
 		
 		// < DTO 객체 필드의 유효성 검증 실패시 >
 		String content = Commons.formatBindingResultHasError(bindingResult, "용어(Term) 유효성 검증 실패");
@@ -272,6 +273,7 @@ public class TermsController {
 		@Parameter( description = "데이터") @RequestBody @Valid EmptyTermDto dto, 
 		BindingResult bindingResult ) {
 
+		// < JWT Token 유효성 검사 >
 		MemberDto user = Commons.findMemberByToken(token, memberService);
 		if ( user == null ) {
 			return ResponseEntity

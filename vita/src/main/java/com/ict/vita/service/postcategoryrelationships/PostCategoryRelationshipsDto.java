@@ -38,7 +38,7 @@ public class PostCategoryRelationshipsDto {
 	}
 	
 	//[PostCategoryRelationshipsEntity를 PostCategoryRelationshipsDto로 변환하는 메서드]
-	public static PostCategoryRelationshipsDto toDto(PostCategoryRelationshipsEntity entity) {
+	public static PostCategoryRelationshipsDto toDto(Object entity) {
 		return PostCategoryRelationshipsDto.builder()
 				.postsDto(PostsDto.toDto(entity.getPostsEntity()))
 				.termCategoryDto(TermCategoryDto.toDto(entity.getTermCategoryEntity()))
