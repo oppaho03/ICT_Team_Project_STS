@@ -13,6 +13,6 @@ import lombok.RequiredArgsConstructor;
 public class PostMetaService {
 	//리포지토리 주입
 	private final PostMetaRepository postMetaRepository;
-	
+
 	
 }
