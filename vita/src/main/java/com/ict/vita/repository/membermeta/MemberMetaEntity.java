@@ -43,10 +43,10 @@ public class MemberMetaEntity {
 	private MemberEntity memberEntity;
 	
 	@NotNull
-	@Column(columnDefinition = "VARCHAR2(255)")
-	private String meta_key; //메타 키
+	@Column( name="meta_key", columnDefinition = "VARCHAR2(255)")
+	private String metaKey; //메타 키
 	
 	@Lob
-	@Column(columnDefinition = "CLOB DEFAULT EMPTY_CLOB()")
-	private String meta_value; //메타 값
+	@Column( name = "meta_value", columnDefinition = "CLOB DEFAULT EMPTY_CLOB()")
+	private String metaValue; //메타 값
 }

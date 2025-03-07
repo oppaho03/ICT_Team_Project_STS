@@ -28,8 +28,8 @@ public class MemberMetaDto {
 		return MemberMetaEntity.builder()
 				.meta_id(meta_id)
 				.memberEntity(memberDto.toEntity())
-				.meta_key(meta_key)
-				.meta_value(meta_value)
+				.metaKey(meta_key)
+				.metaValue(meta_value)
 				.build();
 	}
 	
@@ -38,8 +38,8 @@ public class MemberMetaDto {
 		return MemberMetaDto.builder()
 				.meta_id(entity.getMeta_id())
 				.memberDto(MemberDto.toDto(entity.getMemberEntity()))
-				.meta_key(entity.getMeta_key())
-				.meta_value(entity.getMeta_value())
+				.meta_key(entity.getMetaKey())
+				.meta_value(entity.getMetaValue())
 				.build();
 	}
 }

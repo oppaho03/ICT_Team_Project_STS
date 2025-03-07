@@ -28,8 +28,8 @@ public class PostMetaDto {
 		return PostMetaEntity.builder()
 				.meta_id(meta_id)
 				.postsEntity(postsDto.toEntity())
-				.meta_key(meta_key)
-				.meta_value(meta_value)
+				.metaKey(meta_key)
+				.metaValue(meta_value)
 				.build();
 	}
 	
@@ -38,8 +38,8 @@ public class PostMetaDto {
 		return PostMetaDto.builder()
 				.meta_id(entity.getMeta_id())
 				.postsDto(PostsDto.toDto(entity.getPostsEntity()))
-				.meta_key(entity.getMeta_key())
-				.meta_value(entity.getMeta_value())
+				.meta_key(entity.getMetaKey())
+				.meta_value(entity.getMetaValue())
 				.build();
 	}
 }
