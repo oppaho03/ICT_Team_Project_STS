@@ -163,11 +163,27 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(buffer.toString())); 
 		}
 		//<DTO 객체 필드의 유효성 검증 성공시>
+		//입력한 이메일로 회원 조회
+		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail());
+		//<이미 회원가입된 경우 - status가 1>
+		if(findedMember.getStatus() == 1) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 가입된 회원입니다")); 
+		}
+		//<회원가입이 안 되어 있는 경우 - status가 1이 아님>
 		//회원가입에 실패한 경우
 		if(memberService.isExistsEmail(joinDto.getEmail())) 
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 이메일입니다")); 
 		//회원가입에 성공한 경우
 		if(Commons.isNull(joinDto.getContact())) {
+			//DB에 저장한 회원을 회원가입할때 입력한 정보로 설정
+			findedMember.setPassword(joinDto.getPassword());
+			findedMember.setName(joinDto.getName());
+			//findedMember.setNickname();
+			findedMember.setBirth(joinDto.getBirth());
+			findedMember.setGender(joinDto.getGender());
+			findedMember.setContact(joinDto.getContact());
+			findedMember.setAddress(joinDto.getAddress());
+			
 			MemberDto memberDto = memberService.join(joinDto);
 			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 		}

@@ -12,4 +12,5 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 	boolean existsByContact(String contact); //중복 전화번호 검증용
 	Optional<MemberEntity> findByEmailIsAndPasswordIs(String email,String password); //로그인 검증용
 	Optional<MemberEntity> findByToken(String token); //토큰값으로 회원 조회용
+	Optional<MemberEntity> findByEmail(String email); //이메일로 회원 조회용
 }

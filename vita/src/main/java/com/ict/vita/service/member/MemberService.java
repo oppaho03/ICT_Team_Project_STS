@@ -22,7 +22,7 @@ public class MemberService {
 	/**
 	 * [id(PK)로 회원 찾기]
 	 * @param memberDto 찾을 회원 DTO객체
-	 * @return 찾은 회원 DTO객체
+	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
 	 */
 	public MemberDto findMemberById(MemberDto memberDto) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
@@ -37,12 +37,27 @@ public class MemberService {
 	/**
 	 * [토큰값으로 회원 찾기]
 	 * @param token 찾을 토큰값
-	 * @return 찾은 회원 DTO객체
+	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
 	 */
 	public MemberDto findMemberByToken(String token) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
 		MemberEntity findedMember = memberRepository.findByToken(token).orElse(null);
+		if(findedMember != null) {
+			return MemberDto.toDto(findedMember);
+		}
+		return null;
+	}
+	
+	/**
+	 * [이메일로 회원 찾기]
+	 * @param email 이메일
+	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
+	 */
+	public MemberDto findMemberByEmail(String email) {
+		//회원을 찾으면 찾은 회원 Entity객체를,
+		// 일치하는 회원이 존재하지 않으면 null을 반환
+		MemberEntity findedMember = memberRepository.findByEmail(email).orElse(null);
 		if(findedMember != null) {
 			return MemberDto.toDto(findedMember);
 		}
