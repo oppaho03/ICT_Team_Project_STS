@@ -270,10 +270,8 @@ public class TermsService {
 	@Transactional(rollbackFor = Exception.class)
 	public TermDto update ( EmptyTermDto dto ) {
 
-		TermsEntity termsEntity = termsRepository.findById( dto.getTerm_id() ).orElse(null);
-
-		TermCategoryEntity termCategoryEntity = termsEntity == null ? null : termCategoryRepository.findByTermsEntity( termsEntity ).orElse(null);
-
+		TermCategoryEntity termCategoryEntity = termCategoryRepository.findById( dto.getId() ).orElse(null);
+		
 		// 유효하지 않은 ID
 		if ( termCategoryEntity == null ) {
 			System.out.println( String.format("Not found Terms data. id=%d", dto.getTerm_id()) );
@@ -301,7 +299,7 @@ public class TermsService {
 			termCategoryDto.setDescription( dto.getDescription() );
 
 		// Term 등록
-		termsEntity = termsRepository.save(termsDto.toEntity());
+		TermsEntity termsEntity = termsRepository.save(termsDto.toEntity());
 		if ( termsEntity == null ) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // Rollback
 			return null;
@@ -316,6 +314,8 @@ public class TermsService {
 		}
 
 		return toTermDto(termCategoryEntity);
+
+		
 	}
 
 }

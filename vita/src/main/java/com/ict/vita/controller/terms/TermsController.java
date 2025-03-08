@@ -281,7 +281,7 @@ public class TermsController {
 				.body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 
-		if ( dto.getTerm_id() == null || dto.getTerm_id() == 0 ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "용어를 수정할 수 없습니다. TermCategory ID is Null." ));
+		if ( dto.getTerm_id() == null ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "용어를 수정할 수 없습니다. TermCategory ID is Null." ));
 		else return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.update(dto) ));
 	}
 }
