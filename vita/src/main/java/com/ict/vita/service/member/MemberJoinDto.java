@@ -65,5 +65,5 @@ public class MemberJoinDto {
 	private long status; //상태(가입/탈퇴/대기)
 	
 	@Schema(description = "이메일 인증이 됐는지 여부 확인(0: 인증X, 1: 인증O)",example = "1")
-	private int isEmailAuth; //이메일 인증여부
+	private int isEmailAuth; //이메일 인증여부(이메일 인증 후 회원가입 처리시 사용)
 }

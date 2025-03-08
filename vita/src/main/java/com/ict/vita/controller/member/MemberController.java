@@ -1,6 +1,7 @@
 package com.ict.vita.controller.member;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class MemberController {
 			content = @Content(	
 				schema = @Schema(implementation = MemberJoinDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":36,\"email\":\"abcde@naver.com\",\"password\":\"TEMPORARY\",\"role\":\"USER\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":41,\"email\":\"nonick@naver.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"노닉네임\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":\"123\",\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:57:13.2894058\",\"updated_at\":\"2025-03-07T18:57:13.2894058\",\"status\":9}}}"
 				)
 			) 
 		),
@@ -78,7 +79,16 @@ public class MemberController {
 					value = "{\"success\":0,\"response\":{\"message\":\"이메일을입력하세요\"}}"
 				)
 			) 
-		)
+		),
+		@ApiResponse( 
+				responseCode = "409-임시 회원가입 실패(이미 사용중인 이메일인 경우)",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이미사용중인이메일입니다\"}}"
+					)
+				) 
+			)
 	})
 	@PostMapping("/temp_members")
 	public ResponseEntity<?> tempJoin(@Parameter(description = "임시 회원가입 요청 객체") @RequestBody MemberJoinDto tempJoinDto){
@@ -87,6 +97,11 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("이메일을 입력하세요"));
 		}
 		//<회원이 이메일을 입력한 경우>
+		//임시 회원가입 실패 - 이미 사용중인 아이디 입력시
+		if(memberService.isExistsEmail(tempJoinDto.getEmail())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 이메일입니다")); 
+		}
+		//임시 회원가입 처리
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(tempJoinedMember));
 	}
@@ -145,6 +160,24 @@ public class MemberController {
 						value = "{ \"success\": 0, \"response\": { \"message\": \"이미 사용 중인 전화번호입니다\"  } }" 
 					)
 				) 
+			),
+		@ApiResponse( 
+				responseCode = "409-회원가입 실패",
+				description = "FAIL(이미 가입된 회원인 경우)", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이미가입된회원입니다\"}}" 
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "403-회원가입 실패",
+				description = "FAIL(이메일 인증 안 된 경우)", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이메일인증이안됐습니다\"}}"
+					)
+				) 
 			)
 	})
 	@PostMapping("/members")
@@ -166,6 +199,7 @@ public class MemberController {
 		//<DTO 객체 필드의 유효성 검증 성공시>
 		//입력한 이메일로 회원 조회
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
+		System.out.println("===============회원: "+findedMember.getStatus());
 		//<이미 회원가입된 경우 - status가 1>
 		if(findedMember.getStatus() == 1) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 가입된 회원입니다")); 
@@ -175,28 +209,37 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("이메일 인증이 안 됐습니다")); 
 		}
 		//<이메일 인증이 된 경우>
-		//<회원가입이 안 되어 있는 경우 - status가 1이 아님>
-		//회원가입에 실패한 경우
-		if(memberService.isExistsEmail(joinDto.getEmail())) 
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 이메일입니다")); 
 		//회원가입에 성공한 경우
 		if(Commons.isNull(joinDto.getContact())) {
 			//DB에 저장한 회원을 회원가입할때 입력한 정보로 설정
 			findedMember.setPassword(joinDto.getPassword());
 			findedMember.setName(joinDto.getName());
-			//findedMember.setNickname();
+			findedMember.setNickname(joinDto.getNickname());
 			findedMember.setBirth(joinDto.getBirth());
 			findedMember.setGender(joinDto.getGender());
 			findedMember.setContact(joinDto.getContact());
 			findedMember.setAddress(joinDto.getAddress());
+			findedMember.setCreated_at(LocalDateTime.now());
+			findedMember.setUpdated_at(LocalDateTime.now());
 			
 			MemberDto memberDto = memberService.join(findedMember);
 			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 		}
-		//회원가입에 실패한 경우
+		//회원가입에 실패한 경우 - 이미 사용중인 전화번호 존재시
 		if(memberService.isExistsContact(joinDto.getContact()))
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail("이미 사용 중인 전화번호입니다"));
 		//회원가입에 성공한 경우
+		//DB에 저장한 회원을 회원가입할때 입력한 정보로 설정
+		findedMember.setPassword(joinDto.getPassword());
+		findedMember.setName(joinDto.getName());
+		findedMember.setNickname(joinDto.getNickname());
+		findedMember.setBirth(joinDto.getBirth());
+		findedMember.setGender(joinDto.getGender());
+		findedMember.setContact(joinDto.getContact());
+		findedMember.setAddress(joinDto.getAddress());
+		findedMember.setCreated_at(LocalDateTime.now());
+		findedMember.setUpdated_at(LocalDateTime.now());
+		
 		MemberDto memberDto = memberService.join(findedMember);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
 	}
@@ -329,9 +372,10 @@ public class MemberController {
 	@PutMapping("/members")
 	public ResponseEntity<?> update(@Parameter(description = "수정 요청 객체") @RequestBody MemberUpdateDto updateDto,@RequestHeader(name = "authorization") String token){
 		//<찾은 회원이 존재하는 경우>
+		//토큰값으로 회원 조회
 		if(Commons.findMemberByToken(token, memberService) != null) {
 			MemberDto findedMember = Commons.findMemberByToken(token, memberService);
-			//변경한 회원정보로 기존 회원 dto 수정
+			//변경한 회원정보로 기존 회원 dto 수정 (회원정보 수정은 비밀번호,이름,닉네임,전화번호,주소 만 수정 가능)
 			findedMember.setPassword(updateDto.getPassword());
 			findedMember.setName(updateDto.getName());
 			findedMember.setNickname(updateDto.getNickname());
@@ -343,6 +387,5 @@ public class MemberController {
 		}
 		//<찾은 회원이 존재하지 않는 경우>
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("유효하지 않은 토큰입니다"));
-		
 	}
 }

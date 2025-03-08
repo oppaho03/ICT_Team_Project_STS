@@ -88,15 +88,16 @@ public class MemberService {
 	 * @return MemberDto 임시 회원가입 된 회원 DTO
 	 */
 	public MemberDto tempJoin(MemberJoinDto tempJoinDto) {
+		//원래 회원가입할때 꼭 회원이 입력해야 하는 값들
 		String password = tempJoinDto.getPassword();
 		String nickname = tempJoinDto.getNickname();
 		//임시 회원이 비밀번호를 입력하지 않은 경우
 		if(Commons.isNull(tempJoinDto.getPassword())) {
-			password = "TEMPORARY"; //임시 비밀번호 지정
+			password = Commons.TEMPORARY; //임시 비밀번호 지정
 		}
 		//닉네임 미입력시
 		if(Commons.isNull(nickname)) {
-			nickname = "TEMPORARY";
+			nickname = Commons.TEMPORARY;
 		}
 		//회원 저장
 		MemberEntity entity = memberRepository.save(MemberEntity.builder()
@@ -122,7 +123,7 @@ public class MemberService {
 	 * @return
 	 */
 	public MemberDto join(MemberDto joinDto) {	
-		String nickname = "";
+		String nickname = joinDto.getNickname();
 		//<닉네임 미입력시>
 		if(Commons.isNull(joinDto.getNickname())) { 
 			//이메일에서 @ 전까지를 닉네임으로 지정
@@ -130,6 +131,7 @@ public class MemberService {
 			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
 			//회원 저장
 			MemberEntity entity = memberRepository.save(MemberEntity.builder()
+								.id(joinDto.getId())
 								.email(joinDto.getEmail())
 								.password(joinDto.getPassword())
 								.role(joinDto.getRole())
@@ -149,11 +151,12 @@ public class MemberService {
 		//<닉네임 입력시>
 		//회원 저장
 		MemberEntity entity = memberRepository.save(MemberEntity.builder()
+								.id(joinDto.getId())
 								.email(joinDto.getEmail())
 								.password(joinDto.getPassword())
 								.role(joinDto.getRole())
 								.name(joinDto.getName())
-								.nickname(joinDto.getNickname())
+								.nickname(nickname)
 								.birth(joinDto.getBirth())
 								.gender(joinDto.getGender())
 								.contact(joinDto.getContact())
