@@ -1,8 +1,12 @@
 package com.ict.vita.service.posts;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.repository.posts.PostsRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -16,8 +20,38 @@ public class PostsService {
 
 	/**
 	 * 포스트 가져오기 
-	 * @param id 
+	 * @param id 글 id(PK)
 	 */
 	public PostsDto findById( Long id ) { return PostsDto.toDto( postsRepository.findById(id).get() ); }
+	
+	/**
+	 * [모든 회원의 공개글 조회]
+	 * @return List<PostsDto>
+	 */
+	public List<PostsDto> getAllPublicPosts(){
+		List<PostsEntity> entityList = postsRepository.getAllPublicPosts();
+		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * [특정 회원의 모든 게시글을 조회]
+	 * @param memberId 조회하고 싶은 회원id
+	 * @return List<PostsDto>
+	 */
+	public List<PostsDto> getPostsByMember(Long memberId){
+		List<PostsEntity> entityList = postsRepository.findByMemberEntity_Id(memberId);
+		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * [특정 회원이 쓴 게시글들 중 특정 상태의 글들 조회]
+	 * @param memberId 조회하려는 회원id
+	 * @param status 글의 status
+	 * @return List<PostsDto>
+	 */
+	public List<PostsDto> getPostsByMemberAndStatus(Long memberId,String status){
+		List<PostsEntity> entityList = postsRepository.findByMemberAndStatus(memberId, status);
+		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+	}
 	
 }
