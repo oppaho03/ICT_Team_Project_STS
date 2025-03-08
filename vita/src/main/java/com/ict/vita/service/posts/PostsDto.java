@@ -25,14 +25,15 @@ public class PostsDto {
 	private String post_title; //글 제목
 	private String post_content; //글 내용
 	private String post_summary; //글 요약
-	private String post_status = "PUBLISH"; //글 상태(공개/비공개/삭제)
-	private String post_pass = ""; //글 비밀번호
-	private String post_name = ""; //글 이름(별칭)
-	private String post_mime_type = ""; //글 타입(글/미디어파일)
+	private String post_status; //글 상태(공개/비공개/삭제)
+	private String post_pass; //글 비밀번호
+	private String post_name; //글 이름(별칭)
+	private String post_mime_type; //글 타입(글/미디어파일)
 	private LocalDateTime post_created_at; //글 생성일
 	private LocalDateTime post_modified_at; //글 수정일
-	private String comment_status = "OPEN"; //댓글 허용 상태
-	private long comment_count = 0; //댓글 개수
+	
+	private String comment_status; //댓글 허용 상태
+	private long comment_count; //댓글 개수
 	
 	//[PostsDto를 PostsEntity로 변환하는 메서드]
 	public PostsEntity toEntity() {
