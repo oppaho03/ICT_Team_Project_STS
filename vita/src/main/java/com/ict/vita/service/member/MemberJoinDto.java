@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.ict.vita.util.Commons;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -34,7 +36,7 @@ public class MemberJoinDto {
 	
 	@Schema(description = "사용자 역할", example = "USER")
 	@NotBlank(message = "role을 지정하세요")
-	private String role = "USER"; //역할
+	private String role = Commons.ROLE_USER; //역할
 	
 	@Schema(description = "이름", example = "홍길동")
 	private String name; //이름

@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.ict.vita.repository.terms.TermsEntity;
+import com.ict.vita.util.Commons;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +53,7 @@ public class MemberEntity {
 	@Column(columnDefinition = "VARCHAR2(20)")
 	@ColumnDefault("USER")
 	@NotNull
-	private String role = "USER"; //역할
+	private String role = Commons.ROLE_USER; //역할
 	
 	@Column(columnDefinition = "NVARCHAR2(100)")
 	private String name; //이름

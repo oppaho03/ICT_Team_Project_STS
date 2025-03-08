@@ -13,8 +13,11 @@ import com.ict.vita.service.member.MemberService;
 
 public class Commons {
 	
-	//임시로 저장할때 사용하는 값
-	public static final String TEMPORARY = "TEMPORARY";
+	//[임시로 저장할때 사용하는 값들]
+	public static final String TEMPORARY = "TEMPORARY"; //임시 회원가입시 사용
+	public static final String ROLE_ADMIN = "ADMINSTOR"; //회원가입 역할 - 관리자
+	public static final String ROLE_USER = "USER"; //회원가입 역할 - 일반 회원
+	
 
 	/**
 	 * 문자열이 null 또는 빈문자열인지 판단하는 함수
