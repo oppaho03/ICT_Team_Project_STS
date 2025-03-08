@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
@@ -16,6 +17,7 @@ import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
 import com.ict.vita.service.others.ObjectMetaResponseDto;
 import com.ict.vita.service.termcategory.TermCategoryDto;
+import com.ict.vita.service.termmeta.TermMetaDto;
 import com.ict.vita.service.termmeta.TermMetaService;
 import com.ict.vita.service.terms.TermsService;
 import com.ict.vita.util.Commons;
@@ -63,7 +65,7 @@ public class TermMetaController {
 		@Parameter(description = "카테고리 ID") @PathVariable Long id 
 	) {
 		TermCategoryDto term = termsService.findById(id);
-		List<ObjectMetaResponseDto> result = new ArrayList<>();
+		List<TermMetaDto> result = new ArrayList<>();
 
 		if ( term != null ) 
 			result.addAll( termMetaService.findAll(term) );
@@ -85,8 +87,8 @@ public class TermMetaController {
 	public ResponseEntity<?> getById (
 		@Parameter(description = "메타 ID") @PathVariable Long id 
 	) {
-		ObjectMetaResponseDto result = termMetaService.findById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
+		TermMetaDto result = termMetaService.findById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result == null ? null : ObjectMetaResponseDto.toDto(result.toEntity())  ));
 	} 
 
 	/**
@@ -96,22 +98,31 @@ public class TermMetaController {
 	 * @return 메타 또는 NULL 반환
 	 */	
 	@Operation( summary = "카테고리 ID AND 메타 키 검색", description = "카테고리 ID AND 메타 키 검색" )
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = ObjectMetaResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"meta_id\":1,\"meta_key\":\"_test\",\"meta_value\":\"testmetavalue\"}}}"))),
+		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
+	})
 	@GetMapping( "/value" )
 	public ResponseEntity<?> getValue(
-		@Parameter(description = "카테고리 ID", required = true) @PathVariable Long id,
-		@Parameter(description = "메타 키", required = true) @PathVariable String meta_key
+		@Parameter(description = "카테고리 ID", required = true) @RequestParam Long id,
+		@Parameter(description = "메타 키", required = true) @RequestParam String meta_key
 	) {
 
+		// < TermCategoryDto> 유효성 검사
+		TermCategoryDto termCategoryDto = termsService.findById(id);
+		if ( termCategoryDto == null ) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "term.notfound") ));
+		}
+
+		// < TermMetaDto> 유효성 검사
+		TermMetaDto metaDto = termMetaService.findByTermsDtoByMetaKey(TermMetaDto.builder().termsDto(termCategoryDto.getTermsDto()).meta_key(meta_key).build());
+
+		if ( metaDto == null ) {
+			// - 일치하는 MetaDto 없음
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "meta.notfound") ));
+		}
 		
-
-		// TermCategoryDto termCategoryDto = termMetaService.findById(id);
-		
-
-		// TermMetaDto termMetaDto = TermMetaDto.builder().
-		
-
-
-		return null;
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( metaDto == null ? null : ObjectMetaResponseDto.toDto(metaDto.toEntity())  ));
 	}
 
 
@@ -155,7 +166,7 @@ public class TermMetaController {
 		String meta_value = dto.getMeta_value();
 
 		if ( id == 0 || Commons.isNull(meta_key) ) {	
-			errmsg = Commons.i18nMessages(messageSource, "meta.key.notfound");
+			errmsg = Commons.i18nMessages(messageSource, "meta.key.empty");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(errmsg  ));
 		}
 		else if ( Commons.isNull(meta_value) ) meta_value = "";
@@ -166,9 +177,9 @@ public class TermMetaController {
 
 			dto.setMeta_value(meta_value); // 메타 값 업데이트
 
-			ObjectMetaResponseDto result = termMetaService.save( dto );
+			TermMetaDto result = termMetaService.save( dto );
 			if ( result != null ) 
-				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
+				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( ObjectMetaResponseDto.toDto(result.toEntity()) ));
 		}
 		else errmsg = Commons.i18nMessages(messageSource, "term.notfound");
 		

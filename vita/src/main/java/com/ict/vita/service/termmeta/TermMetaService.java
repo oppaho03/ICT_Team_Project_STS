@@ -30,7 +30,7 @@ public class TermMetaService {
 	 * @param term TermDto
 	 * @return 메타 리스트 반환
 	 */	
-	public List<ObjectMetaResponseDto> findAll( TermCategoryDto term ) {
+	public List<TermMetaDto> findAll( TermCategoryDto term ) {
 
 		List<TermMetaEntity> termMetaEntities = new ArrayList<>();
 		Optional<TermCategoryEntity> termCategory = termCategoryRepository.findById(term.getId());
@@ -38,7 +38,7 @@ public class TermMetaService {
 		if ( termCategory.isPresent() )
 			termMetaEntities.addAll( termMetaRepository.findAllByTermsEntity(termCategory.get().getTermsEntity()) );
 
-		return termMetaEntities.stream().map( entity->ObjectMetaResponseDto.toDto(entity) ).toList();
+		return termMetaEntities.stream().map( entity->TermMetaDto.toDto(entity) ).toList();
 	}
 
 	/**
@@ -46,9 +46,9 @@ public class TermMetaService {
 	 * @param id 메타 ID
 	 * @return 메타 또는 NULL 반환
 	 */	
-	public ObjectMetaResponseDto findById( Long id ) {
+	public TermMetaDto findById( Long id ) {
 		TermMetaEntity termMetaEntity = termMetaRepository.findById(id).orElse(null);
-		return termMetaEntity == null ? null : ObjectMetaResponseDto.toDto(termMetaEntity);
+		return termMetaEntity == null ? null : TermMetaDto.toDto(termMetaEntity);
 	}
 
 	/**
@@ -57,14 +57,14 @@ public class TermMetaService {
 	 * @param meta_key 메타 키
 	 * @return 메타 또는 NULL 반환
 	 */	
-	public ObjectMetaResponseDto findByTermsDtoByMetaKey ( TermMetaDto metaDto ) {
+	public TermMetaDto findByTermsDtoByMetaKey ( TermMetaDto metaDto ) {
 
 		// < TermMetaDto 로 검사 > 
 		if ( metaDto.getTermsDto() == null ) return null;
 
 		TermMetaEntity result = termMetaRepository.findByTermsEntityAndMetaKey( metaDto.getTermsDto().toEntity(), metaDto.getMeta_key());
 
-		return result == null ? null : ObjectMetaResponseDto.toDto(result);
+		return result == null ? null : TermMetaDto.toDto(result);
 	}
 
 
@@ -73,7 +73,7 @@ public class TermMetaService {
 	 * @param reqDto ObjectMetaRequestDto
 	 * @return 메타 값 반환
 	 */	
-	public ObjectMetaResponseDto save( ObjectMetaRequestDto reqDto ) {
+	public TermMetaDto save( ObjectMetaRequestDto reqDto ) {
 
 		// < 카테고리 ID - 카테고리 엔티티 검색 >
 		TermCategoryEntity termCategoryEntity = termCategoryRepository.findById(reqDto.getId()).orElse(null);
@@ -87,12 +87,12 @@ public class TermMetaService {
 			metaEntity.setMetaValue( reqDto.getMeta_value() );
 
 			/// < 현재 TermsEntity 와 MetaKey 값으로 중복 확인 >			
-			ObjectMetaResponseDto resDto = findByTermsDtoByMetaKey( TermMetaDto.toDto(metaEntity) );
+			TermMetaDto resDto = findByTermsDtoByMetaKey( TermMetaDto.toDto(metaEntity) );
 			if ( resDto != null ) 
 				metaEntity.setMetaId(resDto.getMeta_id());  // 해당 메타 데이터 존재할 경우 덮어쓰기
 
 			metaEntity = termMetaRepository.save( metaEntity );
-			return metaEntity == null ? null : ObjectMetaResponseDto.toDto(metaEntity);
+			return metaEntity == null ? null : TermMetaDto.toDto(metaEntity);
 		}
 		else return null;
 	}
