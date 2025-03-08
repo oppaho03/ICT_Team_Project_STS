@@ -16,14 +16,14 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//[글(포스트) DTO]
+//[글(포스트) 응답 DTO]
 public class PostsResponseDto {
 	private Long id; //PK
-	private Long author; //글 작성자
+	private Long author; //글 작성자(MemberDto 대신 회원 아이디값)
 	private String post_title; //글 제목
 	private String post_content; //글 내용
 	private String post_summary; //글 요약
-	private String post_status = "PUBLISH"; //글 상태(공개/비공개)
+	private String post_status = "PUBLISH"; //글 상태(공개/비공개/삭제)
 	private String post_pass = ""; //글 비밀번호
 	private String post_name = ""; //글 이름(별칭)
 	private String post_mime_type = ""; //글 타입(글/미디어파일)
@@ -32,22 +32,22 @@ public class PostsResponseDto {
 	private String comment_status = "OPEN"; //댓글 허용 상태
 	private long comment_count = 0; //댓글 개수
 
-	// PostsDto -> PostsResponseDto 변환 
+	// PostsEntity -> PostsResponseDto 변환 
 	public static PostsResponseDto toDto(PostsEntity entity) {
 		return PostsResponseDto.builder()
 			.id(entity.getId())
 			.author(MemberDto.toDto(entity.getMemberEntity()).getId())
-			.post_title(entity.getPost_title())
-			.post_content(entity.getPost_content())
-			.post_summary(entity.getPost_summary())
-			.post_status(entity.getPost_status())
-			.post_pass(entity.getPost_pass())
-			.post_name(entity.getPost_name())
-			.post_mime_type(entity.getPost_mime_type())
-			.post_created_at(entity.getPost_created_at())
-			.post_modified_at(entity.getPost_modified_at())
-			.comment_status(entity.getComment_status())
-			.comment_count(entity.getComment_count())
+			.post_title(entity.getPostTitle())
+			.post_content(entity.getPostContent())
+			.post_summary(entity.getPostSummary())
+			.post_status(entity.getPostStatus())
+			.post_pass(entity.getPostPass())
+			.post_name(entity.getPostName())
+			.post_mime_type(entity.getPostMimeType())
+			.post_created_at(entity.getPostCreatedAt())
+			.post_modified_at(entity.getPostModifiedAt())
+			.comment_status(entity.getCommentStatus())
+			.comment_count(entity.getCommentCount())
 			.build();
 
 	}

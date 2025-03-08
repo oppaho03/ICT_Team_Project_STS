@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.ict.vita.repository.member.MemberEntity;
+import com.ict.vita.util.Commons;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,49 +49,50 @@ public class PostsEntity {
 	
 	@Lob
 	@NotNull
-	private String post_title; //글 제목
+	@Column(name = "post_title")
+	private String postTitle; //글 제목
 	
 	@Lob
-	@Column(columnDefinition = "CLOB DEFAULT EMPTY_CLOB()")
-	private String post_content; //글 내용
+	@Column(columnDefinition = "CLOB DEFAULT EMPTY_CLOB()",name = "post_content")
+	private String postContent; //글 내용
 	
 	@Lob
-	@Column(columnDefinition = "CLOB DEFAULT EMPTY_CLOB()")
-	private String post_summary; //글 요약
+	@Column(columnDefinition = "CLOB DEFAULT EMPTY_CLOB()",name = "post_summary")
+	private String postSummary; //글 요약
 	
-	@Column(columnDefinition = "VARCHAR2(20)")
+	@Column(columnDefinition = "VARCHAR2(20)",name = "post_status")
 	@NotNull
 	@ColumnDefault("PUBLISH")
-	private String post_status = "PUBLISH"; //글 상태(공개/비공개)
+	private String postStatus = Commons.POST_STATUS_PUBLISH; //글 상태(공개/비공개/삭제)
 	
-	@Column(columnDefinition = "VARCHAR2(255)")
+	@Column(columnDefinition = "VARCHAR2(255)",name = "post_pass")
 	@ColumnDefault("")
-	private String post_pass = ""; //글 비밀번호
+	private String postPass = ""; //글 비밀번호
 	
-	@Column(columnDefinition = "VARCHAR2(200)")
+	@Column(columnDefinition = "VARCHAR2(200)",name = "post_name")
 	@ColumnDefault("")
-	private String post_name = ""; //글 이름(별칭)
+	private String postName = ""; //글 이름(별칭)
 	
-	@Column(columnDefinition = "VARCHAR2(100)")
+	@Column(columnDefinition = "VARCHAR2(100)",name = "post_mime_type")
 	@ColumnDefault("")
-	private String post_mime_type = ""; //글 타입(글/미디어파일)
+	private String postMimeType = ""; //글 타입(글/미디어파일)
 	
 	@NotNull
-	@Column(columnDefinition = "TIMESTAMP")
+	@Column(columnDefinition = "TIMESTAMP",name = "post_created_at")
 	@ColumnDefault("SYSDATE")
 	@CreationTimestamp
-	private LocalDateTime post_created_at; //글 생성일
+	private LocalDateTime postCreatedAt; //글 생성일
 	
 	@NotNull
-	@Column(columnDefinition = "TIMESTAMP")
-	private LocalDateTime post_modified_at; //글 수정일
+	@Column(columnDefinition = "TIMESTAMP",name = "post_modified_at")
+	private LocalDateTime postModifiedAt; //글 수정일
 	
 	@NotNull
-	@Column(columnDefinition = "VARCHAR2(20)")
+	@Column(columnDefinition = "VARCHAR2(20)",name = "comment_status")
 	@ColumnDefault("OPEN")
-	private String comment_status = "OPEN"; //댓글 허용 상태
+	private String commentStatus = Commons.COMMENT_STATUS_OPEN; //댓글 허용 상태
 	
-	@Column(columnDefinition = "NUMBER(20)")
+	@Column(columnDefinition = "NUMBER(20)",name = "comment_count")
 	@ColumnDefault("0")
-	private long comment_count = 0; //댓글 개수
+	private long commentCount = 0; //댓글 개수
 }
