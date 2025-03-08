@@ -51,79 +51,61 @@ public class TermMetaController {
 	private final MemberService memberService;
 	
 	/**
-	 * 전체 검색 (카테고리 ID)
-	 * @param id TermCategory ID
-	 * @return 메타 리스트 반환
-	 */	
-	@Operation( summary = "전체 검색", description = "전체 검색" )
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = ObjectMetaResponseDto.class), examples = @ExampleObject(value ="{\"success\":1,\"response\":{\"data\":[{\"meta_id\":1,\"meta_key\":\"_test\",\"meta_value\":\"testvalue\"}]}}"))),
-		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[]}}")))
-	})
-	@GetMapping("/by_category/{id}")
-	public ResponseEntity<?> getAll (
-		@Parameter(description = "카테고리 ID") @PathVariable Long id 
-	) {
-		TermCategoryDto term = termsService.findById(id);
-		List<TermMetaDto> result = new ArrayList<>();
-
-		if ( term != null ) 
-			result.addAll( termMetaService.findAll(term) );
-		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
-	} 
-
-	/**
-	 * ID 검색
-	 * @param id 메타 ID
-	 * @return 메타 또는 NULL 반환
+	 * 검색
+	 * @param meta_id 메타 아이디
+	 * @param meta_key 메타 키
+	 * @param id 오브젝트 ID
+	 * @return ObjectMetaResponseDto | List<ObjectMetaResponseDto> | Null
 	 */	
 	@Operation( summary = "전체 검색", description = "전체 검색" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = ObjectMetaResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"meta_id\":1,\"meta_key\":\"_test\",\"meta_value\":\"testvalue\"}}}"))),
-		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":null}}")))
-	})
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getById (
-		@Parameter(description = "메타 ID") @PathVariable Long id 
-	) {
-		TermMetaDto result = termMetaService.findById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result == null ? null : ObjectMetaResponseDto.toDto(result.toEntity())  ));
-	} 
-
-	/**
-	 * 카테고리 ID AND 메타 키 검색
-	 * @param id TermCategory ID
-	 * @param meta_key 메타 키
-	 * @return 메타 또는 NULL 반환
-	 */	
-	@Operation( summary = "카테고리 ID AND 메타 키 검색", description = "카테고리 ID AND 메타 키 검색" )
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = ObjectMetaResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"meta_id\":1,\"meta_key\":\"_test\",\"meta_value\":\"testmetavalue\"}}}"))),
+		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":null}}"))),
+		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = ObjectMetaResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"meta_id\":1,\"meta_key\":\"_test\",\"meta_value\":\"testmetavalue\"}]}}"))),
 		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
 	})
-	@GetMapping( "/value" )
-	public ResponseEntity<?> getValue(
-		@Parameter(description = "카테고리 ID", required = true) @RequestParam Long id,
-		@Parameter(description = "메타 키", required = true) @RequestParam String meta_key
+	
+	@GetMapping("/")
+	public ResponseEntity<?> getAll (
+		@Parameter(description = "메타 ID", required = false ) @RequestParam(defaultValue = "0") Long meta_id,		
+		@Parameter(description = "메타 키", required = false) @RequestParam(defaultValue = "") String meta_key,
+		@Parameter(description = "오브젝트 ID", required = false) @RequestParam(defaultValue = "0") Long id
 	) {
+		// < 검색 조건 별 : 메타 정보 반환 >
+		if ( meta_id != 0 ) {
+			TermMetaDto metaDto = termMetaService.findById(meta_id); 
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( metaDto == null ? null : ObjectMetaResponseDto.toDto(metaDto.toEntity())  ));
+		}
+		else if ( id != 0 ) {
+			
+			// < 검색 조건 : 오브젝트 ID > 
+			TermCategoryDto oDto = termsService.findById(id);
+			if ( oDto == null ) {
+				// 오브젝트가 존재하지 않기 때문에 검색 실패
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "term.notfound") )); 
+			}
 
-		// < TermCategoryDto> 유효성 검사
-		TermCategoryDto termCategoryDto = termsService.findById(id);
-		if ( termCategoryDto == null ) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "term.notfound") ));
+			if ( Commons.isNull(meta_key) ) { // - 메타 키 값이 없음, 전체 리스트 반환
+				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termMetaService.findAll(oDto).stream().map( dto->ObjectMetaResponseDto.toDto(dto.toEntity()) ).toList() ) );
+			}
+			else { // - 메타 키 값으로 검색
+				
+				// meta_key 유효성 검사 
+				TermMetaDto metaDto = termMetaService.findByTermsDtoByMetaKey( TermMetaDto.builder().termsDto(oDto.getTermsDto()).meta_key(meta_key).build() );
+
+				if ( metaDto == null ) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "meta.notfound") ));
+				}
+				else {
+					return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( metaDto == null ? null : ObjectMetaResponseDto.toDto(metaDto.toEntity())  ));
+				}
+			}
+
 		}
 
-		// < TermMetaDto> 유효성 검사
-		TermMetaDto metaDto = termMetaService.findByTermsDtoByMetaKey(TermMetaDto.builder().termsDto(termCategoryDto.getTermsDto()).meta_key(meta_key).build());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "request.invalid_parameters") ));
+	} 
 
-		if ( metaDto == null ) {
-			// - 일치하는 MetaDto 없음
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "meta.notfound") ));
-		}
-		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( metaDto == null ? null : ObjectMetaResponseDto.toDto(metaDto.toEntity())  ));
-	}
 
 
 	// public ResponseEntity<?> getAllByName(@Parameter(description = "이름") @PathVariable String name ) { return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findAllByName( name ) )); }
