@@ -57,80 +57,38 @@ public class TermsService {
 	private final TermsRepository termsRepository;		
 	private final TermCategoryRepository termCategoryRepository;
 
-	/**
-	 * TermDto 리스트 생성 
-	 * @param entities List<TermsEntity>
-	 * @return
-	 */
-	public List<TermDto> toTermDtoList ( List<? extends Object> entities ) {
+	public List<TermCategoryEntity> toTermCategoryEntities ( List<? extends Object> entities ) {
 
-		List<TermDto> result = new ArrayList<>();
+		List<TermCategoryEntity> result = new ArrayList<>();
 
 		if ( ! entities.isEmpty() ) {
 
-			List<TermCategoryEntity> dataset;
-
+			entities = entities.stream().filter( entity -> entity != null ).toList(); // null 객체 제거
+			
 			if ( entities.get(0) instanceof TermsEntity ) {
-				List<Optional<TermCategoryEntity>> termCategoryEntities = entities.stream().map( entity -> termCategoryRepository.findByTermsEntity( (TermsEntity) entity) ).filter(Optional::isPresent).toList();
 
-				dataset = termCategoryEntities.stream().map( Optional::get ).toList();
+				List<Optional<TermCategoryEntity>> termCategoryEntity = entities.stream().map( entity->termCategoryRepository.findByTermsEntity( (TermsEntity)entity) ).filter(Optional::isPresent).toList();
 
-			}
-			else if ( entities.get(0) instanceof TermCategoryEntity ) {
-				dataset = entities.stream().map( entity->(TermCategoryEntity)entity ).toList();
-			}
-			else return result;
+				if ( ! termCategoryEntity.isEmpty() ) 
+					result = termCategoryEntity.stream().filter(Optional::isPresent).map( Optional::get ).toList();
 
-			for ( TermCategoryEntity data : dataset ) {
-				TermDto dto = toTermDto( data );
-				if ( dto != null ) result.add( dto ); 
-			} // end for
+ 			} // end instanceof TermsEntity
 
-		} // end if
+		}
 
 		return result;
-	}
-
-
-	/**
-	 *  TermDto 생성
-	 * @param entity TermCategoryEntity
-	 * @return
-	 */
-	public TermDto toTermDto ( TermCategoryEntity entity ) {
-
-		if ( entity == null ) return null;
-
-		try {
-			TermCategoryDto mdto = TermCategoryDto.toDto(entity);
-			TermsDto sdto = mdto.getTermsDto();
-
-			return ( TermDto
-				.builder()
-				.id(mdto.getId())					
-				.description(mdto.getDescription())
-				.category(mdto.getCategory())
-				.count(mdto.getCount())
-				.parent(mdto.getParent())
-				// .term_id(sdto.getId())
-				.name(sdto.getName())
-				.slug(sdto.getSlug())
-				.group_number(sdto.getGroup_number())		
-				.build()
-			);
-		}
-		catch ( Exception e ) {
-			System.out.println( e.getMessage() );
-			return null;
-		}
-		
-	}
+	} 
 
 	/**
 	 * 모두 검색 
 	 * @return
 	 */
-	public List<TermDto> findAll() { return toTermDtoList( termsRepository.findAll( Sort.by(Sort.Order.asc("id")) ) ); } 
+	public List<TermCategoryDto> findAll() { 
+		return toTermCategoryEntities( termsRepository.findAll( Sort.by(Sort.Order.asc("id")) ) )
+			.stream()
+			.map( entity->TermCategoryDto.toDto(entity) )
+			.toList();
+	} 
 
 	/**
 	 * 모두 검색 - 페이지 
@@ -138,11 +96,11 @@ public class TermsService {
 	 * @param ol : 출력 개수 제한
 	 * @return
 	 */
-	public List<TermDto> findAll(int p, int ol) { 
+	public List<TermCategoryDto> findAll(int p, int ol) { 
 
 		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("id")) );
 		Page page = termsRepository.findAll(pageable);
-
+		
 		/*
 		Map<String, Object> result = new HashMap<>();
 		result.put("page", p );
@@ -150,8 +108,10 @@ public class TermsService {
 		result.put("total_count", page.getTotalElements() );
 		result.put("data", toTermDtoList( page.getContent() ));
 		*/
+
+		List<TermsEntity> entities = page.getContent().stream().filter( entity -> entity != null ).map(entity-> (TermsEntity) entity).toList();
 		
-		return toTermDtoList( page.getContent() );
+		return toTermCategoryEntities( entities ).stream().map( entity->TermCategoryDto.toDto(entity) ).toList();
 	} 
 
 	/**
@@ -159,14 +119,24 @@ public class TermsService {
 	 * @param name 이름
 	 * @return
 	 */
-	public List<TermDto> findAllByName (String name) { return toTermDtoList( termsRepository.findAllByName( name, Sort.by(Sort.Order.asc("id")) ) ); } 
+	public List<TermCategoryDto> findAllByName (String name) { 
+		return toTermCategoryEntities( termsRepository.findAllByName( name, Sort.by(Sort.Order.asc("id")) ) )
+			.stream()
+			.map( entity->TermCategoryDto.toDto(entity) )
+			.toList();
+	} 
 
 	/**
 	 * 카테고리(Taxonomy) 검색
 	 * @param taxonomy 카테고리명
 	 * @return
 	 */
-	public List<TermDto> findAllByTaxonomy (String taxonomy) { return toTermDtoList( termCategoryRepository.findByCategory( taxonomy, Sort.by(Sort.Order.asc("id")) ) ); } 
+	public List<TermCategoryDto> findAllByTaxonomy (String taxonomy) { 
+		return termCategoryRepository.findByCategory( taxonomy, Sort.by(Sort.Order.asc("id")) )
+			.stream()
+			.map( entity->TermCategoryDto.toDto(entity) )
+			.toList();
+	} 
 
 	/**
 	Repository.findByCategory( name, Sort.by(Sort.Order.asc("id")) ) ); }  
@@ -176,16 +146,9 @@ public class TermsService {
 	 * @param id 카테고리 Id
 	 * @return
 	 */
-	public TermDto findById ( Long id ) {  
+	public TermCategoryDto findById ( Long id ) {  
 		TermCategoryEntity entity = termCategoryRepository.findById( id ).orElse(null);
-		return entity != null ? toTermDto( entity ) : null;
-		// // find TermsEntity 
-		// TermsEntity entity = termsRepository.findById( id ).orElse(null);
-		// if ( entity != null ) {
-		// 	// TermsEntity -> TermCategoryEntity -> TermDto
-		// 	return toTermDto( termCategoryRepository.findByTermsEntity(entity).orElse(null) );
-		// }
-		// else return null;
+		return entity != null ? TermCategoryDto.toDto(entity) : null;
 	}
 
 	/**
@@ -194,9 +157,9 @@ public class TermsService {
 	 * @param taxonomy 
 	 * @return
 	 */
-	public TermDto findBySlugByCategory ( String slug, String taxonomy ) { 
+	public TermCategoryDto findBySlugByCategory ( String slug, String taxonomy ) { 
 		Optional<TermCategoryEntity> entity = termCategoryRepository.findBySlugByCategory(slug, taxonomy);		
-		return entity.isPresent() ? toTermDto( entity.get() ) : null;
+		return entity.isPresent() ? TermCategoryDto.toDto( entity.get() ) : null;
 	}
 
 	/**
@@ -205,28 +168,31 @@ public class TermsService {
 	 * @param taxonomy 
 	 * @return
 	 */
-	public List<TermDto> findByParent ( Long id ) { 
+	public List<TermCategoryDto> findByParent ( Long id ) { 
 		if ( id > 0 ) {
-			TermCategoryEntity entity = termCategoryRepository.findById( id ).orElse(null);
+			TermCategoryEntity termCategoryEntity = termCategoryRepository.findById( id ).orElse(null);
 			
-			if ( entity == null) 
-				return toTermDtoList(null);
+			if ( termCategoryEntity == null) 
+				return new ArrayList<>();
 
-			id = TermCategoryDto.toDto(entity).getTermsDto().getId(); 
+			id = TermCategoryDto.toDto(termCategoryEntity).getTermsDto().getId(); 
 		}
-		return toTermDtoList( termCategoryRepository.findByParent( id ) ); 
+
+		return termCategoryRepository.findByParent( id ).stream().filter(entity->entity!=null).map( entity->TermCategoryDto.toDto(entity) ).toList(); 
 	}
 
 	/**
 	 * 새 Term, TermCategory 등록
-	 * @param dto 
+	 * @param dto TermsRequestDto
 	 * @return
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public TermDto save ( EmptyTermDto dto ) {
+	public TermCategoryDto save ( TermsRequestDto dto ) {
 
 		// 슬러그 중복 검사
 		if ( findBySlugByCategory( dto.getSlug(), dto.getCategory() ) != null ) return null;
+
+		
 
 		TermsDto termsDto = 
 			TermsDto.builder()
@@ -259,7 +225,7 @@ public class TermsService {
 			return null;
 		}
 		
-		return toTermDto( termCategoryEntity );
+		return TermCategoryDto.toDto(termCategoryEntity);		
 	}
 	
 	/**
@@ -268,7 +234,7 @@ public class TermsService {
 	 * @return
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public TermDto update ( EmptyTermDto dto ) {
+	public TermCategoryDto update ( TermsRequestDto dto ) {
 
 		TermCategoryEntity termCategoryEntity = termCategoryRepository.findById( dto.getId() ).orElse(null);
 		
@@ -313,7 +279,7 @@ public class TermsService {
 			return null;
 		}
 
-		return toTermDto(termCategoryEntity);
+		return TermCategoryDto.toDto(termCategoryEntity);
 
 		
 	}

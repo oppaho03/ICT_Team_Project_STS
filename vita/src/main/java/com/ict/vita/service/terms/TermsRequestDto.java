@@ -13,7 +13,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmptyTermDto {
+public class TermsRequestDto {
     @Schema(description = "ID", example = "0")	
     private Long id = 0L; // APP_TERM_CATEGORY.id
     @Schema(description = "Term ID", example = "0")	

@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.chatqna.ChatQnaDto;
 import com.ict.vita.service.chatqna.ChatQnaService;
-import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
-import com.ict.vita.service.terms.TermDto;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 

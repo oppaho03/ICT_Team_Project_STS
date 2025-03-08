@@ -19,13 +19,8 @@ import com.ict.vita.service.anc.AncService;
 import com.ict.vita.service.chatanswer.ChatAnswerDto;
 import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
-import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
-import com.ict.vita.service.posts.PostsDto;
-import com.ict.vita.service.posts.PostsResponseDto;
-import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.EmptyTermRelDto;
-import com.ict.vita.service.terms.TermDto;
-import com.ict.vita.service.terms.TermsService;
+import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class AncController {
 	//서비스 주입
 	private final AncService ancService;
-	private final TermsService termsService;
 	
 	private final ChatAnswerService answerService;
 
@@ -58,7 +52,7 @@ public class AncController {
 			responseCode = "200",
 			description = "SUCCESS",
 			content = @Content(	
-				schema = @Schema(implementation = TermDto.class),
+				schema = @Schema(implementation = TermsResponseDto.class),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":709,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":710,\"name\":\"HIV감염\",\"slug\":\"hiv_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":711,\"name\":\"결핵\",\"slug\":\"tuberculosis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":712,\"name\":\"곰팡이감염\",\"slug\":\"fungal_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"
 				)
@@ -83,7 +77,7 @@ public class AncController {
 		
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
 			
-			List<TermDto> termCatsDto = relDtos.stream().map( dto -> termsService.toTermDto(dto.getTermCategoryDto().toEntity()) ).toList();
+			List<TermsResponseDto> termCatsDto = relDtos.stream().map( dto -> TermsResponseDto.toDto(dto.getTermCategoryDto().toEntity()) ).toList();
 
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termCatsDto ));
 		}
@@ -158,7 +152,7 @@ public class AncController {
 		relDtos = ancService.findAllByAnswerId(id);
 		// System.out.println(relDtos);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( relDtos.stream().map(dto->TermDto.toDto(dto.getTermCategoryDto().toEntity())).toList() ));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( relDtos.stream().map(dto->TermsResponseDto.toDto(dto.getTermCategoryDto().toEntity())).toList() ));
 	}
 
 }

@@ -11,11 +11,9 @@ import com.ict.vita.repository.termcategory.TermCategoryEntity;
 import com.ict.vita.repository.termcategory.TermCategoryRepository;
 import com.ict.vita.repository.termmeta.TermMetaEntity;
 import com.ict.vita.repository.termmeta.TermMetaRepository;
-import com.ict.vita.repository.terms.TermsEntity;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
 import com.ict.vita.service.others.ObjectMetaResponseDto;
-import com.ict.vita.service.terms.TermDto;
-import com.ict.vita.service.terms.TermsDto;
+import com.ict.vita.service.termcategory.TermCategoryDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +30,7 @@ public class TermMetaService {
 	 * @param term TermDto
 	 * @return 메타 리스트 반환
 	 */	
-	public List<ObjectMetaResponseDto> findAll( TermDto term ) {
+	public List<ObjectMetaResponseDto> findAll( TermCategoryDto term ) {
 
 		List<TermMetaEntity> termMetaEntities = new ArrayList<>();
 		Optional<TermCategoryEntity> termCategory = termCategoryRepository.findById(term.getId());
@@ -53,7 +51,6 @@ public class TermMetaService {
 		return termMetaEntity == null ? null : ObjectMetaResponseDto.toDto(termMetaEntity);
 	}
 
-	
 	/**
 	 * TermsDto AND 메타 키 검색
 	 * @param termsDto TermsDto
@@ -89,11 +86,10 @@ public class TermMetaService {
 			metaEntity.setMetaKey( reqDto.getMeta_key() );
 			metaEntity.setMetaValue( reqDto.getMeta_value() );
 
-			/// < 현재 TermsEntity 와 MetaKey 값으로 중복 확인 >
-			/// - duplicated on Overwrite
+			/// < 현재 TermsEntity 와 MetaKey 값으로 중복 확인 >			
 			ObjectMetaResponseDto resDto = findByTermsDtoByMetaKey( TermMetaDto.toDto(metaEntity) );
 			if ( resDto != null ) 
-				metaEntity.setMetaId(resDto.getMeta_id());
+				metaEntity.setMetaId(resDto.getMeta_id());  // 해당 메타 데이터 존재할 경우 덮어쓰기
 
 			metaEntity = termMetaRepository.save( metaEntity );
 			return metaEntity == null ? null : ObjectMetaResponseDto.toDto(metaEntity);

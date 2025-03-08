@@ -3,8 +3,6 @@ package com.ict.vita.controller.postcategoryrelationships;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ict.vita.controller.termcategory.TermCategoryController;
-import com.ict.vita.repository.posts.PostsRepository;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
@@ -12,9 +10,8 @@ import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsS
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
-import com.ict.vita.service.termcategory.TermCategoryDto;
-import com.ict.vita.service.terms.EmptyTermRelDto;
-import com.ict.vita.service.terms.TermDto;
+import com.ict.vita.service.others.ObjectCategoryRelDto;
+import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.service.terms.TermsService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
@@ -56,8 +53,6 @@ public class PostCategoryRelationshipsController {
 	private final PostsService postsService;
 	private final MemberService memberService;
 
-	private final TermsService termsService;
-	
 	/**
 	 * 카테고리 목록 가져오기
 	 * @param id 포스트 ID
@@ -69,7 +64,7 @@ public class PostCategoryRelationshipsController {
 			responseCode = "200",
 			description = "SUCCESS",
 			content = @Content(	
-				schema = @Schema(implementation = TermDto.class),
+				schema = @Schema(implementation = TermsResponseDto.class),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":709,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":710,\"name\":\"HIV감염\",\"slug\":\"hiv_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":711,\"name\":\"결핵\",\"slug\":\"tuberculosis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":712,\"name\":\"곰팡이감염\",\"slug\":\"fungal_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"
 				)
@@ -92,10 +87,12 @@ public class PostCategoryRelationshipsController {
 		List<PostCategoryRelationshipsDto> relDtos = postCategoryRelService.findAllByPostId(id);
 
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
-			
-			List<TermDto> termCatsDto = relDtos.stream().map( dto -> termsService.toTermDto(dto.getTermCategoryDto().toEntity()) ).toList();
 
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termCatsDto ));
+			//TermsResponseDto
+			List<TermsResponseDto> result = relDtos.stream().map( dto -> TermsResponseDto.toDto(dto.getTermCategoryDto().toEntity()) ).toList();
+			
+
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
 		}
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( new ArrayList() ));
@@ -136,18 +133,18 @@ public class PostCategoryRelationshipsController {
 
 	/**
 	 * 카테고리 등록 
-	 * @param reldto EmptyTermRelDto ( id, categories )
+	 * @param reldto ObjectCategoryRelDto ( id, categories )
 	 * @return
 	 */		
 	@Operation(summary = "포스트 목록 가져오기", description = "포스트 목록 가져오기")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":709,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":710,\"name\":\"HIV감염\",\"slug\":\"hiv_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":712,\"name\":\"곰팡이감염\",\"slug\":\"fungal_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":713,\"name\":\"광우병\",\"slug\":\"bovine_spongiform_encephalopathy\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"))),
+		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":709,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":710,\"name\":\"HIV감염\",\"slug\":\"hiv_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":712,\"name\":\"곰팡이감염\",\"slug\":\"fungal_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681},{\"id\":713,\"name\":\"광우병\",\"slug\":\"bovine_spongiform_encephalopathy\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"))),
 		@ApiResponse(responseCode = "400", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid Values...\"}}")))
 	})
 	@PostMapping("/")
 	public ResponseEntity<?> addCategories(
 		@RequestHeader(value = "Authorization", required = true) String token,
-		@Parameter( description = "관계 데이터") @RequestBody EmptyTermRelDto reldto 
+		@Parameter( description = "관계 데이터") @RequestBody ObjectCategoryRelDto reldto 
 	) {
 		// < JWT Token 유효성 검사 >
 		MemberDto user = Commons.findMemberByToken(token, memberService);
@@ -187,7 +184,7 @@ public class PostCategoryRelationshipsController {
 
 		relDtos = postCategoryRelService.findAllByPostId(id);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( relDtos.stream().map(dto->TermDto.toDto(dto.getTermCategoryDto().toEntity())).toList() ));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( relDtos.stream().map(dto->TermsResponseDto.toDto(dto.getTermCategoryDto().toEntity())).toList() ));
 	}
 
 

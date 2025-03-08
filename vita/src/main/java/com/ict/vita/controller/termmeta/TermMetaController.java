@@ -15,8 +15,8 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
 import com.ict.vita.service.others.ObjectMetaResponseDto;
+import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termmeta.TermMetaService;
-import com.ict.vita.service.terms.TermDto;
 import com.ict.vita.service.terms.TermsService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
@@ -62,7 +62,7 @@ public class TermMetaController {
 	public ResponseEntity<?> getAll (
 		@Parameter(description = "카테고리 ID") @PathVariable Long id 
 	) {
-		TermDto term = termsService.findById(id);
+		TermCategoryDto term = termsService.findById(id);
 		List<ObjectMetaResponseDto> result = new ArrayList<>();
 
 		if ( term != null ) 
@@ -89,6 +89,33 @@ public class TermMetaController {
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
 	} 
 
+	/**
+	 * 카테고리 ID AND 메타 키 검색
+	 * @param id TermCategory ID
+	 * @param meta_key 메타 키
+	 * @return 메타 또는 NULL 반환
+	 */	
+	@Operation( summary = "카테고리 ID AND 메타 키 검색", description = "카테고리 ID AND 메타 키 검색" )
+	@GetMapping( "/value" )
+	public ResponseEntity<?> getValue(
+		@Parameter(description = "카테고리 ID", required = true) @PathVariable Long id,
+		@Parameter(description = "메타 키", required = true) @PathVariable String meta_key
+	) {
+
+		
+
+		// TermCategoryDto termCategoryDto = termMetaService.findById(id);
+		
+
+		// TermMetaDto termMetaDto = TermMetaDto.builder().
+		
+
+
+		return null;
+	}
+
+
+	// public ResponseEntity<?> getAllByName(@Parameter(description = "이름") @PathVariable String name ) { return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findAllByName( name ) )); }
 
 	
 	/**
@@ -97,6 +124,10 @@ public class TermMetaController {
 	 * @return 메타 값 반환
 	 */	
 	@Operation( summary = "메타 등록", description = "메타 등록" )
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = ObjectMetaResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"meta_id\":1,\"meta_key\":\"_test\",\"meta_value\":\"testmetavalue\"}}}"))),
+		@ApiResponse(responseCode = "400", description = "ERROR", content = @Content(examples = @ExampleObject(value = "{\"success\":0,\"response\":{\"message\":\"Invalid values...\"}}")))
+	})
 	@PostMapping("/")
 	public ResponseEntity<?> add (  
 		@RequestHeader(value = "Authorization", required = true) String token,
@@ -123,14 +154,14 @@ public class TermMetaController {
 		String meta_key = dto.getMeta_key();
 		String meta_value = dto.getMeta_value();
 
-		if ( id == 0 || Commons.isNull(meta_key) ) {
+		if ( id == 0 || Commons.isNull(meta_key) ) {	
 			errmsg = Commons.i18nMessages(messageSource, "meta.key.notfound");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(errmsg  ));
 		}
 		else if ( Commons.isNull(meta_value) ) meta_value = "";
 		
 		// Term ID 유효성 검사
-		TermDto term = termsService.findById( id );
+		TermCategoryDto term = termsService.findById( id );
 		if ( term != null ) {
 
 			dto.setMeta_value(meta_value); // 메타 값 업데이트

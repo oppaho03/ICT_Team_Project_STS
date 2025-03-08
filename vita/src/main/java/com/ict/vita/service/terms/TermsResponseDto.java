@@ -17,13 +17,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TermDto {
+public class TermsResponseDto {
     @Schema(description = "ID", example = "0")	
     @NotBlank(message = "")
     private Long id; // APP_TERM_CATEGORY.id
-    // @Schema(description = "Term ID", example = "0")	
-    // @NotBlank(message = "")
-    // private Long term_id; // APP_TERM.id
     @Schema(description = "이름", example = "")	
     private String name; // APP_TERM.name
     @Schema(description = "슬러그", example = "")
@@ -38,19 +35,34 @@ public class TermDto {
     private Long count = 0L; // APP_TERM_CATEGORY.count
     @Schema(description = "소속된 컨텐츠 수", example = "0")
 	private Long parent = 0L; // APP_TERM.id
+
+    // TermCategoryDto 를 -> TermResponseDto
+    public static TermsResponseDto toDto(TermCategoryDto dto) {
+        return TermsResponseDto.builder()
+            .id(dto.getId())					
+            .description(dto.getDescription())
+            .category(dto.getCategory())
+            .count(dto.getCount())
+            .parent(dto.getParent())
+            // .term_id(sdto.getId())
+            .name(dto.getTermsDto().getName())
+            .slug(dto.getTermsDto().getSlug())
+            .group_number(dto.getTermsDto().getGroup_number())		
+            .build();
+    }
     
-    //[TermsEntity를 TermsDTO로 변환하는 메서드]
-	public static TermDto toDto(TermCategoryEntity entity) {
-		return TermDto.builder()
-				.id(entity.getId())					
-				.description(entity.getDescription())
-				.category(entity.getCategory())
-				.count(entity.getCount())
-				.parent(entity.getParent())
-				// .term_id(sdto.getId())
-				.name(entity.getTermsEntity().getName())
-				.slug(entity.getTermsEntity().getSlug())
-				.group_number(entity.getTermsEntity().getGroup_number())		
-				.build();
+    // TermCategoryEntity를 -> TermDto
+	public static TermsResponseDto toDto(TermCategoryEntity entity) {
+		return TermsResponseDto.builder()
+            .id(entity.getId())					
+            .description(entity.getDescription())
+            .category(entity.getCategory())
+            .count(entity.getCount())
+            .parent(entity.getParent())
+            // .term_id(sdto.getId())
+            .name(entity.getTermsEntity().getName())
+            .slug(entity.getTermsEntity().getSlug())
+            .group_number(entity.getTermsEntity().getGroup_number())		
+            .build();
 	}
 }
