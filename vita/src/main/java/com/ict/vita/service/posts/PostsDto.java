@@ -25,7 +25,7 @@ public class PostsDto {
 	private String post_title; //글 제목
 	private String post_content; //글 내용
 	private String post_summary; //글 요약
-	private String post_status = "PUBLISH"; //글 상태(공개/비공개)
+	private String post_status = "PUBLISH"; //글 상태(공개/비공개/삭제)
 	private String post_pass = ""; //글 비밀번호
 	private String post_name = ""; //글 이름(별칭)
 	private String post_mime_type = ""; //글 타입(글/미디어파일)

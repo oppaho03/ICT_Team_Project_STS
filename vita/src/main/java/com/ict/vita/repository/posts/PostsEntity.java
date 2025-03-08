@@ -61,7 +61,7 @@ public class PostsEntity {
 	@Column(columnDefinition = "VARCHAR2(20)")
 	@NotNull
 	@ColumnDefault("PUBLISH")
-	private String post_status = "PUBLISH"; //글 상태(공개/비공개)
+	private String post_status = "PUBLISH"; //글 상태(공개/비공개/삭제)
 	
 	@Column(columnDefinition = "VARCHAR2(255)")
 	@ColumnDefault("")
