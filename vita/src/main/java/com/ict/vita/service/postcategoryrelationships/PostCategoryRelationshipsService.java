@@ -1,9 +1,6 @@
 package com.ict.vita.service.postcategoryrelationships;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,12 +12,12 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.ict.vita.repository.postcategoryrelationships.PostCategoryRelationshipsEntity;
 import com.ict.vita.repository.postcategoryrelationships.PostCategoryRelationshipsRepository;
-import com.ict.vita.repository.posts.PostsEntity;
+
 import com.ict.vita.repository.posts.PostsRepository;
 import com.ict.vita.repository.termcategory.TermCategoryRepository;
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.termcategory.TermCategoryDto;
-import com.ict.vita.service.terms.EmptyTermRelDto;
+import com.ict.vita.service.others.ObjectCategoryRelDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -82,7 +79,7 @@ public class PostCategoryRelationshipsService {
 	
 	/**
 	 * 포스트 + 카테고리 관계 등록
-	 * @param reldto EmptyTermRelDto ( id, categories )
+	 * @param reldto ObjectCategoryRelDto ( id, categories )
 	 * @return
 	 */	
 	@Transactional(rollbackFor = Exception.class)

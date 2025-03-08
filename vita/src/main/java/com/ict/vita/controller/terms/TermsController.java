@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,12 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
-import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
-import com.ict.vita.service.termcategory.TermCategoryService;
-import com.ict.vita.service.terms.EmptyTermRelDto;
-import com.ict.vita.service.terms.TermsDto;
 import com.ict.vita.service.terms.TermsRequestDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.service.terms.TermsService;

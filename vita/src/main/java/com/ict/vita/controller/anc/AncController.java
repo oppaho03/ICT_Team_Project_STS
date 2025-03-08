@@ -19,7 +19,7 @@ import com.ict.vita.service.anc.AncService;
 import com.ict.vita.service.chatanswer.ChatAnswerDto;
 import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
-import com.ict.vita.service.terms.EmptyTermRelDto;
+import com.ict.vita.service.others.ObjectCategoryRelDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.ResultUtil;
 
@@ -114,12 +114,12 @@ public class AncController {
 
 	/**
 	 * 카테고리 등록 
-	 * @param reldto EmptyTermRelDto ( id, categories )
+	 * @param reldto ObjectCategoryRelDto ( id, categories )
 	 * @return
 	 */		
 	@Operation(summary = "포스트 목록 가져오기", description = "포스트 목록 가져오기")	
 	@PostMapping("/")
-	public ResponseEntity<?> addCategories(@Parameter( description = "관계 데이터") @RequestBody EmptyTermRelDto reldto ) {
+	public ResponseEntity<?> addCategories(@Parameter( description = "관계 데이터") @RequestBody ObjectCategoryRelDto reldto ) {
 		/* CHECKE AUTH *** */
 		Long id = reldto.getId();
 		List<Long> categories = reldto.getCategories();
