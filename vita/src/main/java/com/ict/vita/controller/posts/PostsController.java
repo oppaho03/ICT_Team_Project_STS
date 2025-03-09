@@ -3,6 +3,7 @@ package com.ict.vita.controller.posts;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.posts.PostsDto;
+import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
@@ -37,7 +39,24 @@ public class PostsController {
 	//
 	@GetMapping
 	public ResponseEntity<?> getAllPublicPosts(){
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsService.getAllPublicPosts()));
+		List<PostsDto> dtoList = postsService.getAllPublicPosts();
+		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
+													.id(dto.getId())
+													.author(dto.getMemberDto().getId())
+													.post_title(dto.getPost_title())
+													.post_content(dto.getPost_content())
+													.post_summary(dto.getPost_summary())
+													.post_status(dto.getPost_status())
+													.post_pass(dto.getPost_pass())
+													.post_name(dto.getPost_name())
+													.post_mime_type(dto.getPost_mime_type())
+													.post_created_at(dto.getPost_created_at())
+													.post_modified_at(dto.getPost_modified_at())
+													.comment_status(dto.getComment_status())
+													.comment_count(dto.getComment_count())
+													.build())
+						.collect(Collectors.toList());
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
 	}
 	
 	/**

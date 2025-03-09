@@ -14,7 +14,7 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 				select p.* 
 				from app_posts p
 				join app_member m on p.post_author = m.id
-				where m.status = 1 AND p.post_status = 'PUBLISH';
+				where m.status = 1 AND p.post_status = 'PUBLISH'
 			"""
 			,nativeQuery = true)
 	List<PostsEntity> getAllPublicPosts(); //모든 회원의 공개글 조회용
