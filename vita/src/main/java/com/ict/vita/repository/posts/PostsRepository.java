@@ -12,12 +12,12 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 	
 	@Query(value = """
 				select p.* 
-				from app_posts p
-				join app_member m on p.post_author = m.id
-				where m.status = 1 AND p.post_status = 'PUBLISH'
+				from APP_POSTS p
+				join APP_POST_CATEGORY_RELATIONSHIPS pcr on p.id = pcr.post_id
+				where p.post_status = 'PUBLISH'
 			"""
 			,nativeQuery = true)
-	List<PostsEntity> getAllPublicPosts(); //모든 회원의 공개글 조회용
+	List<PostsEntity> getAllPublicPosts(Long cid); //모든 회원의 공개글 조회용
 	
 	List<PostsEntity> findByMemberEntity_Id(Long memberId); //해당 회원의 모든 글 조회용
 	

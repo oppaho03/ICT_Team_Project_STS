@@ -22,6 +22,7 @@ import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -59,8 +60,8 @@ public class PostsController {
 		)
 	})
 	@GetMapping
-	public ResponseEntity<?> getAllPublicPosts(){
-		List<PostsDto> dtoList = postsService.getAllPublicPosts();
+	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam Long cid){
+		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
 		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
 													.id(dto.getId())
 													.author(dto.getMemberDto().getId())

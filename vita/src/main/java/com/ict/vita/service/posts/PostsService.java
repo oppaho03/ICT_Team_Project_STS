@@ -26,10 +26,11 @@ public class PostsService {
 	
 	/**
 	 * [모든 회원의 공개글 조회]
+	 * @param cid 카테고리 id
 	 * @return List<PostsDto>
 	 */
-	public List<PostsDto> getAllPublicPosts(){
-		List<PostsEntity> entityList = postsRepository.getAllPublicPosts();
+	public List<PostsDto> getAllPublicPosts(Long cid){
+		List<PostsEntity> entityList = postsRepository.getAllPublicPosts(cid);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
 	}
 	
