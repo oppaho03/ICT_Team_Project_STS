@@ -93,7 +93,8 @@ public class PostsController {
 	 * @return ResponseEntity
 	*/
 	@GetMapping("/user")
-	public ResponseEntity<?> getPostsByUser(@RequestParam("cid") Long cid,@RequestParam Long uid,@RequestParam(required = false) String status,@RequestHeader("Authorization") String token){
+	public ResponseEntity<?> getPostsByUser(@RequestParam("cid") Long cid,@RequestParam Long uid,
+			@RequestParam(required = false) String status,@RequestHeader("Authorization") String token){
 		//[로그인한 사람이 관리자/일반회원인지 확인]
 		MemberDto loginMember = memberService.findMemberByToken(token); //로그인한 회원
 		//<<로그인한 회원이 관리자인 경우>>
