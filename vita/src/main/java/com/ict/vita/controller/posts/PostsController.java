@@ -21,6 +21,13 @@ import com.ict.vita.service.posts.PostsService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,7 +43,21 @@ public class PostsController {
 	 * [모든 회원의 공개글 조회] - 가입된 상태(status가 1)인 모든 회원들의 공개글(status가 PUBLISH) 조회 
 	 * @return ResponseEntity
 	*/
-	//
+	@Operation( summary = "모든 회원 공개글 조회", description = "모든 회원의 공개글 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = PostsResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":1,\"author\":24,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T08:23:17.509\",\"post_modified_at\":\"2025-03-10T08:23:17.509\",\"comment_status\":\"OPEN\",\"comment_count\":0}]}}" 
+				)
+			) 
+		)
+	})
 	@GetMapping
 	public ResponseEntity<?> getAllPublicPosts(){
 		List<PostsDto> dtoList = postsService.getAllPublicPosts();

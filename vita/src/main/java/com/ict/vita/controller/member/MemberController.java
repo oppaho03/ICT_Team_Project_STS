@@ -65,7 +65,7 @@ public class MemberController {
 			responseCode = "201-임시 회원가입 성공",
 			description = "SUCCESS",
 			content = @Content(	
-				schema = @Schema(implementation = MemberJoinDto.class),
+				schema = @Schema(implementation = MemberDto.class),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":{\"id\":41,\"email\":\"nonick@naver.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"노닉네임\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":\"123\",\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:57:13.2894058\",\"updated_at\":\"2025-03-07T18:57:13.2894058\",\"status\":9}}}"
 				)
