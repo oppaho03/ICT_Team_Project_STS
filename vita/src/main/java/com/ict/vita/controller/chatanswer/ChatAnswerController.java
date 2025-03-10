@@ -18,6 +18,7 @@ import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,9 @@ public class ChatAnswerController {
 			responseCode = "200-검색 결과 조회",
 			description = "SUCCESS", 
 			content = @Content(	
-				schema = @Schema(implementation = ChatAnswerDto.class),
+				array = @ArraySchema(
+						schema = @Schema(implementation = ChatAnswerDto.class)
+				),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는~~\",\"body\":\"HIV는주로~~\",\"conclusion\":\"HIV감염을예방하기위해서는~~\"},{\"id\":17,\"file_name\":\"HC-A-06128457000017\",\"intro\":\"HIV감염검진은~~\",\"body\":\"HIV감염검진은~~~\",\"conclusion\":\"HIV감염검진은~~~\"}]}}"
 				)

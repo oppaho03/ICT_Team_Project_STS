@@ -18,6 +18,7 @@ import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +46,9 @@ public class ChatQnaController {
 			responseCode = "200-조회 성공",
 			description = "SUCCESS", 
 			content = @Content(	
-				schema = @Schema(implementation = ChatQnaDto.class),
+				array = @ArraySchema(
+						schema = @Schema(implementation = ChatQnaDto.class)
+				),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":6,\"chatSessionDto\":{\"id\":3,\"memberDto\":{\"id\":33,\"email\":\"hoho1@naver.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"hoho1\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":\"01015635422\",\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-01T11:36:15.801352\",\"updated_at\":\"2025-03-01T11:36:15.755014\",\"status\":9},\"created_at\":\"2025-03-04T18:56:48.993578\",\"updated_at\":\"2025-03-04T18:56:48.984742\",\"status\":1,\"count\":0},\"chatQuestionDto\":{\"id\":4,\"content\":\"질문내용\",\"created_at\":\"2025-03-04T18:56:49.16922\"},\"chatAnswerDto\":{\"id\":394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는~~\",\"body\":\"HIV는~~\",\"conclusion\":\"HIV감염을~~~\"},\"is_matched\":0}]}}"
 				)
