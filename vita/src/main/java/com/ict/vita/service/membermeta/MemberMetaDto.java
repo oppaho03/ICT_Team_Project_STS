@@ -26,7 +26,7 @@ public class MemberMetaDto {
 	//[MemberMetaDto를 MemberMetaEntity로 변환하는 메서드]
 	public MemberMetaEntity toEntity() {
 		return MemberMetaEntity.builder()
-				.meta_id(meta_id)
+				.metaId(meta_id)
 				.memberEntity(memberDto.toEntity())
 				.metaKey(meta_key)
 				.metaValue(meta_value)
@@ -36,7 +36,7 @@ public class MemberMetaDto {
 	//[MemberMetaEntity를 MemberMetaDto로 변환하는 메서드]
 	public static MemberMetaDto toDto(MemberMetaEntity entity) {
 		return MemberMetaDto.builder()
-				.meta_id(entity.getMeta_id())
+				.meta_id(entity.getMetaId())
 				.memberDto(MemberDto.toDto(entity.getMemberEntity()))
 				.meta_key(entity.getMetaKey())
 				.meta_value(entity.getMetaValue())

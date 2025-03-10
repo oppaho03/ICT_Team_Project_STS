@@ -105,10 +105,6 @@ public class TermMetaController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "request.invalid_parameters") ));
 	} 
 
-
-
-	// public ResponseEntity<?> getAllByName(@Parameter(description = "이름") @PathVariable String name ) { return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findAllByName( name ) )); }
-
 	
 	/**
 	 * 등록  

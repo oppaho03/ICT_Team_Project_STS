@@ -2,6 +2,7 @@ package com.ict.vita.service.others;
 
 import java.time.LocalDateTime;
 
+import com.ict.vita.repository.membermeta.MemberMetaEntity;
 import com.ict.vita.repository.postmeta.PostMetaEntity;
 import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.repository.termmeta.TermMetaEntity;
@@ -35,6 +36,15 @@ public class ObjectMetaResponseDto {
 	}
 
 	public static ObjectMetaResponseDto toDto( PostMetaEntity entity ) {
+		return ObjectMetaResponseDto.builder()
+			.meta_id(entity.getMetaId())
+			.meta_key(entity.getMetaKey())
+			.meta_value(entity.getMetaValue())
+			.build();
+	}
+
+	
+	public static ObjectMetaResponseDto toDto( MemberMetaEntity entity ) {
 		return ObjectMetaResponseDto.builder()
 			.meta_id(entity.getMetaId())
 			.meta_key(entity.getMetaKey())

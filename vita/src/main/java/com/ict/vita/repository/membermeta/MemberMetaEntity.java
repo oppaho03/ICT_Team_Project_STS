@@ -35,7 +35,7 @@ public class MemberMetaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_MEMBER_META_SEQ")
 	@SequenceGenerator(name = "APP_MEMBER_META_SEQ",sequenceName = "APP_MEMBER_META_SEQ",initialValue = 1,allocationSize = 1)
 	@Column(columnDefinition = "NUMBER(20,0)",name = "meta_id")
-	private Long meta_id; //PK
+	private Long metaId; //PK
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id",nullable = false) //테이블에서 FK명
