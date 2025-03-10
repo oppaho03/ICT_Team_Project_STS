@@ -35,7 +35,7 @@ public class PostMetaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_POST_META_SEQ")
 	@SequenceGenerator(name = "APP_POST_META_SEQ",sequenceName = "APP_POST_META_SEQ",initialValue = 1,allocationSize = 1)
 	@Column(columnDefinition = "NUMBER(20,0)",name = "meta_id")
-	private Long meta_id; //PK
+	private Long metaId; //PK
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id",nullable = false) //테이블에서 FK명

@@ -26,7 +26,7 @@ public class PostMetaDto {
 	//[PostMetaDto를 PostMetaEntity로 변환하는 메서드]
 	public PostMetaEntity toEntity() {
 		return PostMetaEntity.builder()
-				.meta_id(meta_id)
+				.metaId(meta_id)
 				.postsEntity(postsDto.toEntity())
 				.metaKey(meta_key)
 				.metaValue(meta_value)
@@ -36,7 +36,7 @@ public class PostMetaDto {
 	//[PostMetaEntity를 PostMetaDto로 변환하는 메서드]
 	public static PostMetaDto toDto(PostMetaEntity entity) {
 		return PostMetaDto.builder()
-				.meta_id(entity.getMeta_id())
+				.meta_id(entity.getMetaId())
 				.postsDto(PostsDto.toDto(entity.getPostsEntity()))
 				.meta_key(entity.getMetaKey())
 				.meta_value(entity.getMetaValue())

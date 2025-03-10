@@ -36,7 +36,7 @@ public class ObjectMetaResponseDto {
 
 	public static ObjectMetaResponseDto toDto( PostMetaEntity entity ) {
 		return ObjectMetaResponseDto.builder()
-			.meta_id(entity.getMeta_id())
+			.meta_id(entity.getMetaId())
 			.meta_key(entity.getMetaKey())
 			.meta_value(entity.getMetaValue())
 			.build();
