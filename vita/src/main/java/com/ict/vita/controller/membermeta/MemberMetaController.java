@@ -75,7 +75,7 @@ public class MemberMetaController {
 			
 			// < 검색 조건 : 오브젝트 ID > 
 
-			MemberDto oDto = memberService.findMemberById(MemberDto.builder().id(id).build());
+			MemberDto oDto = memberService.findMemberById(id);
 			if ( oDto == null ) {
 				// 오브젝트가 존재하지 않기 때문에 검색 실패
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( Commons.i18nMessages(messageSource, "member.notfound") )); 
@@ -146,7 +146,7 @@ public class MemberMetaController {
 		else if ( Commons.isNull(meta_value) ) meta_value = "";
 
 		// Term ID 유효성 검사
-		MemberDto member = memberService.findMemberById( MemberDto.builder().id(id).build() );
+		MemberDto member = memberService.findMemberById(id);
 		if ( member != null ) {
 
 			dto.setMeta_value(meta_value); // 메타 값 업데이트

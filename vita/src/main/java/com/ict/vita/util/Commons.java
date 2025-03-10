@@ -15,9 +15,11 @@ public class Commons {
 	
 	//[임시로 저장할때 사용하는 값들]
 	//<회원가입 관련>
+	public static final String AUTHORIZATION = "Authorization"; //헤더에서 토큰값 네임
 	public static final String TEMPORARY = "TEMPORARY"; //임시 회원가입시 사용
 	public static final String ROLE_ADMIN = "ADMINSTOR"; //회원가입 역할 - 관리자
 	public static final String ROLE_USER = "USER"; //회원가입 역할 - 일반 회원
+	public static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR"; //회원가입 역할 - 관리자
 	//<글(포스트) 관련>
 	public static final String POST_STATUS_PUBLISH = "PUBLISH"; //글 공개
 	public static final String POST_STATUS_PRIVATE = "PRIVATE"; //글 비공개

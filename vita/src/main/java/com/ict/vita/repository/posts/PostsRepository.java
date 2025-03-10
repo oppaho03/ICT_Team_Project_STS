@@ -19,12 +19,21 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 			,nativeQuery = true)
 	List<PostsEntity> getAllPublicPosts(@Param(value = "cid") Long cid); //모든 회원의 공개글 조회용
 	
-	List<PostsEntity> findByMemberEntity_Id(Long memberId); //해당 회원의 모든 글 조회용
-	
 	@Query(value = """
-				select * from app_posts
-				where post_author = :uid and post_status = :status
+				select p.*
+				from APP_POSTS p
+				join APP_POST_CATEGORY_RELATIONSHIPS r on p.id = r.post_id
+				where r.term_category_id = :cid and p.post_author = :uid
 			"""
 			,nativeQuery = true)
-	List<PostsEntity> findByMemberAndStatus(@Param("uid") Long memberId,@Param("status") String status); //해당 회원의 특정 조건에 해당하는 모든 글 조회용
+	List<PostsEntity> findAllByMember(@Param("cid") Long cid,@Param("uid") Long uid); //해당 회원의 모든 글 조회용
+	
+	@Query(value = """
+				select p.* 
+				from APP_POSTS p
+				join APP_POST_CATEGORY_RELATIONSHIPS r on p.id = r.post_id
+				where r.term_category_id = :cid and p.post_status = :status and p.post_author = :uid
+			"""
+			,nativeQuery = true)
+	List<PostsEntity> findByMemberAndStatus(@Param("cid") Long cid,@Param("uid") Long uid,@Param("status") String status); //해당 회원의 특정 조건에 해당하는 모든 글 조회용
 }

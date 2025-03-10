@@ -42,6 +42,7 @@ public class PostsController {
 	
 	/**
 	 * [모든 회원의 공개글 조회] - 가입된 상태(status가 1)인 모든 회원들의 공개글(status가 PUBLISH) 조회 
+	 * @param cid 카테고리 id로 필수값
 	 * @return ResponseEntity
 	*/
 	@Operation( summary = "모든 회원 공개글 조회", description = "모든 회원의 공개글 조회 API" )
@@ -83,39 +84,59 @@ public class PostsController {
 	
 	/**
 	 * [회원 및 공개/비공개 별 글 조회]
-	 *  <관리자> status 값이 없으면 해당 uid 회원이 작성한 모든 글(공개/비공개) 조회 가능 
-	 *  <회원> uid만 값을 넘겨 본인의 공개/비공개 글 조회 가능
+	 *  <관리자> status 값이 없으면 해당 uid 회원이 작성한 모든 글(공개/비공개) 조회 가능 + status값 넘기면 해당하는 status의 글 조회 가능
+	 *  <회원> cid,uid만 값을 넘겨 본인의 공개/비공개 글 조회 가능 + status값 넘기면 해당하는 status의 글 조회 가능
+	 * @param cid 카테고리 id로 필수값
 	 * @param uid 회원id로 필수값
 	 * @param status 글의 status로 옵션값
 	 * @param token 로그인한 회원의 토큰값
 	 * @return ResponseEntity
 	*/
 	@GetMapping("/user")
-	public ResponseEntity<?> getPostsByUser(@RequestParam Long uid,@RequestParam(required = false) String status,@RequestHeader String token){
-		//로그인한 회원의 토큰값으로 회원 조회
-		MemberDto findedMember = memberService.findMemberByToken(token);
-		
-		//파라미터로 uid 값은 전달하고 status 값은 전달하지 않은 경우 <관리자인 경우> - 해당 회원의 모든 게시글 조회
-		if(Commons.isNull(status)) {
-			//해당하는 회원의 모든 게시글을 조회하는 메서드 호출
-			List<PostsDto> findedPosts = postsService.getPostsByMember(uid);
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedPosts));
+	public ResponseEntity<?> getPostsByUser(@RequestParam("cid") Long cid,@RequestParam Long uid,@RequestParam(required = false) String status,@RequestHeader("Authorization") String token){
+		//[로그인한 사람이 관리자/일반회원인지 확인]
+		MemberDto loginMember = memberService.findMemberByToken(token); //로그인한 회원
+		//<<로그인한 회원이 관리자인 경우>>
+		if(Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole())) {
+			//status값을 넘긴 경우 - 해당하는 status의 글 조회
+			if(!Commons.isNull(status)) {
+				//status에 해당하는 회원의 게시글 조회
+				List<PostsDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status);
+				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
+			}		
+			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
+			List<PostsDto> postsList = postsService.getPostsByMember(cid, uid);
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}
 		
-		//파라미터로 uid,status 값을 전달한 경우 <회원인 경우>
-		
-		//로그인한 회원(findedMember)이 본인이 작성하지 않은 공개글 이외의 글 조회 요청시
-		if(findedMember.getId() != uid && !status.equals(Commons.POST_STATUS_PUBLISH)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("타 회원의 공개글만 조회 가능합니다"));
+		//<<로그인한 회원이 일반회원인 경우>>
+		MemberDto searchMember = memberService.findMemberById(uid); //조회하고자 하는 회원
+		//로그인한 회원이 글 작성자인 경우
+		if(loginMember.getId() == searchMember.getId()) {
+			
+			//status값을 넘긴 경우 - 해당하는 status의 글 조회
+			if(!Commons.isNull(status)) {
+				//status에 해당하는 회원의 게시글 조회
+				List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
+						.stream().map(dto->PostsResponseDto.toDto(dto.toEntity())).toList();
+				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
+			}	
+			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
+			List<PostsResponseDto> postsList = postsService.getPostsByMember(cid, uid)
+						.stream().map(dto->PostsResponseDto.toDto(dto.toEntity())).toList();
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}
 		
-		//로그인한 회원이 자신이 쓴 글 조회 요청시
-		List<PostsDto> postsList = postsService.getPostsByMemberAndStatus(uid, status);
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
+		//로그인한 회원이 글 작성자가 아닌 경우
+		//status값을 null 또는 공개글 조회가 아닌 경우
+		if ( Commons.isNull(status) || ! status.equalsIgnoreCase(Commons.POST_STATUS_PUBLISH) ) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("작성자만 비공개글 조회 가능합니다"));	
+		}
+		else {
+			List<PostsDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status);
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
+		}
 
 	}
-	
-	//글의 status별 글 조회
-	
-	
+
 }
