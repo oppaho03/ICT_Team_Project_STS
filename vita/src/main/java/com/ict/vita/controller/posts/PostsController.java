@@ -60,7 +60,7 @@ public class PostsController {
 		)
 	})
 	@GetMapping
-	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam Long cid){
+	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") Long cid){
 		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
 		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
 													.id(dto.getId())
