@@ -22,7 +22,7 @@ public class PostsService {
 	 * 포스트 가져오기 
 	 * @param id 글 id(PK)
 	 */
-	public PostsDto findById( Long id ) { return PostsDto.toDto( postsRepository.findById(id).get() ); }
+	public PostsDto findById( Long id ) { return PostsDto.toDto( postsRepository.findById(id).orElse(null) ); }
 	
 	/**
 	 * [모든 회원의 공개글 조회]
