@@ -40,7 +40,7 @@ public class PostCategoryRelationshipsService {
 		
 		List<PostCategoryRelationshipsEntity> relEntities = postCategoryRelationshipsRepository.findByPostId( id );
 
-		if ( relEntities.isEmpty() ) return null;
+		// if ( relEntities.isEmpty() ) return null;
 		return relEntities.stream().map( entity -> PostCategoryRelationshipsDto.toDto(entity) ).toList();
 	}
 

@@ -9,4 +9,5 @@ import io.swagger.v3.oas.annotations.info.Info;
 )
 @Configuration 
 public class SwaggerConfig {
+  
 }

@@ -168,6 +168,8 @@ public class PostCategoryRelationshipsController {
 
 		// < 포스트 ID 로 카테고리 목록 불러오기 >
 		List<PostCategoryRelationshipsDto> relDtos = postCategoryRelService.findAllByPostId(id);
+
+		System.out.println(relDtos);
 		// 현재 포트스가 가지고 있는 전체 목록 
 		List<Long> olds = relDtos.stream().map( dto -> dto.getTermCategoryDto().getId() ).toList();
 
