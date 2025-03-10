@@ -14,10 +14,10 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 				select p.* 
 				from APP_POSTS p
 				join APP_POST_CATEGORY_RELATIONSHIPS r on p.id = r.post_id
-				where r.term_category_id = 1595 and p.post_status = 'PUBLISH'
+				where r.term_category_id = :cid and p.post_status = 'PUBLISH'
 			"""
 			,nativeQuery = true)
-	List<PostsEntity> getAllPublicPosts(Long cid); //모든 회원의 공개글 조회용
+	List<PostsEntity> getAllPublicPosts(@Param(value = "cid") Long cid); //모든 회원의 공개글 조회용
 	
 	List<PostsEntity> findByMemberEntity_Id(Long memberId); //해당 회원의 모든 글 조회용
 	
