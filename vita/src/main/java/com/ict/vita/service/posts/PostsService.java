@@ -60,9 +60,21 @@ public class PostsService {
 	 * [글 제목으로 글 검색]
 	 * @param cid 카테고리id
 	 * @param title 글 제목
+	 * @return List<PostsDto>
 	 */
 	public List<PostsDto> getPostsByTitle(Long cid, String title) {
 		List<PostsEntity> postsList = postsRepository.findByTitle(cid,title);
+		return postsList.stream().map(post -> PostsDto.toDto(post)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * [닉네임으로 글 검색]
+	 * @param cid 카테고리id
+	 * @param nickname 회원 닉네임
+	 * @return List<PostsDto>
+	 */
+	public List<PostsDto> getPostsByNickname(Long cid, String nickname){
+		List<PostsEntity> postsList = postsRepository.findByNickname(cid, nickname);
 		return postsList.stream().map(post -> PostsDto.toDto(post)).collect(Collectors.toList());
 	}
 	

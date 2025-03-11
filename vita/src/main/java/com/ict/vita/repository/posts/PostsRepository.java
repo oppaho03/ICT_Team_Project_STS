@@ -41,8 +41,18 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 			select p.* 
 			from APP_POSTS p
 			join APP_POST_CATEGORY_RELATIONSHIPS r on p.id = r.post_id
-			where r.term_category_id = :cid and p.post_title = :title
+			where r.term_category_id = :cid and DBMS_LOB.INSTR(p.post_title, :title) > 0 and p.post_status = 'PUBLISH'
 			"""
 			,nativeQuery = true)
 	List<PostsEntity> findByTitle(@Param("cid") Long cid,@Param("title") String title); //글 제목으로 글 검색
+	
+	@Query(value = """
+			select p.*
+			from APP_POSTS p
+			join APP_POST_CATEGORY_RELATIONSHIPS r on p.id = r.post_id
+			join APP_MEMBER m on m.id = p.post_author
+			where r.term_category_id = :cid and m.nickname = :nickname and p.post_status = 'PUBLISH'
+			"""
+			,nativeQuery = true)
+	List<PostsEntity> findByNickname(@Param("cid") Long cid,@Param("nickname") String nickname); //닉네임으로 글 검색
 }

@@ -180,7 +180,7 @@ public class PostsController {
 	public ResponseEntity<?> searchByTitleOrMember(
 			@RequestParam("cid") Long cid, 
 			@RequestParam(value = "title",required = false) String title, 
-			@RequestParam(value = "nickname",required = false) Long nickname){
+			@RequestParam(value = "nickname",required = false) String nickname){
 		//제목으로 검색(title 전달시)
 		if(!Commons.isNull(title)) {
 			List<PostsResponseDto> postsList = postsService.getPostsByTitle(cid,title)
@@ -188,7 +188,9 @@ public class PostsController {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}
 		//닉네임으로 검색(nickname 전달시)
-		
+		List<PostsResponseDto> postsList = postsService.getPostsByNickname(cid, nickname)
+					.stream().map(dto->PostsResponseDto.toDto(dto.toEntity())).toList();
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 	}
 
 }
