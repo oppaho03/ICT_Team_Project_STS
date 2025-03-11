@@ -1,6 +1,10 @@
 package com.ict.vita.service.posts;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.util.Commons;
@@ -20,6 +24,7 @@ import lombok.Setter;
 public class PostsRequestDto {
 	//글 작성자 정보는 요청헤더에서 갖고오자
 	private String post_title; //글 제목
+	private Long post_author; // 작성자
 	private String post_content = ""; //글 내용
 	private String post_summary = ""; //글 요약
 	private String post_status = Commons.POST_STATUS_PUBLISH; //글 상태(공개/비공개/삭제)
@@ -31,6 +36,10 @@ public class PostsRequestDto {
 	
 	private String comment_status = Commons.COMMENT_STATUS_OPEN; //댓글 허용 상태
 	private long comment_count = 0; //댓글 개수
+	
+	//카테고리 id목록들(글은 여러 카테고리에 속할 수 있어서)
+	//카테고리id들이 중복되지 않도록 Set으로 처리
+	private Set<Long> cids = new HashSet<>();
 	
 	//[PostsRequestDto를 PostsDto로 변환하는 메서드]
 	//PostsDto의 memberDto필드는 따로 설정해줘야 함

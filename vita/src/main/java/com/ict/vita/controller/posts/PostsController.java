@@ -3,11 +3,15 @@ package com.ict.vita.controller.posts;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
 import com.ict.vita.service.posts.PostsDto;
+import com.ict.vita.service.posts.PostsRequestDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
+import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
@@ -38,6 +45,8 @@ public class PostsController {
 	//서비스 주입
 	private final PostsService postsService;
 	private final MemberService memberService;
+	private final TermCategoryService termCategoryService;
+	private final PostCategoryRelationshipsService pcrService;
 	
 	
 	/**
@@ -117,10 +126,17 @@ public class PostsController {
 			)
 	})
 	@GetMapping("/user")
-	public ResponseEntity<?> getPostsByUser(@Parameter(description = "카테고리id") @RequestParam("cid") Long cid,@Parameter(description = "조회할 회원id") @RequestParam("uid") Long uid,
-			@Parameter(description = "글의 상태") @RequestParam(value = "status",required = false) String status,@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+	public ResponseEntity<?> getPostsByUser(
+			@Parameter(description = "카테고리id") @RequestParam("cid") Long cid,
+			@Parameter(description = "조회할 회원id") @RequestParam("uid") Long uid,
+			@Parameter(description = "글의 상태") @RequestParam(value = "status",required = false) String status,
+			@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
 		//[로그인한 사람이 관리자/일반회원인지 확인]
-		MemberDto loginMember = memberService.findMemberByToken(token); //로그인한 회원
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);//로그인한 회원
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+		}
 		//<<로그인한 회원이 관리자인 경우>>
 		if(Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole())) {
 			//status값을 넘긴 경우 - 해당하는 status의 글 조회
@@ -140,7 +156,6 @@ public class PostsController {
 		MemberDto searchMember = memberService.findMemberById(uid); //조회하고자 하는 회원
 		//로그인한 회원이 글 작성자인 경우
 		if(loginMember.getId() == searchMember.getId()) {
-			
 			//status값을 넘긴 경우 - 해당하는 status의 글 조회
 			if(!Commons.isNull(status)) {
 				//status에 해당하는 회원의 게시글 조회
@@ -208,4 +223,71 @@ public class PostsController {
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 	}
 
+	/**
+	 * [글 등록]
+	 * @param token 로그인한 회원의 토큰값
+	 * @param postsRequestDto 등록하려는 글의 정보
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "글 등록", description = "글 등록 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "201-글 등록 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = PostsResponseDto.class),
+				examples = @ExampleObject(
+					value = ""
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "400-글 등록 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"글등록실패했습니다\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "404-글 등록 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는회원입니다\"}}"
+					)
+				) 
+			)
+	})
+	@PostMapping
+	public ResponseEntity<?> createPost(
+			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
+			@Parameter(description = "글 등록 요청 dto") @RequestBody PostsRequestDto postsRequestDto
+			){
+
+		//토큰값으로 로그인한 회원 확인
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+		}
+		
+		//존재하는 카테고리에 대해서 글-카테고리 관계 테이블에 삽입	
+		PostsDto post = postsRequestDto.toDto();	
+		post.setMemberDto(loginMember);
+		post.setPost_status(postsRequestDto.getPost_status());
+		List<Long> categories = postsRequestDto.getCids().stream().collect(Collectors.toList());
+		//글 테이블에 글 저장
+		PostsDto savedPost = postsService.savePost(post);
+		
+		//글을 글-카테고리 관계 테이블에 저장
+		if(savedPost != null && pcrService.save(savedPost, categories)) {
+		
+			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(savedPost));
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 등록 실패했습니다"));
+		
+	}
 }

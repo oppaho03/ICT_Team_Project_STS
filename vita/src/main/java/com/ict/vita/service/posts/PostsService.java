@@ -78,4 +78,15 @@ public class PostsService {
 		return postsList.stream().map(post -> PostsDto.toDto(post)).collect(Collectors.toList());
 	}
 	
+	/**
+	 * [글 저장]
+	 * @param postRequestDto 저장하려는 글 정보
+	 * @return PostsDto
+	 */
+	public PostsDto savePost(PostsDto postDto) {
+		
+		PostsEntity entity = postsRepository.save(postDto.toEntity());
+		return entity != null ? PostsDto.toDto(entity) : null;
+	}
+	
 }
