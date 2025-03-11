@@ -276,14 +276,12 @@ public class PostsController {
 		//존재하는 카테고리에 대해서 글-카테고리 관계 테이블에 삽입	
 		PostsDto post = postsRequestDto.toDto();	
 		post.setMemberDto(loginMember);
-		post.setPost_status(postsRequestDto.getPost_status());
 		List<Long> categories = postsRequestDto.getCids().stream().collect(Collectors.toList());
-		//글 테이블에 글 저장
+		//글 저장
 		PostsDto savedPost = postsService.savePost(post);
 		
-		//글을 글-카테고리 관계 테이블에 저장
+		//글-카테고리 관계 저장
 		if(savedPost != null && pcrService.save(savedPost, categories)) {
-		
 			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(savedPost));
 		}
 		

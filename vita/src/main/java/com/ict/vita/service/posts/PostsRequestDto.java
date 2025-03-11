@@ -48,6 +48,7 @@ public class PostsRequestDto {
 						.post_title(post_title)
 						.post_content(post_content)
 						.post_summary(post_summary)
+						.post_status(post_status)
 						.post_pass(post_pass)
 						.post_name(post_name)
 						.post_mime_type(post_mime_type)
