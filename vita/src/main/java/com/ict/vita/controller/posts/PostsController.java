@@ -176,11 +176,26 @@ public class PostsController {
 	 * @param nickname 검색하고자 하는 회원 닉네임(옵션값)
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "제목 및 회원 아이디로 글 검색", description = "제목 및 회원 아이디로 글 검색 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = PostsResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0}]}}"
+				)
+			) 
+		)
+	})
 	@GetMapping("/s")
 	public ResponseEntity<?> searchByTitleOrMember(
-			@RequestParam("cid") Long cid, 
-			@RequestParam(value = "title",required = false) String title, 
-			@RequestParam(value = "nickname",required = false) String nickname){
+			@Parameter(description = "카테고리id") @RequestParam("cid") Long cid, 
+			@Parameter(description = "검색할 게시글 제목") @RequestParam(value = "title",required = false) String title, 
+			@Parameter(description = "검색할 회원 닉네임") @RequestParam(value = "nickname",required = false) String nickname){
 		//제목으로 검색(title 전달시)
 		if(!Commons.isNull(title)) {
 			List<PostsResponseDto> postsList = postsService.getPostsByTitle(cid,title)
