@@ -40,7 +40,7 @@ public class PostsService {
 	 * @return List<PostsDto>
 	 */
 	public List<PostsDto> getPostsByMember(Long cid,Long uid){
-		List<PostsEntity> entityList = postsRepository.findAllByMember(cid,uid);
+		List<PostsEntity> entityList = postsRepository.findByMember(cid,uid);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
 	}
 	
@@ -54,6 +54,16 @@ public class PostsService {
 	public List<PostsDto> getPostsByMemberAndStatus(Long cid,Long uid,String status){
 		List<PostsEntity> entityList = postsRepository.findByMemberAndStatus(cid,uid,status);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+	}
+
+	/**
+	 * [글 제목으로 글 검색]
+	 * @param cid 카테고리id
+	 * @param title 글 제목
+	 */
+	public List<PostsDto> getPostsByTitle(Long cid, String title) {
+		List<PostsEntity> postsList = postsRepository.findByTitle(cid,title);
+		return postsList.stream().map(post -> PostsDto.toDto(post)).collect(Collectors.toList());
 	}
 	
 }
