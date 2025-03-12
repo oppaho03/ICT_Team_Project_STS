@@ -12,6 +12,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +62,7 @@ public class TermsController {
 	 * 모두 검색 
 	 * @return TermDto 배열 반환
 	 */	
+	@CrossOrigin
 	@Operation( summary = "모두 검색 ", description = "용어(Term) 리스트 반환" )
 	@ApiResponses({
 		@ApiResponse(
@@ -83,7 +85,7 @@ public class TermsController {
 			)
 		) 
 	})
-	@GetMapping("/")		
+	@GetMapping("/")
 	public ResponseEntity<?> getAll( 
 		@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
 		@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol ){
@@ -102,6 +104,7 @@ public class TermsController {
 	 * 이름 검색 
 	 * @return TermDto 배열 반환
 	 */	
+	@CrossOrigin
 	@Operation( summary = "이름 검색 ", description = "이름으로 검색색" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":714,\"term_id\":686,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"))),
@@ -115,6 +118,7 @@ public class TermsController {
 	 * @param taxonomy 카테고리명
 	 * @return TermDto 배열 반환
 	 */	
+	@CrossOrigin
 	@Operation( summary = "카테고리(Taxonomy) 검색", description = "카테고리(Taxonomy) 검색" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":714,\"term_id\":686,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":681}]}}"))),
@@ -127,6 +131,7 @@ public class TermsController {
 	 * ID 검색 
 	 * @return TermsResponseDto 또는 Null 반환
 	 */	
+	@CrossOrigin
 	@Operation( summary = "ID 검색 ", description = "ID 검색" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1288,\"term_id\":1260,\"name\":\"전이성신장암\",\"slug\":\"%EC%A0%84%EC%9D%B4%EC%84%B1%20%EC%8B%A0%EC%9E%A5%EC%95%94\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":1179}}}"))),
@@ -146,6 +151,7 @@ public class TermsController {
 	 * @param category
 	 * @return TermsResponseDto 또는 Null 또는 List 반환
 	 */	
+	@CrossOrigin
 	@GetMapping("/s")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1466,\"term_id\":1438,\"name\":\"정신의학과\",\"slug\":\"%EC%A0%95%EC%8B%A0%EC%9D%98%ED%95%99%EA%B3%BC\",\"group_number\":0,\"category\":\"department\",\"description\":null,\"count\":0,\"parent\":0}}}"))),
@@ -188,6 +194,7 @@ public class TermsController {
 	 * @param dto FindTermDto
 	 * @return TermsResponseDto 또는 오류 메시지 반환
 	 */
+	@CrossOrigin
 	@Operation( summary = "새 Term, TermCategory 등록", description = "새 Term, TermCategory 등록" )
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1537,\"term_id\":1511,\"name\":\"테스트질병\",\"slug\":\"%ED%85%8C%EC%8A%A4%ED%8A%B8+%EC%A7%88%EB%B3%91\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}}}"))),
@@ -265,6 +272,7 @@ public class TermsController {
 	 * @param dto FindTermDto
 	 * @return TermsResponseDto 또는 오류 메시지 반환
 	 */
+	@CrossOrigin
 	@Operation(summary = "Term, TermCategory 변경", description = "Term, TermCategory 변경")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = TermsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":{\"id\":1537,\"term_id\":1511,\"name\":\"테스트질병\",\"slug\":\"%ED%85%8C%EC%8A%A4%ED%8A%B8+%EC%A7%88%EB%B3%91\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}}}"))),
