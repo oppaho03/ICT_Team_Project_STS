@@ -1,5 +1,6 @@
 package com.ict.vita.repository.member;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 	Optional<MemberEntity> findByEmailIsAndPasswordIs(String email,String password); //로그인 검증용
 	Optional<MemberEntity> findByToken(String token); //토큰값으로 회원 조회용
 	Optional<MemberEntity> findByEmail(String email); //이메일로 회원 조회용
+	List<MemberEntity> findAllByStatus(Long status); //status로 회원 조회용
+	List<MemberEntity> findAllByRole(String role); //role로 회원 조회용
 }

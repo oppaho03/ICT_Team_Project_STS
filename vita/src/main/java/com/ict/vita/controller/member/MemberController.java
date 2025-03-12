@@ -3,6 +3,7 @@ package com.ict.vita.controller.member;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +40,7 @@ import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,6 +59,171 @@ public class MemberController {
 	
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	
+	/**
+	 * [모든 회원 조회] - 회원의 status에 상관없이 모든 회원 조회
+	 * @param token 로그인한 회원 토큰값
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "모든 회원 조회", description = "모든 회원 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-모든 회원 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = MemberDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":35,\"email\":\"abc@naver.com\",\"password\":\"TEMPORARY\",\"role\":\"USER\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-모든 회원 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"관리자만모든회원조회가능합니다\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "404-모든 회원 조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+					)
+				) 
+			)
+	})
+	@GetMapping("/members")
+	public ResponseEntity<?> getAllPosts(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+		//관리자인 경우
+		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(memberService.getAllMembers()));
+		}
+		
+		if(findedMember == null)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("해당하는 회원이 존재하지 않습니다"));
+		
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("관리자만 모든 회원 조회 가능합니다"));
+		
+	}
+	
+	/**
+	 * [상태(status)별 회원 조회]
+	 * @param token 로그인한 회원 토큰값
+	 * @param status 회원의 status값
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "상태별 회원 조회", description = "상태별 회원 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-상태별 회원 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = MemberDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":37,\"email\":\"abab@naver.com\",\"password\":\"pwdabab\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1},{\"id\":40,\"email\":\"a1@naver.com\",\"password\":\"pwdabab\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"1닉넴\",\"birth\":\"2025-03-07\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:53:58.713134\",\"updated_at\":\"2025-03-07T18:53:58.713134\",\"status\":1},{\"id\":46,\"email\":\"admin@naver.com\",\"password\":\"adminpwd\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1},{\"id\":26,\"email\":\"oppaho1@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho1\",\"birth\":\"2025-02-27\",\"gender\":\"\u0001\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-02-27T20:07:07.161029\",\"updated_at\":\"2025-02-27T20:07:07.131923\",\"status\":1},{\"id\":27,\"email\":\"oppaho12@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho12\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-02-27T20:08:45.332339\",\"updated_at\":\"2025-02-27T20:08:45.32307\",\"status\":1}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-상태별 회원 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"관리자만상태별회원조회가능합니다\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "404-상태별 회원 조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+					)
+				) 
+			)
+	})
+	@GetMapping("/members/status/{status}")
+	public ResponseEntity<?> getMembersByStatus(
+			@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token,
+			@Parameter(description = "회원의 status") @PathVariable("status") Long status){
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+		//관리자인 경우
+		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
+			List<MemberDto> findedMembers = memberService.findMemberByStatus(status);
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
+		}
+		
+		if(findedMember == null)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("해당하는 회원이 존재하지 않습니다"));
+		
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("관리자만 상태별 회원 조회 가능합니다"));
+		
+	}
+	
+	/**
+	 * [역할별 회원 조회]
+	 * @param token 로그인한 회원 토큰값
+	 * @param role 회원의 role값
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "역할별 회원 조회", description = "역할별 회원 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-역할별 회원 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = MemberDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":46,\"email\":\"admin@naver.com\",\"password\":\"adminpwd\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1}]}}"
+				) 
+			)
+		),
+		@ApiResponse( 
+			responseCode = "401-역할별 회원 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"관리자만역할별회원조회가능합니다\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "404-역할별 회원 조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+					)
+				) 
+			)
+	})
+	@GetMapping("/members/role/{role}")
+	public ResponseEntity<?> getMembersByRole(
+			@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token,
+			@Parameter(description = "회원의 role") @PathVariable("role") String role){
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+		//관리자인 경우
+		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
+			List<MemberDto> findedMembers = memberService.findMemberByRole(role);
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
+		}
+		
+		if(findedMember == null)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("해당하는 회원이 존재하지 않습니다"));
+		
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("관리자만 역할별 회원 조회 가능합니다"));
+	}
 	
 	/**
 	 * [임시 회원가입] - 임시 회원가입시 회원의 status는 9(대기)
@@ -183,7 +352,9 @@ public class MemberController {
 			)
 	})
 	@PostMapping("/members")
-	public ResponseEntity<?> join(@Parameter(description = "회원가입 요청 객체") @RequestBody @Valid MemberJoinDto joinDto,BindingResult bindingResult){
+	public ResponseEntity<?> join(
+			@Parameter(description = "회원가입 요청 객체") @RequestBody @Valid MemberJoinDto joinDto,
+			BindingResult bindingResult){
 		//<DTO 객체 필드의 유효성 검증 실패시>
 		if(bindingResult.hasErrors()) {
 			System.out.println("회원가입 유효성 검증 실패: "+bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining(",")));
@@ -275,7 +446,9 @@ public class MemberController {
 		)
 	})
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,BindingResult bindingResult){
+	public ResponseEntity<?> login(
+			@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,
+			BindingResult bindingResult){
 		//[이메일과 비밀번호가 일치하는 회원 조회]
 		MemberDto findedMember = memberService.validateLogin(loginDto);
 		//<회원이 아닌 경우>

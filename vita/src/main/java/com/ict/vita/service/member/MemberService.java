@@ -1,7 +1,9 @@
 package com.ict.vita.service.member;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,14 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	//리포지토리 주입
 	private final MemberRepository memberRepository;
+	
+	/**
+	 * [모든 회원 조회]
+	 * @return List<MemberDto>
+	 */
+	public List<MemberDto> getAllMembers(){
+		return memberRepository.findAll().stream().map(entity -> MemberDto.toDto(entity)).collect(Collectors.toList());
+	}
 	
 	/**
 	 * [id(PK)로 회원 찾기]
@@ -192,6 +202,30 @@ public class MemberService {
 	public MemberDto updateMember(MemberDto memberDto) {
 		MemberEntity memberEntity = memberRepository.save(memberDto.toEntity());
 		return MemberDto.toDto(memberEntity);
+	}
+
+	/**
+	 * [status에 해당하는 회원 조회]
+	 * @param status 회원 status값
+	 * @return List<MemberDto> 
+	 */
+	public List<MemberDto> findMemberByStatus(Long status) {
+		return memberRepository.findAllByStatus(status)
+			.stream()
+			.map(entity -> MemberDto.toDto(entity))
+			.collect(Collectors.toList());
+	}
+
+	/**
+	 * [role에 해당하는 회원 조회]
+	 * @param role 회원 역할
+	 * @return List<MemberDto> 
+	 */
+	public List<MemberDto> findMemberByRole(String role) {
+		return memberRepository.findAllByRole(role)
+			.stream()
+			.map(entity -> MemberDto.toDto(entity))
+			.collect(Collectors.toList());
 	}
 	
 }
