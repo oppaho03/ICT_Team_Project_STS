@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/terms")
+@CrossOrigin
 //[용어 Controller]
 public class TermsController {
 	//서비스 주입

@@ -32,6 +32,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/terms/meta")
+@CrossOrigin
 public class TermMetaController {
 	//서비스 주입
 	private final MessageSource messageSource;
