@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -380,5 +381,19 @@ public class PostsController {
 		}
 		
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("글 작성자만 수정 가능합니다"));
+	}
+	
+	/**
+	 * [글 삭제]
+	 * @param token 회원 토큰값
+	 * @param pid 삭제할 글 id
+	 * @return
+	 */
+	@DeleteMapping("/{pid}")
+	public ResponseEntity<?> deletePost(
+			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
+			@Parameter(description = "삭제할 글 id") @PathVariable("pid") Long pid)
+	{
+		return null;
 	}
 }
