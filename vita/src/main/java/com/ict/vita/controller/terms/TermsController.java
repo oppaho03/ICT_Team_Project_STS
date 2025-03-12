@@ -86,7 +86,7 @@ public class TermsController {
 			)
 		) 
 	})
-	@GetMapping("/")
+	@GetMapping
 	public ResponseEntity<?> getAll( 
 		@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
 		@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol ){
