@@ -108,9 +108,7 @@ public class PostCategoryRelationshipsService {
 				System.out.println( relDto.toEntity().getPostsEntity().getMemberEntity() );
 				System.out.println( relDto.toEntity().getPostsEntity().getPostCreatedAt() );
 				System.out.println( relDto.toEntity().getPostsEntity().getPostModifiedAt() );
-//				System.out.println( relDto.toEntity().getPostsEntity().getPost_created_at() );
-//				System.out.println( relDto.toEntity().getPostsEntity().getPost_modified_at() );
-//				System.out.println( relDto.toEntity().getPostsEntity().getMemberDto() );
+
 				postCategoryRelationshipsRepository.save( relDto.toEntity());
 			}
 	

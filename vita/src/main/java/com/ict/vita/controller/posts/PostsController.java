@@ -370,9 +370,9 @@ public class PostsController {
 			//글 저장
 			PostsDto savedPost = postsService.savePost(findedPost);
 			//글-카테고리 관계 수정
-			if(savedPost != null && pcrService.save(savedPost, categories)) {
-				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(savedPost));
-			}
+//			if(savedPost != null && pcrService.save(savedPost, categories)) {
+//				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(savedPost));
+//			}
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 수정 실패했습니다"));
 		}
