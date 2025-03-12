@@ -287,7 +287,7 @@ public class PostsController {
 		
 		//글-카테고리 관계 저장
 		if(savedPost != null && pcrService.save(savedPost, categories)) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(savedPost));
+			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity())));
 		}
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 등록 실패했습니다"));
@@ -373,9 +373,9 @@ public class PostsController {
 			//글 저장
 			PostsDto savedPost = postsService.savePost(findedPost);
 			//글-카테고리 관계 수정
-//			if(savedPost != null && pcrService.save(savedPost, categories)) {
-//				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(savedPost));
-//			}
+			if(savedPost != null && (pcrService.update(savedPost, categories).size() >= 0)) {
+				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity())));
+			}
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 수정 실패했습니다"));
 		}
@@ -387,13 +387,97 @@ public class PostsController {
 	 * [글 삭제]
 	 * @param token 회원 토큰값
 	 * @param pid 삭제할 글 id
-	 * @return
+	 * @return ResponseEntity
 	 */
+	@Operation( summary = "글 삭제", description = "글 삭제 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "404-글 삭제 실패",
+			description = "FAIL",
+			content = @Content(	
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는회원입니다\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "403-글 삭제 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"글작성자만삭제가능합니다\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "400-글 삭제 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이미삭제된글입니다\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "400-글 삭제 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는글입니다\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "400-글 삭제 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"글삭제실패\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "200-글 삭제 성공",
+				description = "SUCCESS",
+				content = @Content(	
+					schema = @Schema(implementation = PostsResponseDto.class),
+					examples = @ExampleObject(
+						value = "{\"success\":1,\"response\":{\"data\":{\"id\":23,\"author\":29,\"post_title\":\"글제목2\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T20:57:31.119668\",\"post_modified_at\":\"2025-03-11T20:57:31.104365\",\"comment_status\":\"OPEN\",\"comment_count\":0}}}"
+					)
+				) 
+			)
+	})
 	@DeleteMapping("/{pid}")
 	public ResponseEntity<?> deletePost(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
 			@Parameter(description = "삭제할 글 id") @PathVariable("pid") Long pid)
 	{
-		return null;
+		//로그인한 회원 확인
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+		}
+		//글 조회
+		PostsDto findedPost = postsService.findById(pid);
+		//글 존재시
+		if(findedPost != null) {
+			//글 작성자인 경우
+			if(findedPost.getMemberDto().getId() == loginMember.getId()) {
+				//글이 삭제 안 된 경우
+				if(!Commons.POST_STATUS_DELETE.equals(findedPost.getPost_status())) {
+					if(postsService.deletePost(findedPost.getId()))
+						return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(findedPost.toEntity())));
+					
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 삭제 실패"));
+				}
+				
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("이미 삭제된 글입니다"));
+			}
+			
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("글 작성자만 삭제 가능합니다"));
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 글입니다"));
 	}
 }

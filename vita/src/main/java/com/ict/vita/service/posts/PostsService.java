@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.repository.posts.PostsRepository;
+import com.ict.vita.util.Commons;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +23,9 @@ public class PostsService {
 	 * 포스트 가져오기 
 	 * @param id 글 id(PK)
 	 */
-	public PostsDto findById( Long id ) { return PostsDto.toDto( postsRepository.findById(id).orElse(null) ); }
+	public PostsDto findById( Long id ) { 
+		return postsRepository.findById(id).orElse(null) != null ? PostsDto.toDto( postsRepository.findById(id).get()) : null;
+	}
 	
 	/**
 	 * [모든 회원의 공개글 조회]
@@ -87,6 +90,21 @@ public class PostsService {
 		
 		PostsEntity entity = postsRepository.save(postDto.toEntity());
 		return entity != null ? PostsDto.toDto(entity) : null;
+	}
+
+	/**
+	 * [글 삭제]
+	 * @param id 삭제할 게시글 id
+	 */
+	public boolean deletePost(Long id) {
+		PostsEntity findedPost = postsRepository.findById(id).orElse(null);
+		if(findedPost != null) {
+			findedPost.setPostStatus(Commons.POST_STATUS_DELETE);
+			postsRepository.save(findedPost);
+			return true;
+		}
+		
+		return false;
 	}
 	
 }
