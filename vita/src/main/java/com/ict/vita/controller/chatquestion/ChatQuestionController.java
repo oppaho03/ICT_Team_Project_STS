@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,6 +25,7 @@ import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@CrossOrigin
 public class ChatQuestionController {
 	//서비스 주입
 	private final ChatQuestionService chatQuestionService;
@@ -87,7 +90,7 @@ public class ChatQuestionController {
 	@PostMapping("/chatquestions")
 	public ResponseEntity<?> createQuestionWithSession(@Parameter(description = "질문과 세션에 대한 정보") @RequestBody ChatQuestionWithSessionRequestDto qwsDto,@Parameter(description = "회원의 토큰값") @RequestHeader(name = "Authorization") String token){
 		//회원의 토큰값 조회
-		MemberDto findedMember = memberService.findMemberByToken(token);
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//<회원 토큰값이 존재하지 않는 경우>
 		if(findedMember == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("유효하지 않은 토큰입니다"));

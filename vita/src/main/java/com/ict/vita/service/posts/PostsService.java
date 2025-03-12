@@ -39,20 +39,54 @@ public class PostsService {
 	 * @param memberId 조회하고 싶은 회원id
 	 * @return List<PostsDto>
 	 */
-	public List<PostsDto> getPostsByMember(Long memberId){
-		List<PostsEntity> entityList = postsRepository.findByMemberEntity_Id(memberId);
+	public List<PostsDto> getPostsByMember(Long cid,Long uid){
+		List<PostsEntity> entityList = postsRepository.findByMember(cid,uid);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
 	}
 	
 	/**
 	 * [특정 회원이 쓴 게시글들 중 특정 상태의 글들 조회]
-	 * @param memberId 조회하려는 회원id
+	 * @param cid 조회하려는 카테고리id
+	 * @param uid 조회하려는 회원id
 	 * @param status 글의 status
 	 * @return List<PostsDto>
 	 */
-	public List<PostsDto> getPostsByMemberAndStatus(Long memberId,String status){
-		List<PostsEntity> entityList = postsRepository.findByMemberAndStatus(memberId, status);
+	public List<PostsDto> getPostsByMemberAndStatus(Long cid,Long uid,String status){
+		List<PostsEntity> entityList = postsRepository.findByMemberAndStatus(cid,uid,status);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+	}
+
+	/**
+	 * [글 제목으로 글 검색]
+	 * @param cid 카테고리id
+	 * @param title 글 제목
+	 * @return List<PostsDto>
+	 */
+	public List<PostsDto> getPostsByTitle(Long cid, String title) {
+		List<PostsEntity> postsList = postsRepository.findByTitle(cid,title);
+		return postsList.stream().map(post -> PostsDto.toDto(post)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * [닉네임으로 글 검색]
+	 * @param cid 카테고리id
+	 * @param nickname 회원 닉네임
+	 * @return List<PostsDto>
+	 */
+	public List<PostsDto> getPostsByNickname(Long cid, String nickname){
+		List<PostsEntity> postsList = postsRepository.findByNickname(cid, nickname);
+		return postsList.stream().map(post -> PostsDto.toDto(post)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * [글 저장]
+	 * @param postRequestDto 저장하려는 글 정보
+	 * @return PostsDto
+	 */
+	public PostsDto savePost(PostsDto postDto) {
+		
+		PostsEntity entity = postsRepository.save(postDto.toEntity());
+		return entity != null ? PostsDto.toDto(entity) : null;
 	}
 	
 }

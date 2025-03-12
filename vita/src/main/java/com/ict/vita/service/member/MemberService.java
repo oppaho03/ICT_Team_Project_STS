@@ -24,10 +24,10 @@ public class MemberService {
 	 * @param memberDto 찾을 회원 DTO객체
 	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
 	 */
-	public MemberDto findMemberById(MemberDto memberDto) {
+	public MemberDto findMemberById(Long id) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
-		MemberEntity findedMember = memberRepository.findById(memberDto.getId()).orElse(null);
+		MemberEntity findedMember = memberRepository.findById(id).orElse(null);
 		if(findedMember != null) {
 			return MemberDto.toDto(findedMember);
 		}

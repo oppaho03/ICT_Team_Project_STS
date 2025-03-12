@@ -52,6 +52,4 @@ public class TermsEntity {
 	@Column(columnDefinition = "NUMBER(20,0)")
 	private long group_number = 0; //용어 그룹번호
 	
-//	@Transient	
-	
 }

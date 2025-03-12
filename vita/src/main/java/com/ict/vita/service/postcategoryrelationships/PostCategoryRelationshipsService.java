@@ -84,24 +84,31 @@ public class PostCategoryRelationshipsService {
 	 */	
 	@Transactional(rollbackFor = Exception.class)
 	public boolean save( PostsDto postsDto, List<Long> categories ) {
-
+		
 		if ( postsDto == null ) {
+			
 			return false;
 		}
 
 		try {
+			
 			for(  Long c_id : categories ) {
 				TermCategoryDto _dto = TermCategoryDto.toDto(termCategoryRepository.findById( c_id ).orElse(null));
 				
 				if ( _dto == null || _dto.getId() == 0 || _dto.getId() == null ) continue;
-	
+				
+				
 				PostCategoryRelationshipsDto relDto = 
 					PostCategoryRelationshipsDto
 					.builder()
 					.postsDto(postsDto)
 					.termCategoryDto(_dto)
 					.build();
-	
+				System.out.println( relDto.toEntity().getPostsEntity().getPostTitle() );
+				System.out.println( relDto.toEntity().getPostsEntity().getMemberEntity() );
+				System.out.println( relDto.toEntity().getPostsEntity().getPostCreatedAt() );
+				System.out.println( relDto.toEntity().getPostsEntity().getPostModifiedAt() );
+
 				postCategoryRelationshipsRepository.save( relDto.toEntity());
 			}
 	
