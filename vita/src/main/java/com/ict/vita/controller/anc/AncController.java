@@ -21,6 +21,7 @@ import com.ict.vita.service.chatanswer.ChatAnswerDto;
 import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
 import com.ict.vita.service.others.ObjectCategoryRelDto;
+import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.ResultUtil;
 
@@ -129,30 +130,14 @@ public class AncController {
 		if ( id == null || id == 0 || categories == null ) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( id == 0 ? "포스트 ID 값으로 NULL 또는 0 을 사용할 수 없습니다." : "카테고리 목록으로 NULL 을 사용할 수 없습니다."  ));
 		}
-		// < 포스트 ID 유효성 검사 >
+		// < 답변 ID 유효성 검사 >
 		ChatAnswerDto answerDto = answerService.findById(id);
 		if ( answerDto == null ) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "유효하지 않은 답변 ID 입니다." ));
 		}
 
-		// < 포스트 ID 로 카테고리 목록 불러오기 >
-		List<AncDto> relDtos = ancService.findAllByAnswerId(id);
-		// 현재 포트스가 가지고 있는 전체 목록 
-		List<Long> olds = relDtos.stream().map( dto -> dto.getTermCategoryDto().getId() ).toList();
-
-		// 등록, 삭제 할 카테고리 ID 분류
-		// - 포스트 + 카테고리 관계 등록 
-		Set<Long> adds = new HashSet<>(categories);
-		adds.removeAll(olds);
-		if ( adds.size() > 0 ) ancService.save( answerDto, adds.stream().toList() );
-
-		// - 포스트 + 카테고리 관계 삭제  
-		Set<Long> dels = new HashSet<>(olds);
-		dels.removeAll(categories);
-		if ( dels.size() > 0 ) ancService.delete( answerDto, dels.stream().toList() );
-
-		relDtos = ancService.findAllByAnswerId(id);
-		// System.out.println(relDtos);
+		// < 답변 ID 로 카테고리 목록 비교 및 추가 / 삭제 >
+		List<AncDto> relDtos = ancService.update(answerDto, categories);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( relDtos.stream().map(dto->TermsResponseDto.toDto(dto.getTermCategoryDto().toEntity())).toList() ));
 	}

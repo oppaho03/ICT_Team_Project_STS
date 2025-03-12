@@ -1,6 +1,8 @@
 package com.ict.vita.service.anc;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,6 +115,36 @@ public class AncService {
 
 		return true;
 
+	}
+
+	/**
+	 * 카테고리 목록 비교 및 추가 / 삭제
+	 * @param id 포스트 ID
+	 * @return
+	 */
+	public List<AncDto> update( ChatAnswerDto ancDto, List<Long> catIds ) {
+
+		// < 포스트 ID 로 카테고리 목록 불러오기 >
+		List<AncDto> relDtos = findAllByAnswerId(ancDto.getId());
+
+		// 현재 포트스가 가지고 있는 전체 목록 
+		List<Long> olds = relDtos.stream().map( dto -> dto.getTermCategoryDto().getId() ).toList();
+
+		// 등록, 삭제 할 카테고리 ID 분류
+		// - 포스트 + 카테고리 관계 등록 
+		Set<Long> adds = new HashSet<>(catIds);
+		adds.removeAll(olds);
+		if ( adds.size() > 0 ) save( ancDto, adds.stream().toList() );
+		
+		
+		// - 포스트 + 카테고리 관계 삭제  
+		Set<Long> dels = new HashSet<>(olds);
+		dels.removeAll(catIds);
+		if ( dels.size() > 0 ) delete( ancDto, dels.stream().toList() );
+
+		System.out.println(dels);
+
+		return findAllByAnswerId(ancDto.getId());
 	}
 	
 }

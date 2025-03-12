@@ -1,6 +1,8 @@
 package com.ict.vita.service.postcategoryrelationships;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,8 +77,6 @@ public class PostCategoryRelationshipsService {
 		return relEntities.stream().map( entity -> PostCategoryRelationshipsDto.toDto(entity) ).toList();
 	}
 
-
-	
 	/**
 	 * 포스트 + 카테고리 관계 등록
 	 * @param reldto ObjectCategoryRelDto ( id, categories )
@@ -104,10 +104,6 @@ public class PostCategoryRelationshipsService {
 					.postsDto(postsDto)
 					.termCategoryDto(_dto)
 					.build();
-				System.out.println( relDto.toEntity().getPostsEntity().getPostTitle() );
-				System.out.println( relDto.toEntity().getPostsEntity().getMemberEntity() );
-				System.out.println( relDto.toEntity().getPostsEntity().getPostCreatedAt() );
-				System.out.println( relDto.toEntity().getPostsEntity().getPostModifiedAt() );
 
 				postCategoryRelationshipsRepository.save( relDto.toEntity());
 			}
@@ -155,6 +151,34 @@ public class PostCategoryRelationshipsService {
 
 	}
 
+	/**
+	 * 카테고리 목록 비교 및 추가 / 삭제
+	 * @param id 포스트 ID
+	 * @return
+	 */
+	public List<PostCategoryRelationshipsDto> update( PostsDto postsDto, List<Long> catIds ) {
 
+		// < 포스트 ID 로 카테고리 목록 불러오기 >
+		List<PostCategoryRelationshipsDto> relDtos = findAllByPostId(postsDto.getId());
+
+		// 현재 포트스가 가지고 있는 전체 목록 
+		List<Long> olds = relDtos.stream().map( dto -> dto.getTermCategoryDto().getId() ).toList();
+
+		// 등록, 삭제 할 카테고리 ID 분류
+		// - 포스트 + 카테고리 관계 등록 
+		Set<Long> adds = new HashSet<>(catIds);
+		adds.removeAll(olds);
+		if ( adds.size() > 0 ) save( postsDto, adds.stream().toList() );
+		
+		
+		// - 포스트 + 카테고리 관계 삭제  
+		Set<Long> dels = new HashSet<>(olds);
+		dels.removeAll(catIds);
+		if ( dels.size() > 0 ) delete( postsDto, dels.stream().toList() );
+
+		System.out.println(dels);
+
+		return findAllByPostId(postsDto.getId());
+	}
 
 }
