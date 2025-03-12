@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -263,7 +265,7 @@ public class PostsController {
 	@PostMapping
 	public ResponseEntity<?> createPost(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
-			@Parameter(description = "글 등록 요청 dto") @RequestBody PostsRequestDto postsRequestDto
+			@Parameter(description = "글 등록 dto") @RequestBody PostsRequestDto postsRequestDto
 			){
 
 		//토큰값으로 로그인한 회원 확인
@@ -287,5 +289,94 @@ public class PostsController {
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 등록 실패했습니다"));
 		
+	}
+	
+	/**
+	 * [글 수정]
+	 * @param token 회원 토큰값
+	 * @param pid 글 id
+	 * @param updateRequestDto 수정할 글 정보
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "글 수정", description = "글 수정 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-글 수정 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = PostsResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":66,\"memberDto\":{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},\"post_title\":\"수title123\",\"post_content\":\"수contents입니다\",\"post_summary\":\"수정글요약이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-12T08:14:37.653523\",\"post_modified_at\":\"2025-03-12T09:29:10.2319364\",\"comment_status\":\"OPEN\",\"comment_count\":0}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "400-글 수정 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"글수정실패했습니다\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "403-글 수정 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"글작성자만수정가능합니다\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "404-글 수정 실패",
+				description = "FAIL",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는회원입니다\"}}"
+					)
+				) 
+			)
+	})
+	@PutMapping("/{pid}")
+	public ResponseEntity<?> editPost(
+			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
+			@Parameter(description = "수정할 글 id") @PathVariable("pid") Long pid,
+			@Parameter(description = "글 수정 dto") @RequestBody PostsRequestDto updateRequestDto)
+	{
+		//로그인한 회원 확인
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+		}
+		//글 조회
+		PostsDto findedPost = postsService.findById(pid);
+		//글 작성자인 경우
+		if(findedPost.getMemberDto().getId() == loginMember.getId()) {
+			findedPost.setPost_title(updateRequestDto.getPost_title());
+			findedPost.setPost_content(updateRequestDto.getPost_content());
+			findedPost.setPost_summary(updateRequestDto.getPost_summary());
+			findedPost.setPost_status(updateRequestDto.getPost_status());
+			findedPost.setPost_pass(updateRequestDto.getPost_pass());
+			findedPost.setPost_name(updateRequestDto.getPost_name());
+			findedPost.setPost_mime_type(updateRequestDto.getPost_mime_type());
+			findedPost.setPost_modified_at(updateRequestDto.getPost_modified_at());
+			findedPost.setComment_status(updateRequestDto.getComment_status());
+			findedPost.setComment_count(updateRequestDto.getComment_count());
+			
+			List<Long> categories = updateRequestDto.getCids().stream().collect(Collectors.toList());
+			
+			//글 저장
+			PostsDto savedPost = postsService.savePost(findedPost);
+			//글-카테고리 관계 저장
+			if(savedPost != null && pcrService.save(savedPost, categories)) {
+				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(savedPost));
+			}
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 수정 실패했습니다"));
+		}
+		
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("글 작성자만 수정 가능합니다"));
 	}
 }
