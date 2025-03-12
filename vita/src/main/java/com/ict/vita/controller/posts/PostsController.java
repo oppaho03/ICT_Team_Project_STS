@@ -369,7 +369,7 @@ public class PostsController {
 			
 			//글 저장
 			PostsDto savedPost = postsService.savePost(findedPost);
-			//글-카테고리 관계 저장
+			//글-카테고리 관계 수정
 			if(savedPost != null && pcrService.save(savedPost, categories)) {
 				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(savedPost));
 			}
