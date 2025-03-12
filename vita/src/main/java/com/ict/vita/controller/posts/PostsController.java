@@ -174,6 +174,8 @@ public class PostsController {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}
 		
+		System.out.println("aas");
+		
 		//로그인한 회원이 글 작성자가 아닌 경우
 		//status값을 null 또는 공개글 조회가 아닌 경우
 		if ( Commons.isNull(status) || ! status.equalsIgnoreCase(Commons.POST_STATUS_PUBLISH) ) {
