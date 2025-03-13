@@ -1,9 +1,11 @@
 package com.ict.vita.service.posts;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.terms.TermsResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,9 +34,11 @@ public class PostsResponseDto {
 	
 	private String comment_status; //댓글 허용 상태
 	private long comment_count; //댓글 개수
+	
+	private List<TermsResponseDto> categories; //응답시 카테고리 목록 보여주기 위한 필드
 
 	// PostsEntity -> PostsResponseDto 변환 
-	public static PostsResponseDto toDto(PostsEntity entity) {
+	public static PostsResponseDto toDto(PostsEntity entity,List<TermsResponseDto> categories) {
 		return PostsResponseDto.builder()
 			.id(entity.getId())
 			.author(MemberDto.toDto(entity.getMemberEntity()).getId())
@@ -49,6 +53,7 @@ public class PostsResponseDto {
 			.post_modified_at(entity.getPostModifiedAt())
 			.comment_status(entity.getCommentStatus())
 			.comment_count(entity.getCommentCount())
+			.categories(categories)
 			.build();
 
 	}

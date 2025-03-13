@@ -22,4 +22,16 @@ public class TermCategoryService {
 	public boolean isExistCategory(Long cid) {
 		return termCategoryRepository.existsById(cid);
 	}
+
+	/**
+	 * [카테고리id로 카테고리 조회]
+	 * @param id 카테고리id
+	 */
+	public TermCategoryDto findById(Long id) {
+		TermCategoryEntity findedCategory = termCategoryRepository.findById(id).orElse(null);
+		if(findedCategory != null)
+			return TermCategoryDto.toDto(findedCategory);
+		
+		return null;
+	}
 }

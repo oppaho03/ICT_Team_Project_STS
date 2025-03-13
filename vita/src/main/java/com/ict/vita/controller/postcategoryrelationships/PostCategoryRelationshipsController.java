@@ -10,6 +10,8 @@ import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsS
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
+import com.ict.vita.service.termcategory.TermCategoryDto;
+import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.others.ObjectCategoryRelDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.Commons;
@@ -53,6 +55,7 @@ public class PostCategoryRelationshipsController {
 	private final PostCategoryRelationshipsService postCategoryRelService;
 	private final PostsService postsService;
 	private final MemberService memberService;
+	private final TermCategoryService categoryService;
 
 	/**
 	 * 카테고리 목록 가져오기
@@ -102,6 +105,8 @@ public class PostCategoryRelationshipsController {
 	/**
 	 * 포스트 목록 가져오기
 	 * @param id 카테고리 ID
+	 * @param p 페이지
+	 * @param ol 출력 개수 제한
 	 * @return
 	 */		
 	@Operation(summary = "포스트 목록 가져오기", description = "포스트 목록 가져오기")
@@ -123,8 +128,11 @@ public class PostCategoryRelationshipsController {
 		else relDtos = postCategoryRelService.findAllByTermCategoryId(id);
 
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
+			TermCategoryDto category = categoryService.findById(id);
 			
-			List<PostsResponseDto> postsDtos = relDtos.stream().map( dto -> PostsResponseDto.toDto(dto.getPostsDto().toEntity()) ).toList();
+			List<PostsResponseDto> postsDtos = relDtos.stream()
+					.map( dto -> PostsResponseDto.toDto(dto.getPostsDto().toEntity(),List.of(TermsResponseDto.toDto(category)) ) )
+					.toList();
 
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( postsDtos ));
 		}

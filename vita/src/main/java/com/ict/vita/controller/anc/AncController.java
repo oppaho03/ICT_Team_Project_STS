@@ -22,6 +22,8 @@ import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
 import com.ict.vita.service.others.ObjectCategoryRelDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
+import com.ict.vita.service.termcategory.TermCategoryDto;
+import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.ResultUtil;
 
@@ -41,8 +43,8 @@ import lombok.RequiredArgsConstructor;
 public class AncController {
 	//서비스 주입
 	private final AncService ancService;
-	
 	private final ChatAnswerService answerService;
+	private final TermCategoryService categoryService;
 
 	/**
 	 * 카테고리 목록 가져오기
@@ -80,6 +82,7 @@ public class AncController {
 		
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
 			
+			
 			List<TermsResponseDto> termCatsDto = relDtos.stream().map( dto -> TermsResponseDto.toDto(dto.getTermCategoryDto().toEntity()) ).toList();
 
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termCatsDto ));
@@ -106,8 +109,10 @@ public class AncController {
 		List<AncDto> relDtos = ancService.findAllByTermCategoryId(id);
 
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
+			//카테고리 찾기
+			TermCategoryDto findedCategory = categoryService.findById(id);
 			
-			List<ChatAnswerResponseDto> answerDtos = relDtos.stream().map( dto -> ChatAnswerResponseDto.toDto(dto.getChatAnswerDto().toEntity()) ).toList();
+			List<ChatAnswerResponseDto> answerDtos = relDtos.stream().map( rel -> ChatAnswerResponseDto.toDto( rel.getChatAnswerDto().toEntity(),List.of(TermsResponseDto.toDto(findedCategory)) ) ).toList();
 
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( answerDtos ));
 		}

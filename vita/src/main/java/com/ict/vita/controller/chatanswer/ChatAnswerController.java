@@ -1,6 +1,8 @@
 package com.ict.vita.controller.chatanswer;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -11,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.anc.AncDto;
+import com.ict.vita.service.anc.AncService;
 import com.ict.vita.service.chatanswer.ChatAnswerDto;
+import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
 import com.ict.vita.service.chatanswer.SearchRequestDto;
 import com.ict.vita.service.chatqna.ChatQnaDto;
+import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatAnswerController {
 	//서비스 주입
 	private final ChatAnswerService chatanswerService;
+	private final AncService ancService;
 
 	/**
 	 * 키워드로 검색
@@ -47,7 +54,7 @@ public class ChatAnswerController {
 			description = "SUCCESS", 
 			content = @Content(	
 				array = @ArraySchema(
-						schema = @Schema(implementation = ChatAnswerDto.class)
+						schema = @Schema(implementation = ChatAnswerResponseDto.class)
 				),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는~~\",\"body\":\"HIV는주로~~\",\"conclusion\":\"HIV감염을예방하기위해서는~~\"},{\"id\":17,\"file_name\":\"HC-A-06128457000017\",\"intro\":\"HIV감염검진은~~\",\"body\":\"HIV감염검진은~~~\",\"conclusion\":\"HIV감염검진은~~~\"}]}}"
@@ -77,7 +84,21 @@ public class ChatAnswerController {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		}
 		
-		//<검색 결과가 존재하는 경우>
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(answerList));
+		//<검색 결과가 존재하는 경우>	
+		List<ChatAnswerResponseDto> result = new Vector<>(); //카테고리 목록이 포함된 답변 응답 객체 목록
+		for ( ChatAnswerDto answerDto : answerList ) {
+			//ANC관계테이블에서 답변id로 관계객체 조회
+			List<AncDto> ancDtos = ancService.findAllByAnswerId(answerDto.getId());
+			//ANC관계객체 존재시
+			if ( ancDtos != null && !ancDtos.isEmpty() ) {		
+				List<TermsResponseDto> termResponseList = ancDtos.stream().map( anc -> TermsResponseDto.toDto(anc.getTermCategoryDto().toEntity()) ).toList();
+				result.add(ChatAnswerResponseDto.toDto(answerDto.toEntity(), termResponseList));
+			}
+	
+		}
+		
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success(result));
 	}
 }
