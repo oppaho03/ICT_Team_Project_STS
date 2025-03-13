@@ -1,7 +1,14 @@
 package com.ict.vita.controller;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @Controller
 public class IndexController {
@@ -16,8 +23,10 @@ public class IndexController {
         return "YW/yw"; // yw.html로 이동
     }
 
-    @GetMapping("/dh")
+    @GetMapping("/dhpage")
     public String dhPage() {
-        return "DH/dh"; // dh.html로 이동
+        return "DH/dhpage"; // dh.html로 이동
     }
+
+
 }

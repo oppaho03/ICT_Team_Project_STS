@@ -12,12 +12,19 @@
 					<div class="p-5 bg-warning text-white">
 						<h1>Welcome to DH Page!</h1>
 					</div>
+					  <!-- ✅ 로그인 실패 시 에러 메시지 표시 -->
+					 <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+					
 					<fieldset class="border rounded-3 p-3">
 						<legend class="float-none w-auto px-3">로그인</legend>
-						<form method="post" th:action = "@{/auth/login}">
+						<!-- 
+						AuthController로 매핑 폼
+						<form method="post" th:action = "@{/auth/login}" > 
+						-->
+						<form method ="post" th:action = "@{/login.do}">
 							<div class="row">
 								<div class="col-4">
-									<input type="text" class="form-control" placeholder="Enter username!" name="username" />
+									<input type="text" class="form-control" placeholder="Enter username!" name="username"/>
 								</div>
 								<div class="col-4">
 									<input type="password" class="form-control" placeholder="Enter password" name="password" />
