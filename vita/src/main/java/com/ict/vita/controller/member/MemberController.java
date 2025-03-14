@@ -98,11 +98,64 @@ public class MemberController {
 			)
 	})
 	@GetMapping("/members")
-	public ResponseEntity<?> getAllPosts(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+	public ResponseEntity<?> getAllMembers(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//관리자인 경우
 		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(memberService.getAllMembers()));
+		}
+		
+		if(findedMember == null)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("해당하는 회원이 존재하지 않습니다"));
+		
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("관리자만 모든 회원 조회 가능합니다"));
+		
+	}
+	
+	/**
+	 * [모든 일반회원(USER) 조회]
+	 * @param token 로그인한 회원 토큰값
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "모든 일반회원(USER) 조회", description = "모든 일반회원(USER) 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-모든 일반회원(USER) 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = MemberDto.class)
+				),
+				examples = @ExampleObject(
+					value = ""
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-모든 일반회원(USER) 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"관리자만모든회원조회가능합니다\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "404-모든 일반회원(USER) 조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+					)
+				) 
+			)
+	})
+	@GetMapping("/members/users")
+	public ResponseEntity<?> getUserMembers(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+		//관리자인 경우
+		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(memberService.findMemberByRole(Commons.ROLE_USER)));
 		}
 		
 		if(findedMember == null)
