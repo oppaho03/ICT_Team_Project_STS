@@ -51,7 +51,7 @@ public class ChatQuestionController {
 	
 	/**
 	 * [질문과 세션 생성]
-	 * @param qwsDto 질문과 세션에 대한 정보를 담고있는 DTO 객체
+	 * @param qwsDto 질문과 세션에 대한 정보를 담고있는 DTO 객체(키워드 정보 포함돼 있음)
 	 * @param token 로그인한 회원의 토큰값
 	 * @return ResponseEntity
 	 */
@@ -88,7 +88,9 @@ public class ChatQuestionController {
 		)
 	})
 	@PostMapping("/chatquestions")
-	public ResponseEntity<?> createQuestionWithSession(@Parameter(description = "질문과 세션에 대한 정보") @RequestBody ChatQuestionWithSessionRequestDto qwsDto,@Parameter(description = "회원의 토큰값") @RequestHeader(name = "Authorization") String token){
+	public ResponseEntity<?> createQuestionWithSession(
+			@Parameter(description = "질문과 세션에 대한 정보") @RequestBody ChatQuestionWithSessionRequestDto qwsDto,
+			@Parameter(description = "회원의 토큰값") @RequestHeader(name = "Authorization") String token){
 		//회원의 토큰값 조회
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//<회원 토큰값이 존재하지 않는 경우>
@@ -120,7 +122,8 @@ public class ChatQuestionController {
 		}	
 		
 		//질문의 키워드로 답변 검색
-		List<ChatAnswerDto> answers = chatAnswerService.findAnswerByKeywords(qwsDto.getKeywords().stream().collect(Collectors.joining(" OR ")));
+		List <String> keywords = qwsDto.getKeywords();
+		List<ChatAnswerDto> answers = chatAnswerService.findAnswerByKeywords(keywords.stream().collect(Collectors.joining(" OR ")));
 		
 		//<답변 검색 결과가 없는 경우>
 		if(answers.size() == 0) {

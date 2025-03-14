@@ -26,6 +26,8 @@ public class ChatAnswerResponseDto {
 	
 	private List<TermsResponseDto> categories; //응답시 카테고리 목록 보여주기 위한 필드
 	
+	//키워드 추가해야함!!!
+	//private List<String> keywords; //질문 내용의 키워드
 	
 	//[ChatAnswerEntity를 ChatAnswerDto로 변환하는 메서드]
 	public static ChatAnswerResponseDto toDto(ChatAnswerEntity entity,List<TermsResponseDto> categories) {
@@ -36,6 +38,7 @@ public class ChatAnswerResponseDto {
 			.body(entity.getBody())
 			.conclusion(entity.getConclusion())
 			.categories(categories)
+			//keywords(??)
 			.build();
 	}
 }
