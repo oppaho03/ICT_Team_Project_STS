@@ -16,7 +16,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//[답변 DTO]
+//[답변 response DTO]
 public class ChatAnswerResponseDto {
 	private Long id; //PK 
 	private String file_name; //파일이름

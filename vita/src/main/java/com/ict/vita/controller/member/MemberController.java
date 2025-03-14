@@ -31,6 +31,7 @@ import com.ict.vita.service.chatanswer.ChatAnswerDto;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberLoginDto;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberUpdateDto;
 import com.ict.vita.util.Commons;
@@ -71,7 +72,7 @@ public class MemberController {
 			description = "SUCCESS",
 			content = @Content(	
 				array = @ArraySchema(
-						schema = @Schema(implementation = MemberDto.class)
+						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":35,\"email\":\"abc@naver.com\",\"password\":\"TEMPORARY\",\"role\":\"USER\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
@@ -102,7 +103,8 @@ public class MemberController {
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//관리자인 경우
 		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(memberService.getAllMembers()));
+			List<MemberResponseDto> members = memberService.getAllMembers().stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(members));
 		}
 		
 		if(findedMember == null)
@@ -124,7 +126,7 @@ public class MemberController {
 			description = "SUCCESS",
 			content = @Content(	
 				array = @ArraySchema(
-						schema = @Schema(implementation = MemberDto.class)
+						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
 					value = ""
@@ -155,7 +157,8 @@ public class MemberController {
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//관리자인 경우
 		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(memberService.findMemberByRole(Commons.ROLE_USER)));
+			List<MemberResponseDto> members = memberService.findMemberByRole(Commons.ROLE_USER).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(members));
 		}
 		
 		if(findedMember == null)
@@ -178,7 +181,7 @@ public class MemberController {
 			description = "SUCCESS",
 			content = @Content(	
 				array = @ArraySchema(
-						schema = @Schema(implementation = MemberDto.class)
+						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":37,\"email\":\"abab@naver.com\",\"password\":\"pwdabab\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1},{\"id\":40,\"email\":\"a1@naver.com\",\"password\":\"pwdabab\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"1닉넴\",\"birth\":\"2025-03-07\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:53:58.713134\",\"updated_at\":\"2025-03-07T18:53:58.713134\",\"status\":1},{\"id\":46,\"email\":\"admin@naver.com\",\"password\":\"adminpwd\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1},{\"id\":26,\"email\":\"oppaho1@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho1\",\"birth\":\"2025-02-27\",\"gender\":\"\u0001\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-02-27T20:07:07.161029\",\"updated_at\":\"2025-02-27T20:07:07.131923\",\"status\":1},{\"id\":27,\"email\":\"oppaho12@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho12\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-02-27T20:08:45.332339\",\"updated_at\":\"2025-02-27T20:08:45.32307\",\"status\":1}]}}"
@@ -211,7 +214,7 @@ public class MemberController {
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//관리자인 경우
 		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
-			List<MemberDto> findedMembers = memberService.findMemberByStatus(status);
+			List<MemberResponseDto> findedMembers = memberService.findMemberByStatus(status).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
 		}
 		
@@ -235,7 +238,7 @@ public class MemberController {
 			description = "SUCCESS",
 			content = @Content(	
 				array = @ArraySchema(
-						schema = @Schema(implementation = MemberDto.class)
+						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":46,\"email\":\"admin@naver.com\",\"password\":\"adminpwd\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1}]}}"
@@ -268,7 +271,7 @@ public class MemberController {
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		//관리자인 경우
 		if( findedMember != null && findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
-			List<MemberDto> findedMembers = memberService.findMemberByRole(role);
+			List<MemberResponseDto> findedMembers = memberService.findMemberByRole(role).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
 		}
 		
@@ -289,7 +292,7 @@ public class MemberController {
 			responseCode = "201-임시 회원가입 성공",
 			description = "SUCCESS",
 			content = @Content(	
-				schema = @Schema(implementation = MemberDto.class),
+				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":{\"id\":41,\"email\":\"nonick@naver.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"노닉네임\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":\"123\",\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:57:13.2894058\",\"updated_at\":\"2025-03-07T18:57:13.2894058\",\"status\":9}}}"
 				)
@@ -327,7 +330,7 @@ public class MemberController {
 		}
 		//임시 회원가입 처리
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(tempJoinedMember));
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember)));
 	}
 	
 	/**
@@ -351,7 +354,7 @@ public class MemberController {
 			responseCode = "201-회원가입 성공",
 			description = "SUCCESS(사용중인 이메일이 아니면서 전화번호 미입력시)",
 			content = @Content(	
-				schema = @Schema(implementation = MemberDto.class),
+				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
 					value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
 				)
@@ -361,7 +364,7 @@ public class MemberController {
 				responseCode = "201-회원가입 성공",
 				description = "SUCCESS(입력한 이메일과 전화번호가 사용중이지 않은 경우)",
 				content = @Content(	
-					schema = @Schema(implementation = MemberDto.class),
+					schema = @Schema(implementation = MemberResponseDto.class),
 					examples = @ExampleObject(
 						value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
 					)
@@ -449,7 +452,7 @@ public class MemberController {
 			findedMember.setUpdated_at(LocalDateTime.now());
 			
 			MemberDto memberDto = memberService.join(findedMember);
-			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
+			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(memberDto)));
 		}
 		//회원가입에 실패한 경우 - 이미 사용중인 전화번호 존재시
 		if(memberService.isExistsContact(joinDto.getContact()))
@@ -467,7 +470,7 @@ public class MemberController {
 		findedMember.setUpdated_at(LocalDateTime.now());
 		
 		MemberDto memberDto = memberService.join(findedMember);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(memberDto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(memberDto)));
 	}
 	
 	/**
@@ -482,7 +485,7 @@ public class MemberController {
 			responseCode = "200-로그인 성공",
 			description = "SUCCESS",
 			content = @Content(	
-				schema = @Schema(implementation = MemberDto.class),
+				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
 					value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
 				)
@@ -533,7 +536,7 @@ public class MemberController {
 		
 		//회원 정보 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedMember));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
 	}
 
 	/**
@@ -581,7 +584,7 @@ public class MemberController {
 			responseCode = "200-수정 성공",
 			description = "SUCCESS", 
 			content = @Content(	
-				schema = @Schema(implementation = MemberDto.class),
+				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
 					value = "{\"success\":1,\"response\":{\"data\":{\"id\":31,\"email\":\"hahaha12@naver.com\",\"password\":\"newPwd\",\"role\":\"USER\",\"name\":\"개명홍길동\",\"nickname\":\"홍홍\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":\"0202\",\"address\":\"\",\"token\":\"tokenString\",\"created_at\":\"2025-02-28T20:16:05.570502\",\"updated_at\":\"2025-02-28T20:16:05.549038\",\"status\":9}}}" 
 				)
@@ -611,7 +614,7 @@ public class MemberController {
 			findedMember.setAddress(updateDto.getAddress());
 			//변경된 회원 정보로 회원 수정
 			MemberDto updatedMember = memberService.updateMember(findedMember);
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(updatedMember));
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
 		}
 		//<찾은 회원이 존재하지 않는 경우>
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail("유효하지 않은 토큰입니다"));
