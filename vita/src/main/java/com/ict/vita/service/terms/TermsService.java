@@ -215,6 +215,7 @@ public class TermsService {
 		if (dto.getCategory().equals("keywords") && findByNameAndCategory( dto.getName(), dto.getCategory()) != null ) return null;
 		
 		// .parent, .count 값 초기화 
+		System.out.println(dto.getParent());
 		if ( dto.getGroup_number() < 0L ) dto.setGroup_number( 0L );
 		if ( dto.getParent() < 0L ) dto.setParent( 0L );
 		if ( dto.getCount() < 0L ) dto.setCount( 0L );

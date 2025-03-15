@@ -90,11 +90,14 @@ public class ChatAnswerController {
 		
 		//키워드를 용어 테이블에 저장
 		for(String kwd : searchRequest.getKeywords()) {
-			termsService.save(TermsRequestDto.builder()
+			termsService.save( 
+					TermsRequestDto.builder()
 					.name(kwd)
 					.slug(URLEncoder.encode(kwd, "UTF-8")) //슬러그는 URL인코딩해서 저장
 					.group_number(0L)
 					.category("keywords")
+					.count(0L)
+					.parent(0L)
 					.build()
 			);
 		}
