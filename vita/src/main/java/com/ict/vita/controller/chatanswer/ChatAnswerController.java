@@ -1,5 +1,7 @@
 package com.ict.vita.controller.chatanswer;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,10 @@ import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
 import com.ict.vita.service.chatanswer.SearchRequestDto;
 import com.ict.vita.service.chatqna.ChatQnaDto;
+import com.ict.vita.service.terms.TermsDto;
+import com.ict.vita.service.terms.TermsRequestDto;
 import com.ict.vita.service.terms.TermsResponseDto;
+import com.ict.vita.service.terms.TermsService;
 import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,11 +49,13 @@ public class ChatAnswerController {
 	//서비스 주입
 	private final ChatAnswerService chatanswerService;
 	private final AncService ancService;
+	private final TermsService termsService;
 
 	/**
 	 * 키워드로 검색
 	 * @param searchRequest 사용자가 입력한 키워드(JSON형식)
 	 * @return ResponseEntity
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Operation( summary = "키워드 검색", description = "답변에서 키워드로 검색 API" )
 	@ApiResponses({
@@ -75,11 +82,23 @@ public class ChatAnswerController {
 		)
 	})
 	@PostMapping("/answers/search")
-	public ResponseEntity<?> searchKeywords(@Parameter(description = "사용자가 입력한 키워드") @RequestBody SearchRequestDto searchRequest){
+	public ResponseEntity<?> searchKeywords(@Parameter(description = "사용자가 입력한 키워드") @RequestBody SearchRequestDto searchRequest) throws UnsupportedEncodingException{
 		System.out.println("===== 답변 검색 테스트 =====");
 		//사용자가 입력한 키워드들
 		String keywords = searchRequest.getKeywords().stream().map(keyword -> keyword.toString()).collect(Collectors.joining(" OR "));
 		System.out.println("사용자 입력 키워드들:"+keywords);
+		
+		//키워드를 용어 테이블에 저장
+		for(String kwd : searchRequest.getKeywords()) {
+			termsService.save(TermsRequestDto.builder()
+					.name(kwd)
+					.slug(URLEncoder.encode(kwd, "UTF-8")) //슬러그는 URL인코딩해서 저장
+					.group_number(0L)
+					.category("keywords")
+					.build()
+			);
+		}
+		
 		//키워드로 검색한 답변 결과들
 		List<ChatAnswerDto> answerList = chatanswerService.findAnswerByKeywords(keywords);
 		//<검색 결과가 없는 경우>
@@ -101,7 +120,7 @@ public class ChatAnswerController {
 			}
 		}
 		
-		//result.put("keywords", null);  //키워드값 넣어야 함!!!!
+		result.put("keywords", searchRequest.getKeywords());  
 		result.put("answers", responses);
 		
 		return ResponseEntity

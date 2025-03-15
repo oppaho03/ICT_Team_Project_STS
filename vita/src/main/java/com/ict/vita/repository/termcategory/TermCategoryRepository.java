@@ -29,4 +29,12 @@ public interface TermCategoryRepository extends JpaRepository<TermCategoryEntity
 
     List<TermCategoryEntity> findByParent(Long id);
     
+    @Query(value="""
+		SELECT tc FROM TermCategoryEntity tc
+		LEFT JOIN FETCH tc.termsEntity t 
+		WHERE t.name = :termName AND tc.category = :categoryName
+		""", 
+		nativeQuery = false )
+	Optional<TermCategoryEntity> findByNameAndCategory(@Param("termName") String termName,@Param("categoryName") String categoryName); //카테고리명에 속하는 용어명 조회
+    
 }

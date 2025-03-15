@@ -168,6 +168,17 @@ public class TermsService {
 		Optional<TermCategoryEntity> entity = termCategoryRepository.findBySlugByCategory(slug, taxonomy);		
 		return entity.isPresent() ? TermCategoryDto.toDto( entity.get() ) : null;
 	}
+	
+	/**
+	 * [카테고리에 해당하는 용어 검색]
+	 * @param termName 용어 이름
+	 * @param categoryName 카테고리 이름
+	 * @return
+	 */
+	public TermCategoryDto findByNameAndCategory(String termName, String categoryName) {
+		Optional<TermCategoryEntity> entity = termCategoryRepository.findByNameAndCategory(termName,categoryName);
+		return entity.isPresent() ? TermCategoryDto.toDto( entity.get() ) : null;
+	}
 
 	/**
 	 * 검색 : 부모 카테고리 ID
@@ -199,8 +210,15 @@ public class TermsService {
 
 		// 슬러그 중복 검사
 		if ( findBySlugByCategory( dto.getSlug(), dto.getCategory() ) != null ) return null;
-
 		
+		//키워드에 속하는 용어 중복 검사
+		if (dto.getCategory().equals("keywords") && findByNameAndCategory( dto.getName(), dto.getCategory()) != null ) return null;
+		
+		// .parent, .count 값 초기화 
+		if ( dto.getGroup_number() < 0L ) dto.setGroup_number( 0L );
+		if ( dto.getParent() < 0L ) dto.setParent( 0L );
+		if ( dto.getCount() < 0L ) dto.setCount( 0L );
+					
 
 		TermsDto termsDto = 
 			TermsDto.builder()

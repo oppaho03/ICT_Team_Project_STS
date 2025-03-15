@@ -227,7 +227,7 @@ public class TermsController {
 			// .parent, .count 값 초기화 
 			if ( dto.getGroup_number() < 0L ) dto.setGroup_number( 0L );
 			if ( dto.getParent() < 0L ) dto.setParent( 0L );
-			if ( dto.getParent() < 0L ) dto.setCount( 0L );
+			if ( dto.getCount() < 0L ) dto.setCount( 0L );
 			
 			// - 이름 유효성 검사
 			if ( Commons.isNull(dto.getName()) ) throw new Exception( String.format("이름 없는 (슬러그 : %s) 용어를 등록할 수 없습니다.", dto.getSlug() ) );
