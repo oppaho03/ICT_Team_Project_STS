@@ -46,6 +46,7 @@ public class TermMetaService {
 	 * @param id 메타 ID
 	 * @return 메타 또는 NULL 반환
 	 */	
+	@Transactional(readOnly = true)
 	public TermMetaDto findById( Long id ) {
 		TermMetaEntity termMetaEntity = termMetaRepository.findById(id).orElse(null);
 		return termMetaEntity == null ? null : TermMetaDto.toDto(termMetaEntity);
@@ -57,6 +58,7 @@ public class TermMetaService {
 	 * @param meta_key 메타 키
 	 * @return 메타 또는 NULL 반환
 	 */	
+	@Transactional(readOnly = true)
 	public TermMetaDto findByTermsDtoByMetaKey ( TermMetaDto metaDto ) {
 
 		// < TermMetaDto 로 검사 > 

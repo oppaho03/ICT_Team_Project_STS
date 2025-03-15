@@ -38,6 +38,7 @@ public class PostCategoryRelationshipsService {
 	 * @param id 포스트 ID
 	 * @return 
 	 */
+	@Transactional(readOnly = true)
 	public List<PostCategoryRelationshipsDto> findAllByPostId( Long id ) {
 		
 		List<PostCategoryRelationshipsEntity> relEntities = postCategoryRelationshipsRepository.findByPostId( id );
@@ -51,6 +52,7 @@ public class PostCategoryRelationshipsService {
 	 * @param id 카테고리 ID
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<PostCategoryRelationshipsDto> findAllByTermCategoryId( Long id ) {
 
 		List<PostCategoryRelationshipsEntity> relEntities = postCategoryRelationshipsRepository.findByTermCategoryId( id );
@@ -66,6 +68,7 @@ public class PostCategoryRelationshipsService {
 	 * @param ol 출력 개수 제한
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<PostCategoryRelationshipsDto> findAllByTermCategoryId( Long id, int p, int ol ) {
 
 		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("term_category_id")) );

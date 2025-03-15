@@ -35,6 +35,7 @@ public class MemberMetaService {
 	 * @param reqDto MemberDto
 	 * @return 메타 리스트 반환
 	 */	
+	@Transactional(readOnly = true)
 	public List<MemberMetaDto> findAll( MemberDto reqDto ) {
 
 		List<MemberMetaEntity> memberMetaEntities = new ArrayList<>();
@@ -53,6 +54,7 @@ public class MemberMetaService {
 	 * @param meta_key 메타 키
 	 * @return 메타 또는 NULL 반환
 	 */	
+	@Transactional(readOnly = true)
 	public MemberMetaDto findByMemberDtoByMetaKey ( MemberMetaDto metaDto ) {
 
 		// < TermMetaDto 로 검사 > 
@@ -68,6 +70,7 @@ public class MemberMetaService {
 	 * @param id 메타 ID
 	 * @return 메타 또는 NULL 반환
 	 */	
+	@Transactional(readOnly = true)
 	public MemberMetaDto findById( Long id ) {
 		MemberMetaEntity metaEntity = memberMetaRepository.findById(id).orElse(null);
 		return metaEntity == null ? null : MemberMetaDto.toDto(metaEntity);

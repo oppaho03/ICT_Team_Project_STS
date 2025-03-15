@@ -1,12 +1,15 @@
 package com.ict.vita.controller.chatanswer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,17 +88,21 @@ public class ChatAnswerController {
 		}
 		
 		//<검색 결과가 존재하는 경우>	
-		List<ChatAnswerResponseDto> result = new Vector<>(); //카테고리 목록이 포함된 답변 응답 객체 목록
+		List<ChatAnswerResponseDto> responses = new Vector<>(); //카테고리 목록이 포함된 답변 응답 객체 목록
+		//키워드와 검색결과 반환 객체 생성
+		Map<String, Object> result = new HashMap<>();
 		for ( ChatAnswerDto answerDto : answerList ) {
 			//ANC관계테이블에서 답변id로 관계객체 조회
 			List<AncDto> ancDtos = ancService.findAllByAnswerId(answerDto.getId());
 			//ANC관계객체 존재시
 			if ( ancDtos != null && !ancDtos.isEmpty() ) {		
 				List<TermsResponseDto> termResponseList = ancDtos.stream().map( anc -> TermsResponseDto.toDto(anc.getTermCategoryDto().toEntity()) ).toList();
-				result.add(ChatAnswerResponseDto.toDto(answerDto.toEntity(), termResponseList));
+				responses.add(ChatAnswerResponseDto.toDto(answerDto.toEntity(), termResponseList));
 			}
-	
 		}
+		
+		//result.put("keywords", null);  //키워드값 넣어야 함!!!!
+		result.put("answers", responses);
 		
 		return ResponseEntity
 				.status(HttpStatus.OK)

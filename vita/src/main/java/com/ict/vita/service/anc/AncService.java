@@ -31,6 +31,7 @@ public class AncService {
 	 * @param id 답변 ID
 	 * @return
 	 */	
+	@Transactional(readOnly = true)
 	public List<AncDto> findAllByAnswerId( Long id ) {
 		List<AncEntity> relEntities = ancRepository.findByAnswerId( id );
 		if ( relEntities.isEmpty() ) return null;
@@ -42,6 +43,7 @@ public class AncService {
 	 * @param id 카테고리 ID
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<AncDto> findAllByTermCategoryId( Long id ) {
 		List<AncEntity> relEntities = ancRepository.findAllByTermCategoryId( id );
 		if ( relEntities.isEmpty() ) return null;

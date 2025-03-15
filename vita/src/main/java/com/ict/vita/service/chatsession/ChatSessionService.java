@@ -20,6 +20,7 @@ public class ChatSessionService {
 	 * @param sid 세션id(PK)
 	 * @return boolean(존재시 true, 미존재시 false 반환)
 	 */
+	@Transactional(readOnly = true)
 	public boolean existsById(Long sid) {
 		return chatSessionRepository.existsById(sid);
 	}
@@ -39,6 +40,7 @@ public class ChatSessionService {
 	 * @param id 세션id(PK)
 	 * @return ChatSessionDto 찾은 세션 DTO 객체
 	 */
+	@Transactional(readOnly = true)
 	public ChatSessionDto findById(Long id) {
 		ChatSessionEntity sessionEntity = chatSessionRepository.findById(id).orElse(null);
 		//세션을 찾은 경우

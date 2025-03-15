@@ -24,6 +24,7 @@ public class ChatAnswerService {
 	 * @param keywords
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ChatAnswerDto findById(Long id) { 
 		return chatAnswerRepository.findById(id).isPresent() ? ChatAnswerDto.toDto(chatAnswerRepository.findById(id).get()) : null; }
 	
@@ -33,6 +34,7 @@ public class ChatAnswerService {
 	 * @param keywords 사용자가 입력한 검색어들
 	 * @return List<ChatAnswerDto> 키워드로 검색한 답변 결과값들
 	 */
+	@Transactional(readOnly = true)
 	public List<ChatAnswerDto> findAnswerByKeywords(String keywords) {
 		//키워드 중복되지 않게
 		keywords = Set.of(keywords).toString();

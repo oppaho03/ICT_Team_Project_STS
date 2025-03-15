@@ -27,6 +27,7 @@ public class TermCategoryService {
 	 * [카테고리id로 카테고리 조회]
 	 * @param id 카테고리id
 	 */
+	@Transactional(readOnly = true)
 	public TermCategoryDto findById(Long id) {
 		TermCategoryEntity findedCategory = termCategoryRepository.findById(id).orElse(null);
 		if(findedCategory != null)

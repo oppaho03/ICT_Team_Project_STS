@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -125,7 +126,7 @@ public class AncController {
 	 * @param reldto ObjectCategoryRelDto ( id, categories )
 	 * @return
 	 */		
-	@Operation(summary = "포스트 목록 가져오기", description = "포스트 목록 가져오기")	
+	@Operation(summary = "카테고리 등록", description = "카테고리 등록")	
 	@PostMapping("/")
 	public ResponseEntity<?> addCategories(@Parameter( description = "관계 데이터") @RequestBody ObjectCategoryRelDto reldto ) {
 		/* CHECKE AUTH *** */

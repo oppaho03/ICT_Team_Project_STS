@@ -57,6 +57,7 @@ public class TermsService {
 	private final TermsRepository termsRepository;		
 	private final TermCategoryRepository termCategoryRepository;
 
+	@Transactional(readOnly = true)
 	public List<TermCategoryEntity> toTermCategoryEntities ( List<? extends Object> entities ) {
 
 		List<TermCategoryEntity> result = new ArrayList<>();
@@ -83,6 +84,7 @@ public class TermsService {
 	 * 모두 검색 
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findAll() { 
 		return toTermCategoryEntities( termsRepository.findAll( Sort.by(Sort.Order.asc("id")) ) )
 			.stream()
@@ -96,6 +98,7 @@ public class TermsService {
 	 * @param ol : 출력 개수 제한
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findAll(int p, int ol) { 
 
 		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("id")) );
@@ -119,6 +122,7 @@ public class TermsService {
 	 * @param name 이름
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findAllByName (String name) { 
 		return toTermCategoryEntities( termsRepository.findAllByName( name, Sort.by(Sort.Order.asc("id")) ) )
 			.stream()
@@ -131,6 +135,7 @@ public class TermsService {
 	 * @param taxonomy 카테고리명
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findAllByTaxonomy (String taxonomy) { 
 		return termCategoryRepository.findByCategory( taxonomy, Sort.by(Sort.Order.asc("id")) )
 			.stream()
@@ -146,6 +151,7 @@ public class TermsService {
 	 * @param id 카테고리 Id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TermCategoryDto findById ( Long id ) {  
 		TermCategoryEntity entity = termCategoryRepository.findById( id ).orElse(null);
 		return entity != null ? TermCategoryDto.toDto(entity) : null;
@@ -157,6 +163,7 @@ public class TermsService {
 	 * @param taxonomy 
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TermCategoryDto findBySlugByCategory ( String slug, String taxonomy ) { 
 		Optional<TermCategoryEntity> entity = termCategoryRepository.findBySlugByCategory(slug, taxonomy);		
 		return entity.isPresent() ? TermCategoryDto.toDto( entity.get() ) : null;
@@ -168,6 +175,7 @@ public class TermsService {
 	 * @param taxonomy 
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findByParent ( Long id ) { 
 		if ( id > 0 ) {
 			TermCategoryEntity termCategoryEntity = termCategoryRepository.findById( id ).orElse(null);

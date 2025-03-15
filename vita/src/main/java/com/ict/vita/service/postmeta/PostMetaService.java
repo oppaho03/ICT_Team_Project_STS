@@ -45,6 +45,7 @@ public class PostMetaService {
 	 * @param id 메타 ID
 	 * @return 메타 또는 NULL 반환
 	 */	
+	@Transactional(readOnly = true)
 	public PostMetaDto findById( Long id ) {
 		PostMetaEntity postMetaEntity = postMetaRepository.findById(id).orElse(null);
 		return postMetaEntity == null ? null : PostMetaDto.toDto(postMetaEntity);
@@ -57,6 +58,7 @@ public class PostMetaService {
 	 * @param meta_key 메타 키
 	 * @return 메타 또는 NULL 반환
 	 */	
+	@Transactional(readOnly = true)
 	public PostMetaDto findByPostDtoByMetaKey ( PostMetaDto metaDto ) {
 
 		// < PostMetaDto 로 검사 > 

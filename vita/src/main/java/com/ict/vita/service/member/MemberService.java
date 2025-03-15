@@ -25,6 +25,7 @@ public class MemberService {
 	 * [모든 회원 조회]
 	 * @return List<MemberDto>
 	 */
+	@Transactional(readOnly = true)
 	public List<MemberDto> getAllMembers(){
 		return memberRepository.findAll().stream().map(entity -> MemberDto.toDto(entity)).collect(Collectors.toList());
 	}
@@ -34,6 +35,7 @@ public class MemberService {
 	 * @param memberDto 찾을 회원 DTO객체
 	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
 	 */
+	@Transactional(readOnly = true)
 	public MemberDto findMemberById(Long id) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
@@ -49,6 +51,7 @@ public class MemberService {
 	 * @param token 찾을 토큰값
 	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
 	 */
+	@Transactional(readOnly = true)
 	public MemberDto findMemberByToken(String token) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
@@ -64,6 +67,7 @@ public class MemberService {
 	 * @param email 이메일
 	 * @return MemberDto 찾은 회원 DTO객체(없으면 null)
 	 */
+	@Transactional(readOnly = true)
 	public MemberDto findMemberByEmail(String email) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
@@ -79,6 +83,7 @@ public class MemberService {
 	 * @param email 입력된 이메일 주소
 	 * @return 가입된 이메일이 존재하는지 여부
 	 */
+	@Transactional(readOnly = true)
 	public boolean isExistsEmail(String email) {
 		return memberRepository.existsByEmail(email);
 	}
@@ -88,6 +93,7 @@ public class MemberService {
 	 * @param contact 입력된 전화번호
 	 * @return 가입된 전화번호가 존재하는지 여부
 	 */
+	@Transactional(readOnly = true)
 	public boolean isExistsContact(String contact) {
 		return memberRepository.existsByContact(contact);
 	}
@@ -185,6 +191,7 @@ public class MemberService {
 	 * @param loginDto
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public MemberDto validateLogin(MemberLoginDto loginDto) {
 		//리포지토리 호출해서 이메일과 비밀번호가 일치하면 해당하는 DTO를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
@@ -209,6 +216,7 @@ public class MemberService {
 	 * @param status 회원 status값
 	 * @return List<MemberDto> 
 	 */
+	@Transactional(readOnly = true)
 	public List<MemberDto> findMemberByStatus(Long status) {
 		return memberRepository.findAllByStatus(status)
 			.stream()
@@ -221,6 +229,7 @@ public class MemberService {
 	 * @param role 회원 역할
 	 * @return List<MemberDto> 
 	 */
+	@Transactional(readOnly = true)
 	public List<MemberDto> findMemberByRole(String role) {
 		return memberRepository.findAllByRole(role)
 			.stream()
