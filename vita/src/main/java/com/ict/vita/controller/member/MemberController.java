@@ -21,6 +21,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -611,7 +612,9 @@ public class MemberController {
 		)
 	})
 	@PutMapping("/members")
-	public ResponseEntity<?> update(@Parameter(description = "수정 요청 객체") @RequestBody MemberUpdateDto updateDto,@RequestHeader(name = "authorization") String token){
+	public ResponseEntity<?> update(
+			@Parameter(description = "수정 요청 객체") @RequestBody MemberUpdateDto updateDto,
+			@RequestHeader(name = "authorization") String token){
 		
 		//토큰값으로 회원 조회
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
@@ -632,4 +635,41 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
 		
 	}
+	
+	/**
+	 * [비밀번호 수정]
+	 * @param newPwd 수정할 새 비밀번호
+	 * @param token 로그인한 회원의 토큰값
+	 * @return
+	 */
+	@PatchMapping("/members")
+	public ResponseEntity<?> updatePassword(
+			@Parameter(description = "수정할 비밀번호") @RequestBody Map<String, String> newPwd,
+			@RequestHeader(name = "authorization") String token){
+		//토큰값으로 회원 조회
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+		
+		if (findedMember == null) {
+			//<찾은 회원이 존재하지 않는 경우>
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.login_fail_token", null, new Locale("ko")) ));
+		}
+		
+		//<찾은 회원이 존재하는 경우>
+		System.out.println("비번 수정 전:"+findedMember.getPassword());
+		//비밀번호 수정
+		try {
+			findedMember.setPassword(EncryptAES256.encrypt(newPwd.get("password")));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageSource.getMessage("user.pwd_change_fail", null, new Locale("ko")));
+		}
+		findedMember.setUpdated_at(LocalDateTime.now());
+		
+		MemberDto updatedMember = memberService.updateMember(findedMember);
+		System.out.println("비번 수정 후:"+updatedMember.getPassword());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
+		
+	}
+	
 }
