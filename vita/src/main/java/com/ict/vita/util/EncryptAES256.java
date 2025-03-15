@@ -5,7 +5,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
-public class AES256Util {
+public class EncryptAES256 {
 
     private static final String SECRET_KEY = "01234567890123456789012345678901";
     private static final String INIT_VECTOR = "0123456789012345";

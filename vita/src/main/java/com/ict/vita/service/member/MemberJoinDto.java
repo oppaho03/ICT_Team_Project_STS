@@ -61,8 +61,10 @@ public class MemberJoinDto {
 	
 	@Schema(description = "가입일", example = "2025-03-03T05:46:09.470Z")
 	private LocalDateTime created_at = LocalDateTime.now(); //가입일
+	
 	@Schema(description = "수정일", example = "2025-03-03T05:46:09.470Z")
 	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
+	
 	@Schema(description = "상태 (1: 가입, 0: 탈퇴, 9: 대기)", example = "1")
 	private long status; //상태(가입/탈퇴/대기)
 	

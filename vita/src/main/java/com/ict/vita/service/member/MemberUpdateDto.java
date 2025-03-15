@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberUpdateDto {
-	private String password; //비밀번호
+
 	private String name; //이름
 	private String nickname; //닉네임
 	private String contact; //전화번호
