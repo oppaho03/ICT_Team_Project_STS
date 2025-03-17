@@ -1,5 +1,7 @@
 package com.ict.vita.service.terms;
 
+import java.util.Objects;
+
 import com.ict.vita.repository.termcategory.TermCategoryEntity;
 import com.ict.vita.repository.terms.TermsEntity;
 import com.ict.vita.service.termcategory.TermCategoryDto;
@@ -42,7 +44,7 @@ public class TermsResponseDto {
     private Long count = 0L; // APP_TERM_CATEGORY.count
     
     @Schema(description = "소속된 컨텐츠 수", example = "0")
-	private Long parent = 0L; // APP_TERM.id
+	private Long parent = 0L; // APP_TERM_CATEGORY.parent
 
     // TermCategoryDto 를 -> TermResponseDto
     public static TermsResponseDto toDto(TermCategoryDto dto) {
@@ -72,5 +74,18 @@ public class TermsResponseDto {
             .slug(entity.getTermsEntity().getSlug())
             .group_number(entity.getTermsEntity().getGroup_number())		
             .build();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj) return true;
+		if(obj == null || getClass() != obj.getClass()) return false;
+		TermsResponseDto response = (TermsResponseDto)obj;
+		return Objects.equals(id, response.id);
 	}
 }

@@ -3,6 +3,7 @@ package com.ict.vita.service.chatanswer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.ict.vita.repository.chatanswer.ChatAnswerEntity;
 import com.ict.vita.service.terms.TermsResponseDto;
@@ -26,9 +27,7 @@ public class ChatAnswerResponseDto {
 	private String body; //메인내용
 	private String conclusion; //결론
 	
-//	private List<TermsResponseDto> categories; //응답시 카테고리 목록 보여주기 위한 필드
-	private Set<TermsResponseDto> categories; //응답시 카테고리 목록 보여주기 위한 필드
-	
+	private List<TermsResponseDto> categories; //응답시 카테고리 목록 보여주기 위한 필드
 	
 	//[ChatAnswerEntity를 ChatAnswerDto로 변환하는 메서드]
 	public static ChatAnswerResponseDto toDto(ChatAnswerEntity entity,List<TermsResponseDto> categories) {
@@ -38,7 +37,7 @@ public class ChatAnswerResponseDto {
 			.intro(entity.getIntro())
 			.body(entity.getBody())
 			.conclusion(entity.getConclusion())
-			.categories(new HashSet<>(categories))
+			.categories(categories.stream().distinct().collect(Collectors.toList()))
 			.build();
 	}
 	
@@ -50,7 +49,7 @@ public class ChatAnswerResponseDto {
 			.intro(dto.getIntro())
 			.body(dto.getBody())
 			.conclusion(dto.getConclusion())
-			.categories(new HashSet<>(categories))
+			.categories(categories.stream().distinct().collect(Collectors.toList()))
 			.build();
 	}
 	
