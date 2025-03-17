@@ -2,6 +2,7 @@ package com.ict.vita.controller.chatquestion;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.anc.AncDto;
+import com.ict.vita.service.anc.AncService;
 import com.ict.vita.service.chatanswer.ChatAnswerDto;
+import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatanswer.ChatAnswerService;
 import com.ict.vita.service.chatqna.ChatQnaDto;
 import com.ict.vita.service.chatqna.ChatQnaService;
@@ -25,6 +29,8 @@ import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.termcategory.TermCategoryDto;
+import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
@@ -48,6 +54,7 @@ public class ChatQuestionController {
 	private final ChatAnswerService chatAnswerService;
 	private final MemberService memberService;
 	private final ChatQnaService chatQnaService;
+	private final AncService ancService;
 	
 	/**
 	 * [질문과 세션 생성]
@@ -125,6 +132,18 @@ public class ChatQuestionController {
 		List <String> keywords = qwsDto.getKeywords();
 		List<ChatAnswerDto> answers = chatAnswerService.findAnswerByKeywords(keywords.stream().collect(Collectors.joining(" OR ")));
 		
+		
+		List<ChatAnswerResponseDto> answerResponses = new Vector<>();
+		List<TermCategoryDto> categories = new Vector<>();
+		
+		for(ChatAnswerDto answerDto : answers) {
+			List<AncDto> ancs = ancService.findAllByAnswerId(answerDto.getId());
+			categories.addAll( ancs.stream().map(anc -> anc.getTermCategoryDto()).collect(Collectors.toList()) );
+			List<TermsResponseDto> termsResponses = categories.stream().map(cate -> TermsResponseDto.toDto(cate)).collect(Collectors.toList());
+			answerResponses.add(ChatAnswerResponseDto.toDto(answerDto, termsResponses));
+		}
+		
+		
 		//<답변 검색 결과가 없는 경우>
 		if(answers.size() == 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
@@ -134,7 +153,7 @@ public class ChatQuestionController {
 		//질문 DTO 객체 생성
 		ChatQuestionDto questionDto = ChatQuestionDto.builder().content(qwsDto.getContents()).created_at(LocalDateTime.now()).build();
 		//질문에 대한 키워드 검색한 답변 DTO객체
-		ChatQuestionWithSessionResponseDto qwsResponseDto = ChatQuestionWithSessionResponseDto.builder().sid(sid).answers(answers).build();
+		ChatQuestionWithSessionResponseDto qwsResponseDto = ChatQuestionWithSessionResponseDto.builder().sid(sid).answers(answerResponses).build();
 		//질문 저장
 		ChatQuestionDto createdQDto = chatQuestionService.save(questionDto);
 		System.out.println("===== 질문:"+createdQDto.getId());
@@ -142,11 +161,11 @@ public class ChatQuestionController {
 		//<ChatQna에 저장>
 		//답변이 1개인 경우
 		if(answers.size() == 1) {
-			ChatAnswerDto answerDto = qwsResponseDto.getAnswers().get(0);
+			ChatAnswerResponseDto answerDto = qwsResponseDto.getAnswers().get(0);
 			ChatQnaDto qnaDto = ChatQnaDto.builder()
 										.chatSessionDto(sessionDto)
 										.chatQuestionDto(createdQDto)
-										.chatAnswerDto(answerDto)
+										.chatAnswerDto(answerDto.toAnswerDto())
 										.is_matched(1) //매칭여부를 1로(매칭됨)
 										.build();
 			//ChatQnaDto객체 저장
