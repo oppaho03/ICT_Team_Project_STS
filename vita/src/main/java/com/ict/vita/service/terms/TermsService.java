@@ -156,6 +156,18 @@ public class TermsService {
 		TermCategoryEntity entity = termCategoryRepository.findById( id ).orElse(null);
 		return entity != null ? TermCategoryDto.toDto(entity) : null;
 	}
+	
+	/**
+	 * ID리스트로 검색 
+	 * @param ids 카테고리 Ids
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public List<TermCategoryDto> findById ( List<Long> ids ) {  
+		
+		List<TermCategoryEntity> entities = termCategoryRepository.findById( ids );
+		return entities.stream().map(entity -> TermCategoryDto.toDto(entity)).collect(Collectors.toList());
+	}
 
 	/**
 	 * 검색 : 슬러그 

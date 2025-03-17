@@ -39,7 +39,7 @@ public class PostsRequestDto {
 	
 	//카테고리 id목록들(글은 여러 카테고리에 속할 수 있어서)
 	//카테고리id들이 중복되지 않도록 Set으로 처리
-	private Set<Long> cids = new HashSet<>();
+	private List<Long> cids = new Vector<>();
 	
 	//[PostsRequestDto를 PostsDto로 변환하는 메서드]
 	//PostsDto의 memberDto필드는 따로 설정해줘야 함

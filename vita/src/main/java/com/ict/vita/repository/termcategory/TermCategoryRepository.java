@@ -26,6 +26,9 @@ public interface TermCategoryRepository extends JpaRepository<TermCategoryEntity
 		""", 
 		nativeQuery = false )
 	Optional<TermCategoryEntity> findBySlugByCategory( @Param("slug") String slug, @Param("taxonomy") String taxonomy );
+	
+	@Query("SELECT m FROM TermCategoryEntity m WHERE m.id IN :ids")
+    List<TermCategoryEntity> findById(@Param("ids") List<Long> ids);
 
     List<TermCategoryEntity> findByParent(Long id);
     

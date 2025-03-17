@@ -55,6 +55,5 @@ public class PostsResponseDto {
 			.comment_count(entity.getCommentCount())
 			.categories(categories)
 			.build();
-
 	}
 }
