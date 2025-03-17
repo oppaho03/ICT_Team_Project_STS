@@ -80,25 +80,25 @@ public class MemberController {
 						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":35,\"email\":\"abc@naver.com\",\"password\":\"TEMPORARY\",\"role\":\"USER\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":35,\"email\":\"abc@naver.com\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
 				)
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "401-모든 회원 조회 실패",
+			responseCode = "400-모든 회원 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"관리자만모든회원조회가능합니다\"}}"
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "404-모든 회원 조회 실패",
+				responseCode = "401-모든 회원 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
 					)
 				) 
 			)
@@ -134,25 +134,25 @@ public class MemberController {
 						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = ""
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":35,\"email\":\"abc@naver.com\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
 				)
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "401-모든 일반회원(USER) 조회 실패",
+			responseCode = "400-모든 일반회원(USER) 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"관리자만모든회원조회가능합니다\"}}"
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "404-모든 일반회원(USER) 조회 실패",
+				responseCode = "401-모든 일반회원(USER) 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
 					)
 				) 
 			)
@@ -189,25 +189,25 @@ public class MemberController {
 						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":37,\"email\":\"abab@naver.com\",\"password\":\"pwdabab\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1},{\"id\":40,\"email\":\"a1@naver.com\",\"password\":\"pwdabab\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"1닉넴\",\"birth\":\"2025-03-07\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:53:58.713134\",\"updated_at\":\"2025-03-07T18:53:58.713134\",\"status\":1},{\"id\":46,\"email\":\"admin@naver.com\",\"password\":\"adminpwd\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1},{\"id\":26,\"email\":\"oppaho1@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho1\",\"birth\":\"2025-02-27\",\"gender\":\"\u0001\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-02-27T20:07:07.161029\",\"updated_at\":\"2025-02-27T20:07:07.131923\",\"status\":1},{\"id\":27,\"email\":\"oppaho12@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho12\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":null,\"created_at\":\"2025-02-27T20:08:45.332339\",\"updated_at\":\"2025-02-27T20:08:45.32307\",\"status\":1}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1},{\"id\":40,\"email\":\"a1@naver.com\",\"name\":\"홍길동\",\"nickname\":\"1닉넴\",\"birth\":\"2025-03-07\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-07T18:53:58.713134\",\"updated_at\":\"2025-03-07T18:53:58.713134\",\"status\":1},{\"id\":41,\"email\":\"nonick@naver.com\",\"name\":\"홍길동\",\"nickname\":\"nonick\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-15T12:44:54.692711\",\"updated_at\":\"2025-03-15T12:44:54.692711\",\"status\":1},{\"id\":46,\"email\":\"admin@naver.com\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1},{\"id\":26,\"email\":\"oppaho1@gmail.com\",\"name\":\"홍길동\",\"nickname\":\"oppaho1\",\"birth\":\"2025-02-27\",\"gender\":\"\u0001\",\"contact\":null,\"address\":null,\"created_at\":\"2025-02-27T20:07:07.161029\",\"updated_at\":\"2025-02-27T20:07:07.131923\",\"status\":1},{\"id\":27,\"email\":\"oppaho12@gmail.com\",\"name\":\"홍길동\",\"nickname\":\"oppaho12\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-02-27T20:08:45.332339\",\"updated_at\":\"2025-02-27T20:08:45.32307\",\"status\":1},{\"id\":47,\"email\":\"baekjongwon1@naver.com\",\"name\":\"백종원\",\"nickname\":\"빽햄구속\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-15T13:58:21.560432\",\"updated_at\":\"2025-03-15T15:50:05.083318\",\"status\":1}]}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "401-상태별 회원 조회 실패",
+			responseCode = "400-상태별 회원 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"관리자만상태별회원조회가능합니다\"}}"
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "404-상태별 회원 조회 실패",
+				responseCode = "401-상태별 회원 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
 					)
 				) 
 			)
@@ -247,25 +247,25 @@ public class MemberController {
 						schema = @Schema(implementation = MemberResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":46,\"email\":\"admin@naver.com\",\"password\":\"adminpwd\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},{\"id\":35,\"email\":\"abc@naver.com\",\"name\":null,\"nickname\":\"TEMPORARY\",\"birth\":null,\"gender\":\""
 				) 
 			)
 		),
 		@ApiResponse( 
-			responseCode = "401-역할별 회원 조회 실패",
+			responseCode = "400-역할별 회원 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"관리자만역할별회원조회가능합니다\"}}"
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "404-역할별 회원 조회 실패",
+				responseCode = "401-역할별 회원 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"해당하는회원이존재하지않습니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
 					)
 				) 
 			)
@@ -301,7 +301,7 @@ public class MemberController {
 			content = @Content(	
 				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":41,\"email\":\"nonick@naver.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"노닉네임\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":\"123\",\"address\":null,\"token\":null,\"created_at\":\"2025-03-07T18:57:13.2894058\",\"updated_at\":\"2025-03-07T18:57:13.2894058\",\"status\":9}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":48,\"email\":\"baekjongwon222@naver.com\",\"name\":\"박종원\",\"nickname\":\"빽다방\",\"birth\":\"1950-03-17\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-17T08:48:32.6060574\",\"updated_at\":\"2025-03-17T08:48:32.6060574\",\"status\":9}}}"
 				)
 			) 
 		),
@@ -310,7 +310,7 @@ public class MemberController {
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"이메일을입력하세요\"}}"
+					value = "{\"success\":0,\"response\":{\"message\":\"잘못된이메일입니다.\"}}"
 				)
 			) 
 		),
@@ -319,7 +319,16 @@ public class MemberController {
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"이미사용중인이메일입니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"사용중인이메일입니다.\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "500-임시 회원가입 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"회원가입에실패했습니다.\"}}"
 					)
 				) 
 			)
@@ -339,7 +348,8 @@ public class MemberController {
 		
 		//임시 회원가입 처리
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember)));
+		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
+				ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
 	}
 	
 	/**
@@ -351,49 +361,30 @@ public class MemberController {
 	@Operation( summary = "회원가입", description = "회원가입 API" )
 	@ApiResponses({
 		@ApiResponse( 
-			responseCode = "400-회원가입 실패",
-			description = "FAIL(유효성 검증 실패)",
-			content = @Content(	
-				examples = @ExampleObject(
-					value = "{ \"success\": 0, \"response\": { \"message\": \"email:올바른 이메일 주소를 입력하세요.\"  } }" 
-				)
-			) 
-		),
-		@ApiResponse( 
 			responseCode = "201-회원가입 성공",
 			description = "SUCCESS(사용중인 이메일이 아니면서 전화번호 미입력시)",
 			content = @Content(	
 				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
-					value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":48,\"email\":\"baekjongwon222@naver.com\",\"name\":\"백종원\",\"nickname\":\"슈가보이\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-17T09:14:51.6264284\",\"updated_at\":\"2025-03-17T09:14:51.6264284\",\"status\":1}}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "201-회원가입 성공",
-				description = "SUCCESS(입력한 이메일과 전화번호가 사용중이지 않은 경우)",
-				content = @Content(	
-					schema = @Schema(implementation = MemberResponseDto.class),
-					examples = @ExampleObject(
-						value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
-					)
-				) 
-			),
-		@ApiResponse( 
-			responseCode = "409-회원가입 실패",
-			description = "FAIL(이미 이메일이 사용중인 경우)", 
+			responseCode = "400-회원가입 실패",
+			description = "FAIL(유효성 검증 실패)", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{ \"success\": 0, \"response\": { \"message\": \"이미 사용 중인 이메일입니다\"  } }" 
+					value = "{\"success\":0,\"response\":{\"message\":\"email:이메일을입력하세요\\r\\n\"}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "409-회원가입 실패",
-				description = "FAIL(이미 전화번호가 사용중인 경우)", 
+				responseCode = "403-회원가입 실패",
+				description = "FAIL(이메일 인증 안 된 경우)", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{ \"success\": 0, \"response\": { \"message\": \"이미 사용 중인 전화번호입니다\"  } }" 
+						value = "{\"success\":0,\"response\":{\"message\":\"이메일인증이필요합니다.\"}}"
 					)
 				) 
 			),
@@ -402,16 +393,25 @@ public class MemberController {
 				description = "FAIL(이미 가입된 회원인 경우)", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"이미가입된회원입니다\"}}" 
+						value = "{\"success\":0,\"response\":{\"message\":\"이미가입된회원입니다.\"}}" 
 					)
 				) 
 			),
 		@ApiResponse( 
-				responseCode = "403-회원가입 실패",
-				description = "FAIL(이메일 인증 안 된 경우)", 
+				responseCode = "409-회원가입 실패",
+				description = "FAIL(이미 사용중인 전화번호인 경우)", 
 				content = @Content(					
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"이메일인증이안됐습니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"사용중인전화번호입니다.\"}}" 
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "500-회원가입 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"회원가입에실패했습니다.\"}}" 
 					)
 				) 
 			)
@@ -455,7 +455,7 @@ public class MemberController {
 		//회원가입에 성공한 경우
 		//DB에 저장한 회원을 회원가입할때 입력한 정보로 설정
 		try {
-			findedMember.setPassword(EncryptAES256.encrypt(joinDto.getPassword()));
+			findedMember.setPassword(joinDto.getPassword());
 			findedMember.setName(joinDto.getName());
 			findedMember.setNickname(joinDto.getNickname());
 			findedMember.setBirth(joinDto.getBirth());
@@ -464,7 +464,6 @@ public class MemberController {
 			findedMember.setAddress(joinDto.getAddress());
 			findedMember.setCreated_at(LocalDateTime.now());
 			findedMember.setUpdated_at(LocalDateTime.now());
-
 		}
 		catch(Exception e) {
 			System.out.println("회원가입 실패:"+e.getMessage());
@@ -472,7 +471,8 @@ public class MemberController {
 		} 
 		
 		MemberDto memberDto = memberService.join(findedMember);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(memberDto)));
+		return memberDto != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(memberDto))) :
+					ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
 	}
 	
 	/**
@@ -489,7 +489,7 @@ public class MemberController {
 			content = @Content(	
 				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
-					value = "{ \"success\": 1, \"response\": { \"data\": {\"id\": 1, \"email\": \"test@example.com\", \"password\": \"hashed_password\", \"role\": \"USER\", \"name\": \"홍길동\", \"nickname\": \"gildong123\", \"birth\": \"1990-01-01\", \"gender\": \"M\", \"contact\": \"000-0000-0000\", \"address\": \"서울시 강남구 역삼동\", \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\", \"created_at\": \"2025-03-03T05:46:09.470\", \"updated_at\": \"2025-03-03T05:46:09.470\", \"status\": 1 } } }" 
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":47,\"email\":\"baekjongwon1@naver.com\",\"name\":\"백종원\",\"nickname\":\"빽햄구속\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-15T13:58:21.560432\",\"updated_at\":\"2025-03-15T15:50:05.083318\",\"status\":1}}}"
 				)
 			) 
 		),
@@ -498,7 +498,7 @@ public class MemberController {
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{ \"success\": 0, \"response\": { \"message\": \"아이디 또는 비밀번호 불일치.\"  } }" 
+					value = "{ \"success\": 0, \"response\": { \"message\": \"이메일또는비밀번호가일치하지않습니다.\"  } }" 
 				)
 			) 
 		)
@@ -589,7 +589,7 @@ public class MemberController {
 	 * @param token 로그인한 회원의 토큰값
 	 * @return ResponseEntity
 	 */
-	@Operation( summary = "수정", description = "수정 API" )
+	@Operation( summary = "회원정보 수정", description = "회원정보 수정 API" )
 	@ApiResponses({
 		@ApiResponse( 
 			responseCode = "200-수정 성공",
@@ -597,7 +597,7 @@ public class MemberController {
 			content = @Content(	
 				schema = @Schema(implementation = MemberResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":31,\"email\":\"hahaha12@naver.com\",\"password\":\"newPwd\",\"role\":\"USER\",\"name\":\"개명홍길동\",\"nickname\":\"홍홍\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":\"0202\",\"address\":\"\",\"token\":\"tokenString\",\"created_at\":\"2025-02-28T20:16:05.570502\",\"updated_at\":\"2025-02-28T20:16:05.549038\",\"status\":9}}}" 
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":47,\"email\":\"baekjongwon1@naver.com\",\"name\":\"박종원원\",\"nickname\":\"빽다방\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":\"\",\"address\":\"\",\"created_at\":\"2025-03-15T13:58:21.560432\",\"updated_at\":\"2025-03-15T15:50:05.083318\",\"status\":1}}}"
 				)
 			) 
 		),
@@ -606,7 +606,7 @@ public class MemberController {
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"유효하지않은토큰입니다\"}}"
+					value = "{\"success\":0,\"response\":{\"message\":\"토큰이생성되지않았습니다.\"}}"
 				)
 			) 
 		)
@@ -642,6 +642,37 @@ public class MemberController {
 	 * @param token 로그인한 회원의 토큰값
 	 * @return
 	 */
+	@Operation( summary = "비밀번호 수정", description = "비밀번호 수정 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-수정 성공",
+			description = "SUCCESS", 
+			content = @Content(	
+				schema = @Schema(implementation = MemberResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":47,\"email\":\"baekjongwon1@naver.com\",\"name\":\"박종원원\",\"nickname\":\"빽다방\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-15T13:58:21.560432\",\"updated_at\":\"2025-03-17T09:32:32.7737292\",\"status\":1}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-수정 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"토큰이생성되지않았습니다.\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "500-수정 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"비밀번호변경을실패했습니다.\"}}"
+					)
+				) 
+			)
+	})
 	@PatchMapping("/members")
 	public ResponseEntity<?> updatePassword(
 			@Parameter(description = "수정할 비밀번호") @RequestBody Map<String, String> newPwd,
@@ -661,7 +692,7 @@ public class MemberController {
 			findedMember.setPassword(EncryptAES256.encrypt(newPwd.get("password")));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageSource.getMessage("user.pwd_change_fail", null, new Locale("ko")));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.pwd_change_fail", null, new Locale("ko"))));
 		}
 		findedMember.setUpdated_at(LocalDateTime.now());
 		

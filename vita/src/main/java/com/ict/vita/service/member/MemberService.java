@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.vita.repository.member.MemberEntity;
 import com.ict.vita.repository.member.MemberRepository;
 import com.ict.vita.util.Commons;
+import com.ict.vita.util.EncryptAES256;
 
 import lombok.RequiredArgsConstructor;
 
@@ -116,20 +118,25 @@ public class MemberService {
 			nickname = Commons.TEMPORARY;
 		}
 		//회원 저장
-		MemberEntity entity = memberRepository.save(MemberEntity.builder()
-								.email(tempJoinDto.getEmail())
-								.password(password)
-								.role(tempJoinDto.getRole())
-								.name(tempJoinDto.getName())
-								.nickname(nickname)
-								.birth(tempJoinDto.getBirth())
-								.gender(tempJoinDto.getGender())
-								.contact(tempJoinDto.getContact())
-								.address(tempJoinDto.getAddress())
-								.created_at(tempJoinDto.getCreated_at())
-								.updated_at(tempJoinDto.getUpdated_at())
-								.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
-								.build());
+		MemberEntity entity = null;
+		try {
+			entity = memberRepository.save(MemberEntity.builder()
+									.email(tempJoinDto.getEmail())
+									.password(EncryptAES256.encrypt(password))
+									.role(tempJoinDto.getRole())
+									.name(tempJoinDto.getName())
+									.nickname(nickname)
+									.birth(tempJoinDto.getBirth())
+									.gender(tempJoinDto.getGender())
+									.contact(tempJoinDto.getContact())
+									.address(tempJoinDto.getAddress())
+									.created_at(tempJoinDto.getCreated_at())
+									.updated_at(tempJoinDto.getUpdated_at())
+									.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
+									.build());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return MemberDto.toDto(entity);
 	}
 	
@@ -146,42 +153,52 @@ public class MemberService {
 			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); 
 			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
 			//회원 저장
-			MemberEntity entity = memberRepository.save(MemberEntity.builder()
-								.id(joinDto.getId())
-								.email(joinDto.getEmail())
-								.password(joinDto.getPassword())
-								.role(joinDto.getRole())
-								.name(joinDto.getName())
-								.nickname(nickname)
-								.birth(joinDto.getBirth())
-								.gender(joinDto.getGender())
-								.contact(joinDto.getContact())
-								.address(joinDto.getAddress())
-								.token(joinDto.getToken())
-								.created_at(joinDto.getCreated_at())
-								.updated_at(joinDto.getUpdated_at())
-								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-								.build());
+			MemberEntity entity = null;
+			try {
+				entity = memberRepository.save(MemberEntity.builder()
+									.id(joinDto.getId())
+									.email(joinDto.getEmail())
+									.password(EncryptAES256.encrypt(joinDto.getPassword()))
+									.role(joinDto.getRole())
+									.name(joinDto.getName())
+									.nickname(nickname)
+									.birth(joinDto.getBirth())
+									.gender(joinDto.getGender())
+									.contact(joinDto.getContact())
+									.address(joinDto.getAddress())
+									.token(joinDto.getToken())
+									.created_at(joinDto.getCreated_at())
+									.updated_at(joinDto.getUpdated_at())
+									.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
+									.build());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return MemberDto.toDto(entity);
 		}
 		//<닉네임 입력시>
 		//회원 저장
-		MemberEntity entity = memberRepository.save(MemberEntity.builder()
-								.id(joinDto.getId())
-								.email(joinDto.getEmail())
-								.password(joinDto.getPassword())
-								.role(joinDto.getRole())
-								.name(joinDto.getName())
-								.nickname(nickname)
-								.birth(joinDto.getBirth())
-								.gender(joinDto.getGender())
-								.contact(joinDto.getContact())
-								.address(joinDto.getAddress())
-								.token(joinDto.getToken())
-								.created_at(joinDto.getCreated_at())
-								.updated_at(joinDto.getUpdated_at())
-								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-								.build());
+		MemberEntity entity = null;
+		try {
+			entity = memberRepository.save(MemberEntity.builder()
+									.id(joinDto.getId())
+									.email(joinDto.getEmail())
+									.password(EncryptAES256.encrypt(joinDto.getPassword()))
+									.role(joinDto.getRole())
+									.name(joinDto.getName())
+									.nickname(nickname)
+									.birth(joinDto.getBirth())
+									.gender(joinDto.getGender())
+									.contact(joinDto.getContact())
+									.address(joinDto.getAddress())
+									.token(joinDto.getToken())
+									.created_at(joinDto.getCreated_at())
+									.updated_at(joinDto.getUpdated_at())
+									.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
+									.build());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return MemberDto.toDto(entity);
 	}////
 	
