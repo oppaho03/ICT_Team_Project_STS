@@ -13,6 +13,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+//[카테고리 정보가 포함된 용어 요청 객체 (용어+카테고리)]
 public class TermsRequestDto {
     @Schema(description = "ID", example = "0")	
     private Long id = 0L; // APP_TERM_CATEGORY.id
