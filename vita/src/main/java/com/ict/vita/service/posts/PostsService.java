@@ -1,6 +1,7 @@
 package com.ict.vita.service.posts;
 
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,9 @@ import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.repository.posts.PostsRepository;
 import com.ict.vita.util.Commons;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 public class PostsService {
 	//리포지토리 주입
 	private final PostsRepository postsRepository;
+	
+	private final EntityManager em;
 
 	/**
 	 * 포스트 가져오기 
@@ -34,10 +40,52 @@ public class PostsService {
 	 * @return List<PostsDto>
 	 */
 	@Transactional(readOnly = true)
-	public List<PostsDto> getAllPublicPosts(Long cid){
-//	public List<PostsDto> getAllPublicPosts(List<Long> cid){
+//	public List<PostsDto> getAllPublicPosts(Long cid){
+	public List<PostsDto> getAllPublicPosts(List<Long> cids,int size){
+		System.out.println("카테고리 ids(cids):"+cids.toString());
+		/*
 		List<PostsEntity> entityList = postsRepository.getAllPublicPosts(cid);
-		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList()); */
+		
+		
+		StringBuilder jpql = new StringBuilder("SELECT p.id "
+				+ " FROM PostsEntity p"
+				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
+				+ " WHERE p.postStatus = 'PUBLISH' "
+				);
+		if(cids.size() != 0) {
+			for(int i=0;i<cids.size();i++) {
+				if(i==0) jpql.append(String.format(" AND r.termCategoryEntity.id = :id%s", i));
+				else jpql.append(String.format(" OR r.termCategoryEntity.id = :id%s", i));
+			}
+		}
+
+		jpql.append(" GROUP BY p.id ");
+		jpql.append(" HAVING COUNT(DISTINCT r.termCategoryEntity.id) = :size ");
+		
+		System.out.println("jpql:"+jpql);
+
+		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		for(int i=0;i<cids.size();i++) {
+			System.out.println(String.format("id%s:%s", i,cids.get(i)));
+			query.setParameter(String.format("id%s", i), cids.get(i));
+		}
+		query.setParameter("size", size);
+		List<Long> results = query.getResultList();
+		
+		System.out.println("post ids:"+results.toString());
+		
+		List<PostsEntity> entities = new Vector<>();
+		for(Long pid:results) {
+			PostsDto dto = findById(pid);
+			if(dto != null) { 
+				entities.add(dto.toEntity());
+				System.out.println("post:"+dto.toEntity().getId());
+			}
+		}
+		
+		return entities.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+
 	}
 	
 	/**

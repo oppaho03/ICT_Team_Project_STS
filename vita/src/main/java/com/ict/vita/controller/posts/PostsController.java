@@ -80,16 +80,18 @@ public class PostsController {
 		)
 	})
 	@GetMapping
-	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") Long cid){
-//	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid){
-		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
+//	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") Long cid){
+	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid){
 //		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
+		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid, cid.size());
 		
-		TermCategoryDto categoryDto = termCategoryService.findById(cid);
-//		List<TermCategoryDto> categoryDto = termService.findById(cid);
-//		Set<TermCategoryDto> filter = categoryDto.stream().collect(Collectors.toSet());
-//		categoryDto = filter.stream().toList();
-//		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
+//		TermCategoryDto categoryDto = termCategoryService.findById(cid);
+		
+		List<TermCategoryDto> categoryDto = termService.findById(cid);
+		Set<TermCategoryDto> filter = categoryDto.stream().collect(Collectors.toSet());
+		categoryDto = filter.stream().toList();
+		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
+		
 		
 		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
 													.id(dto.getId())
@@ -105,8 +107,8 @@ public class PostsController {
 													.post_modified_at(dto.getPost_modified_at())
 													.comment_status(dto.getComment_status())
 													.comment_count(dto.getComment_count())
-													.categories(List.of(TermsResponseDto.toDto(categoryDto)))
-													//.categories( termsResponses )
+//													.categories(List.of(TermsResponseDto.toDto(categoryDto)))
+													.categories( termsResponses )
 													.build())
 						.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
