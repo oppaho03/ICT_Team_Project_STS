@@ -18,7 +18,11 @@ public class TermCategoryService {
 	//레포지토리 주입	
 	private final TermCategoryRepository termCategoryRepository;
 	
-	//카테고리가 존재하는지 유무 확인
+	/**
+	 * [카테고리가 존재하는지 유무 확인]
+	 * @param cid 카테고리id
+	 * @return
+	 */
 	public boolean isExistCategory(Long cid) {
 		return termCategoryRepository.existsById(cid);
 	}
@@ -35,4 +39,5 @@ public class TermCategoryService {
 		
 		return null;
 	}
+	
 }

@@ -147,6 +147,16 @@ public class TermsService {
 	Repository.findByCategory( name, Sort.by(Sort.Order.asc("id")) ) ); }  
 
 	/**
+	 * [카테고리가 존재하는지 유무 확인]
+	 * @param cid 카테고리id
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public boolean isExistCategory(Long cid) {
+		return termCategoryRepository.existsById(cid);
+	}
+
+	/**
 	 * ID 검색 
 	 * @param id 카테고리 Id
 	 * @return
