@@ -28,7 +28,7 @@ public class KeywordCountingDto {
 				.id(id)
 				.termsEntity(termsDto.toEntity())
 				.count(count)
-				.searched_at(searched_at)
+				.searchedAt(searched_at)
 				.build();
 	}
 	
@@ -38,7 +38,7 @@ public class KeywordCountingDto {
 				.id(entity.getId())
 				.termsDto(TermsDto.toDto(entity.getTermsEntity()))
 				.count(entity.getCount())
-				.searched_at(entity.getSearched_at())
+				.searched_at(entity.getSearchedAt())
 				.build();
 	}
 }
