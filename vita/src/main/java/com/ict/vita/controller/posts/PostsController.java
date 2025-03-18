@@ -81,9 +81,15 @@ public class PostsController {
 	})
 	@GetMapping
 	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") Long cid){
+//	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid){
 		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
+//		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
 		
 		TermCategoryDto categoryDto = termCategoryService.findById(cid);
+//		List<TermCategoryDto> categoryDto = termService.findById(cid);
+//		Set<TermCategoryDto> filter = categoryDto.stream().collect(Collectors.toSet());
+//		categoryDto = filter.stream().toList();
+//		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
 		
 		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
 													.id(dto.getId())
@@ -100,6 +106,7 @@ public class PostsController {
 													.comment_status(dto.getComment_status())
 													.comment_count(dto.getComment_count())
 													.categories(List.of(TermsResponseDto.toDto(categoryDto)))
+													//.categories( termsResponses )
 													.build())
 						.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
@@ -485,8 +492,7 @@ public class PostsController {
 	@DeleteMapping("/{pid}")
 	public ResponseEntity<?> deletePost(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
-			@Parameter(description = "삭제할 글 id") @PathVariable("pid") Long pid)
-	{
+			@Parameter(description = "삭제할 글 id") @PathVariable("pid") Long pid){
 		//로그인한 회원 확인
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
@@ -495,6 +501,30 @@ public class PostsController {
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
+		
+		/*
+		//글 존재하지 않는 경우
+		if(findedPost == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 글입니다"));
+		}
+	
+		//글 작성자가 아닌 경우
+		if(findedPost.getMemberDto().getId() != loginMember.getId()) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("글 작성자만 삭제 가능합니다"));
+		}
+		
+		//글이 삭제된 경우
+		if(Commons.POST_STATUS_DELETE.equals(findedPost.getPost_status())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("이미 삭제된 글입니다"));
+		}
+		
+		if(postsService.deletePost(findedPost.getId())) {
+			List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
+			List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(findedPost.toEntity(),responses )) );
+		} */
+			
+		
 		//글 존재시
 		if(findedPost != null) {
 			//글 작성자인 경우
@@ -517,4 +547,5 @@ public class PostsController {
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 글입니다"));
 	}
+	
 }

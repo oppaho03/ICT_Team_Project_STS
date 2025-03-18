@@ -174,7 +174,6 @@ public class TermsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findById ( List<Long> ids ) {  
-		
 		List<TermCategoryEntity> entities = termCategoryRepository.findById( ids );
 		return entities.stream().map(entity -> TermCategoryDto.toDto(entity)).collect(Collectors.toList());
 	}

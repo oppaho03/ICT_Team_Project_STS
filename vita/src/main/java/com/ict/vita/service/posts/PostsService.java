@@ -35,6 +35,7 @@ public class PostsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<PostsDto> getAllPublicPosts(Long cid){
+//	public List<PostsDto> getAllPublicPosts(List<Long> cid){
 		List<PostsEntity> entityList = postsRepository.getAllPublicPosts(cid);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
 	}
