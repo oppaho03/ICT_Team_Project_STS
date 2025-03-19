@@ -2,11 +2,13 @@ package com.ict.vita.controller.posts;
 
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -51,11 +53,14 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/posts")
 @CrossOrigin
 public class PostsController {
+	
 	//서비스 주입
 	private final PostsService postsService;
 	private final MemberService memberService;
 	private final TermsService termService;
 	private final PostCategoryRelationshipsService pcrService;
+	
+	private final MessageSource messageSource;
 	
 	
 	/**
@@ -79,9 +84,8 @@ public class PostsController {
 		)
 	})
 	@GetMapping
-//	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") Long cid){
 	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid){
-//		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
+		
 		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid, cid.size());
 		
 		List<TermCategoryDto> categoryDto = termService.findById(cid);
@@ -104,10 +108,9 @@ public class PostsController {
 													.post_modified_at(dto.getPost_modified_at())
 													.comment_status(dto.getComment_status())
 													.comment_count(dto.getComment_count())
-//													.categories(List.of(TermsResponseDto.toDto(categoryDto)))
 													.categories( termsResponses )
 													.build())
-						.collect(Collectors.toList());
+			.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
 	}
 	
@@ -155,7 +158,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);//로그인한 회원
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
 		TermCategoryDto category = termService.findById(cid);
@@ -163,47 +166,28 @@ public class PostsController {
 		if(category == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));
 		}
+
 		
-		//<<로그인한 회원이 관리자인 경우>>
-		if(Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole())) {
-	
-			//status값을 넘긴 경우 - 해당하는 status의 글 조회
+		MemberDto searchMember = memberService.findMemberById(uid); //조회하고자 하는 회원
+		
+		//<관리자거나 본인이 쓴 글 조회시>
+		if( (loginMember.getId() == searchMember.getId() || Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole()) ) ) {	
 			if(!Commons.isNull(status)) {
-				
 				//status에 해당하는 회원의 게시글 조회
 				List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
 											.stream().map(dto -> PostsResponseDto.toDto(dto.toEntity(), List.of(TermsResponseDto.toDto(category)) )).toList();
 				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
-			}		
+			}
 			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
 			List<PostsResponseDto> postsList = postsService.getPostsByMember(cid, uid)
-											.stream().map(dto -> PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
+											.stream().map(dto -> PostsResponseDto.toDto(dto.toEntity(), List.of(TermsResponseDto.toDto(category)) )).toList();
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
-		}
+		}	
 		
-		//<<로그인한 회원이 일반회원인 경우>>
-		MemberDto searchMember = memberService.findMemberById(uid); //조회하고자 하는 회원
-		//로그인한 회원이 글 작성자인 경우
-		if(loginMember.getId() == searchMember.getId()) {
-			
-			
-			//status값을 넘긴 경우 - 해당하는 status의 글 조회
-			if(!Commons.isNull(status)) {
-				//status에 해당하는 회원의 게시글 조회
-				List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
-						.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
-				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
-			}	
-			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
-			List<PostsResponseDto> postsList = postsService.getPostsByMember(cid, uid)
-						.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
-		}
-		
-		//로그인한 회원이 글 작성자가 아닌 경우
+		//<로그인한 회원이 글 작성자가 아닌 경우>
 		//status값을 null 또는 공개글 조회가 아닌 경우
 		if ( Commons.isNull(status) || ! status.equalsIgnoreCase(Commons.POST_STATUS_PUBLISH) ) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("작성자만 비공개글 조회 가능합니다"));	
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(List.of()));	
 		}
 		else {
 			List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
@@ -246,19 +230,23 @@ public class PostsController {
 		TermCategoryDto category = termService.findById(cid);
 		//카테고리가 존재하지 않는 경우
 		if(category == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));
 		}
 		
-		//제목으로 검색(title 전달시)
-		if(!Commons.isNull(title)) {
-			List<PostsResponseDto> postsList = postsService.getPostsByTitle(cid,title)
-					.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
+		//제목 또는 닉네임 전달시
+		if(!Commons.isNull(title) || !Commons.isNull(nickname)) {		
+			List<PostsDto> postsList = null;
+			if( !Commons.isNull(title) ) postsList = postsService.getPostsByTitle(cid,title);
+			else postsList = postsService.getPostsByNickname(cid, nickname);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList()));
+			
 		}
-		//닉네임으로 검색(nickname 전달시)
-		List<PostsResponseDto> postsList = postsService.getPostsByNickname(cid, nickname)
-					.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
+
+		//제목 또는 닉네임 미전달시
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(List.of()));
+		
+		
 	}
 
 	/**
@@ -308,7 +296,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
 				
@@ -389,7 +377,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
@@ -416,7 +404,7 @@ public class PostsController {
 				List<PostCategoryRelationshipsDto> pcrDtos = pcrService.update(savedPost, categories);
 				List<TermsResponseDto> termsResponseDto = pcrDtos.stream().map( pcrDto->TermsResponseDto.toDto(pcrDto.getTermCategoryDto()) ).toList();
 				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity(), termsResponseDto)));
-			}
+			}		
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 수정 실패했습니다"));
 		}
@@ -496,55 +484,28 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
 		
-		/*
-		//글 존재하지 않는 경우
-		if(findedPost == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 글입니다"));
+		//글 존재하지 않거나 글이 삭제된 경우
+		if( findedPost == null || Commons.POST_STATUS_DELETE.equals(findedPost.getPost_status()) ) {
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		}
 	
 		//글 작성자가 아닌 경우
 		if(findedPost.getMemberDto().getId() != loginMember.getId()) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("글 작성자만 삭제 가능합니다"));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( "글 작성자만 삭제 가능합니다" ));
 		}
 		
-		//글이 삭제된 경우
-		if(Commons.POST_STATUS_DELETE.equals(findedPost.getPost_status())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("이미 삭제된 글입니다"));
-		}
+		boolean result = postsService.deletePost(findedPost.getId());
 		
-		if(postsService.deletePost(findedPost.getId())) {
-			List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
-			List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(findedPost.toEntity(),responses )) );
-		} */
-			
-		
-		//글 존재시
-		if(findedPost != null) {
-			//글 작성자인 경우
-			if(findedPost.getMemberDto().getId() == loginMember.getId()) {
-				//글이 삭제 안 된 경우
-				if(!Commons.POST_STATUS_DELETE.equals(findedPost.getPost_status())) {
-					if(postsService.deletePost(findedPost.getId())) {
-						List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
-						List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
-						return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(findedPost.toEntity(),responses )) );
-					}
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 삭제 실패"));
-				}
-				
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("이미 삭제된 글입니다"));
-			}
-			
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail("글 작성자만 삭제 가능합니다"));
-		}
-		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 글입니다"));
+		List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
+		List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(findedPost.toEntity(),responses )) );
+
 	}
+	
 	
 }

@@ -40,12 +40,8 @@ public class PostsService {
 	 * @return List<PostsDto>
 	 */
 	@Transactional(readOnly = true)
-//	public List<PostsDto> getAllPublicPosts(Long cid){
 	public List<PostsDto> getAllPublicPosts(List<Long> cids,int size){
 		System.out.println("카테고리 ids(cids):"+cids.toString());
-		/*
-		List<PostsEntity> entityList = postsRepository.getAllPublicPosts(cid);
-		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList()); */
 		
 		//JPQL문 작성
 		StringBuilder jpql = new StringBuilder("SELECT p.id "
@@ -63,7 +59,7 @@ public class PostsService {
 
 		jpql.append(" GROUP BY p.id ");
 		jpql.append(" HAVING COUNT(DISTINCT r.termCategoryEntity.id) = :size ");
-		
+
 		System.out.println("jpql:"+jpql);
 
 		//createQuery() 메서드 이용해 JPQL로 Query 생성
