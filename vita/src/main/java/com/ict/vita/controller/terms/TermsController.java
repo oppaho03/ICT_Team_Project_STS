@@ -29,6 +29,7 @@ import com.ict.vita.service.terms.TermsRequestDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.service.terms.TermsService;
 import com.ict.vita.util.Commons;
+import com.ict.vita.util.EncryptAES256;
 import com.ict.vita.util.JwtUtil;
 import com.ict.vita.util.ResultUtil;
 
@@ -96,7 +97,7 @@ public class TermsController {
 
 		if ( p > 0 ) termCategoryDtoList.addAll(termsService.findAll(p, ol));
 		else termCategoryDtoList.addAll(termsService.findAll());
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termCategoryDtoList.stream().map(TermsResponseDto::toDto).collect(Collectors.toList()) ));
 
 	} /// findAll()
