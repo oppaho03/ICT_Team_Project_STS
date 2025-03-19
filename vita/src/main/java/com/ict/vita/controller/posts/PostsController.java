@@ -55,7 +55,6 @@ public class PostsController {
 	private final PostsService postsService;
 	private final MemberService memberService;
 	private final TermsService termService;
-	private final TermCategoryService termCategoryService;
 	private final PostCategoryRelationshipsService pcrService;
 	
 	
@@ -84,8 +83,6 @@ public class PostsController {
 	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid){
 //		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid);
 		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid, cid.size());
-		
-//		TermCategoryDto categoryDto = termCategoryService.findById(cid);
 		
 		List<TermCategoryDto> categoryDto = termService.findById(cid);
 		Set<TermCategoryDto> filter = categoryDto.stream().collect(Collectors.toSet());
@@ -161,7 +158,7 @@ public class PostsController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 회원입니다"));
 		}
 		
-		TermCategoryDto category = termCategoryService.findById(cid);
+		TermCategoryDto category = termService.findById(cid);
 		//카테고리가 존재하지 않는 경우
 		if(category == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));
@@ -246,7 +243,7 @@ public class PostsController {
 			@Parameter(description = "검색할 게시글 제목") @RequestParam(value = "title",required = false) String title, 
 			@Parameter(description = "검색할 회원 닉네임") @RequestParam(value = "nickname",required = false) String nickname){
 		
-		TermCategoryDto category = termCategoryService.findById(cid);
+		TermCategoryDto category = termService.findById(cid);
 		//카테고리가 존재하지 않는 경우
 		if(category == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));

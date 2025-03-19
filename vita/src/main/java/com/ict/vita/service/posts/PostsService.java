@@ -47,12 +47,13 @@ public class PostsService {
 		List<PostsEntity> entityList = postsRepository.getAllPublicPosts(cid);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList()); */
 		
-		
+		//JPQL문 작성
 		StringBuilder jpql = new StringBuilder("SELECT p.id "
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " WHERE p.postStatus = 'PUBLISH' "
 				);
+		
 		if(cids.size() != 0) {
 			for(int i=0;i<cids.size();i++) {
 				if(i==0) jpql.append(String.format(" AND r.termCategoryEntity.id = :id%s", i));
@@ -65,16 +66,21 @@ public class PostsService {
 		
 		System.out.println("jpql:"+jpql);
 
+		//createQuery() 메서드 이용해 JPQL로 Query 생성
 		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		
+		//파라미터 바인딩
 		for(int i=0;i<cids.size();i++) {
 			System.out.println(String.format("id%s:%s", i,cids.get(i)));
 			query.setParameter(String.format("id%s", i), cids.get(i));
 		}
 		query.setParameter("size", size);
-		List<Long> results = query.getResultList();
 		
-		System.out.println("post ids:"+results.toString());
+		//JPQL 결과 리스트를 반환
+		List<Long> results = query.getResultList(); //조회한 글 목록 id값들
+		System.out.println("post ids:" + results.toString());
 		
+		//글id로 글 목록 조회
 		List<PostsEntity> entities = new Vector<>();
 		for(Long pid:results) {
 			PostsDto dto = findById(pid);
