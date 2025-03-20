@@ -296,7 +296,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
 				
@@ -377,7 +377,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
@@ -484,7 +484,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);

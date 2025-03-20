@@ -60,10 +60,10 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 public class MemberController {
 	//서비스 주입
-	private final MessageSource messageSource;
 	private final MemberService memberService;
 	
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
+	private final MessageSource messageSource;
 	
 	/**
 	 * [모든 회원 조회] - 회원의 status에 상관없이 모든 회원 조회

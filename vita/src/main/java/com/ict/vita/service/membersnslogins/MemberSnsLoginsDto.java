@@ -20,7 +20,7 @@ import lombok.Setter;
 public class MemberSnsLoginsDto {
 	private Long id; //PK
 	private MemberDto memberDto; //회원
-	private String login_id = ""; //로그인ID 또는 이메일
+	private String login_id; //로그인ID 또는 이메일
 	private String provider; //인증서버
 	private String provider_id; //인증서버 발급ID
 	private String access_token; //인증토큰
