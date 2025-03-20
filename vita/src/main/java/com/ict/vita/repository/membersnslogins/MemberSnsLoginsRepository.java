@@ -14,7 +14,7 @@ public interface MemberSnsLoginsRepository extends JpaRepository<MemberSnsLogins
 			select s.*
 			from APP_MEMBER_SNS_LOGINS s
 			join APP_MEMBER m on s.member_id = m.id
-			where m.email = :email
+			where s.login_id = :email
 			""", nativeQuery = true)
 	Optional<MemberSnsLoginsEntity> findByEmail(@Param("email") String email);
 

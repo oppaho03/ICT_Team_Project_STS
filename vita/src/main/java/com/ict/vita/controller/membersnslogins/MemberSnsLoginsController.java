@@ -35,16 +35,78 @@ public class MemberSnsLoginsController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/api/sns_login")
-//	public ResponseEntity<?> snsLogin(@RequestBody Map<String, String> infos){
 	public ResponseEntity<?> snsLogin(@RequestBody MemberSnsLoginsRequestDto snsReqDto){
 		
 		System.out.println(String.format("[sns]이메일:%s, 인증토큰:%s", snsReqDto.getEmail(), snsReqDto.getToken()));
 		
+		//<sns회원 테이블에서 조회>
+		MemberSnsLoginsDto snsDto = memberSnsLoginsService.getSnsMemberByEmail(snsReqDto.getEmail().trim());
+		//<회원 테이블에서 이메일 조회>
+		MemberDto findedMember = memberService.findMemberByEmail(snsReqDto.getEmail().trim());
+		
+		//[sns회원 존재시]
+		if(snsDto != null) {
+			//회원 테이블에 존재
+			if(findedMember.getStatus() != 1) { 
+				findedMember.setStatus(1);
+				memberService.updateMember(findedMember);
+			}
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+		}
+		
+		//[sns회원 미존재시]
+		//회원 테이블에 없을 때
+		if(findedMember == null) {
+			//회원 테이블에 저장
+			findedMember = MemberDto.builder()
+									.email(snsReqDto.getEmail().trim())
+									.password(EncryptAES256.encrypt(snsReqDto.getToken()) )
+									.nickname( snsReqDto.getEmail().trim().split("@")[0] )
+									.created_at(LocalDateTime.now())
+									.updated_at(LocalDateTime.now())
+									.status(1)
+									.build();
+			findedMember = memberService.join(findedMember);
+			//sns회원 테이블에 저장
+			snsDto = MemberSnsLoginsDto.builder()
+									.memberDto(findedMember)
+									.login_id( snsReqDto.getEmail().trim() )
+									.access_token(snsReqDto.getToken().trim())
+									.status(1)
+									.login_created_at(LocalDateTime.now())
+									.login_modified_at(LocalDateTime.now())
+									.provider(Commons.TEMPORARY)
+									//.provider_id(Commons.TEMPORARY) //유니크한 값
+									.build();
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+		}
+		
+		//회원 테이블에 있을 때
+		if(findedMember.getStatus() != 1) {
+			findedMember.setStatus(1);
+			findedMember.setPassword(EncryptAES256.encrypt(snsReqDto.getToken()));
+			findedMember = memberService.updateMember(findedMember);
+		}
+		
+		//sns회원 테이블에 저장
+		snsDto = MemberSnsLoginsDto.builder()
+								.memberDto(findedMember)
+								.login_id( snsReqDto.getEmail().trim() )
+								.access_token(snsReqDto.getToken().trim())
+								.status(1)
+								.login_created_at(LocalDateTime.now())
+								.login_modified_at(LocalDateTime.now())
+								.provider(Commons.TEMPORARY)
+								//.provider_id(Commons.TEMPORARY) //유니크한 값
+								.build();
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+		
+		
+		/*
 		//<회원 테이블에서 이메일 존재여부 확인>
 		//회원 존재시
 		if(memberService.isExistsEmail(snsReqDto.getEmail().trim())) {
-			
-//			MemberDto findedMember = memberService.findMemberByEmail(infos.get("email").trim()); 
+
 			MemberDto findedMember = memberService.findMemberByEmail(snsReqDto.getEmail().trim()); 
 			
 			//탈퇴(0)한 회원 또는 임시가입(9)된 회원인 경우
@@ -69,18 +131,12 @@ public class MemberSnsLoginsController {
 			
 			//sns회원 테이블에 미존재시
 			else {
-//				MemberSnsLoginsRequestDto snsReqDto = MemberSnsLoginsRequestDto.builder()
-//														.member( memberService.findMemberByEmail(snsReqDto.getEmail().trim()).getId() )
-//														.login_id(snsReqDto.getEmail().trim())
-//														.access_token(snsReqDto.getToken().trim())
-//														.build();
 				
 				findedSnsMember = MemberSnsLoginsDto.builder()
-//						 					.id(null)
 											.memberDto(findedMember)
 											.login_id(snsReqDto.getEmail())
 											.provider(Commons.TEMPORARY)
-											//.provider_id(Commons.TEMPORARY)
+											//.provider_id(Commons.TEMPORARY) //유니크한 값
 											.access_token(snsReqDto.getToken())
 											.refresh_token(null)
 											.status(1)
@@ -89,7 +145,6 @@ public class MemberSnsLoginsController {
 											.build();
 				
 				//sns회원 테이블에 저장
-//				findedSnsMember = memberSnsLoginsService.save(snsReqDto.toLoginDto(findedMember));
 				findedSnsMember = memberSnsLoginsService.save(findedSnsMember);
 			}
 			
@@ -124,12 +179,13 @@ public class MemberSnsLoginsController {
 									.login_created_at(LocalDateTime.now())
 									.login_modified_at(LocalDateTime.now())
 									.provider(Commons.TEMPORARY)
-									//.provider_id(Commons.TEMPORARY)
+									//.provider_id(Commons.TEMPORARY) //유니크한 값
 									.build();
 		MemberSnsLoginsDto savedSnsMember = memberSnsLoginsService.save(snsDto);
 		
 		return savedSnsMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(savedSnsMember))
 				: ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("sns회원 저장 실패"));
+	} */
 	}
 	
 }
