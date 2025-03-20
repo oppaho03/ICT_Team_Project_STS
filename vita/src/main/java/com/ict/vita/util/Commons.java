@@ -3,7 +3,6 @@ package com.ict.vita.util;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;

@@ -21,7 +21,7 @@ public interface ChatAnswerRepository extends JpaRepository<ChatAnswerEntity, Lo
                     OR CONTAINS(a.conclusion, :keywords, 3) > 0
                 ORDER BY scores DESC
             ) aa
-            WHERE ROWNUM <= 2
+            WHERE ROWNUM <= 1
             """, nativeQuery = true)
 	List<ChatAnswerEntity> findAnswerByKeywords(@Param("keywords") String keywords); //키워드로 답변 검색
 
