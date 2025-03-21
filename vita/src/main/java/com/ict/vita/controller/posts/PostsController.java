@@ -1,6 +1,7 @@
 package com.ict.vita.controller.posts;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class PostsController {
 						schema = @Schema(implementation = PostsResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":68,\"author\":47,\"post_title\":\"수수title123\",\"post_content\":\"수수contents입니다\",\"post_summary\":\"수수정글요약이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-17T20:53:32.206184\",\"post_modified_at\":\"2025-03-17T21:11:59.990984\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":69,\"author\":47,\"post_title\":\"글하고질병글입니다.\",\"post_content\":\"contents입니다\",\"post_summary\":\"황조롱이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-18T17:42:18.876855\",\"post_modified_at\":\"2025-03-18T17:42:18.721348\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}]}}"
 				)
 			) 
 		)
@@ -134,16 +135,16 @@ public class PostsController {
 						schema = @Schema(implementation = PostsResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}]}}"
 				)
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "400-조회 실패",
-				description = "FAIL",
+				responseCode = "401-조회 실패",
+				description = "FAIL(회원 미존재)",
 				content = @Content(	
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"작성자만비공개글조회가능합니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 					)
 				) 
 			)
@@ -158,13 +159,13 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);//로그인한 회원
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
 		TermCategoryDto category = termService.findById(cid);
 		//카테고리가 존재하지 않는 경우
 		if(category == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(Arrays.asList()));
 		}
 
 		
@@ -189,6 +190,7 @@ public class PostsController {
 		if ( Commons.isNull(status) || ! status.equalsIgnoreCase(Commons.POST_STATUS_PUBLISH) ) {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(List.of()));	
 		}
+		
 		else {
 			List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
 						.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
@@ -216,7 +218,7 @@ public class PostsController {
 						schema = @Schema(implementation = PostsResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}]}}"
 				)
 			) 
 		)
@@ -230,7 +232,7 @@ public class PostsController {
 		TermCategoryDto category = termService.findById(cid);
 		//카테고리가 존재하지 않는 경우
 		if(category == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("존재하지 않는 카테고리입니다"));
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(List.of()));
 		}
 		
 		//제목 또는 닉네임 전달시
@@ -263,7 +265,7 @@ public class PostsController {
 			content = @Content(	
 				schema = @Schema(implementation = PostsResponseDto.class),
 				examples = @ExampleObject(
-					value = ""
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":71,\"author\":49,\"post_title\":\"우하하하하\",\"post_content\":\"글글글\",\"post_summary\":\"우하하하글\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-21T11:52:10.7016797\",\"post_modified_at\":\"2025-03-21T11:52:10.7016797\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":830,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":825}]}}}"
 				)
 			) 
 		),
@@ -277,11 +279,11 @@ public class PostsController {
 				) 
 			),
 		@ApiResponse( 
-				responseCode = "404-글 등록 실패",
-				description = "FAIL",
+				responseCode = "401-글 등록 실패",
+				description = "FAIL(회원 미존재)",
 				content = @Content(	
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는회원입니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 					)
 				) 
 			)
@@ -296,7 +298,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
 				
@@ -335,7 +337,7 @@ public class PostsController {
 			content = @Content(	
 				schema = @Schema(implementation = PostsResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":66,\"memberDto\":{\"id\":29,\"email\":\"oppaho123@gmail.com\",\"password\":\"pwd\",\"role\":\"USER\",\"name\":\"홍길동\",\"nickname\":\"oppaho123\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoieWVzbmlja0BuYXZlci5jb20iLCJzdWIiOiI0MiIsImlhdCI6MTc0MTM0MjI5OCwiZXhwIjoxNzQxMzQzMTk4fQ.0tjhRQMEjNruFwoI8g6F1QISOcjF1qIZ77ktq_R4fL0\",\"created_at\":\"2025-02-27T20:28:06.48291\",\"updated_at\":\"2025-02-27T20:28:06.475567\",\"status\":1},\"post_title\":\"수title123\",\"post_content\":\"수contents입니다\",\"post_summary\":\"수정글요약이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-12T08:14:37.653523\",\"post_modified_at\":\"2025-03-12T09:29:10.2319364\",\"comment_status\":\"OPEN\",\"comment_count\":0}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":70,\"author\":47,\"post_title\":\"수수정22\",\"post_content\":\"22수contents입니다\",\"post_summary\":\"22수정글요약이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-19T21:02:49.671588\",\"post_modified_at\":\"2025-03-21T11:58:44.2114677\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]}}}"
 				)
 			) 
 		),
@@ -349,20 +351,20 @@ public class PostsController {
 				) 
 			),
 		@ApiResponse( 
-				responseCode = "403-글 수정 실패",
-				description = "FAIL",
+				responseCode = "401-글 수정 실패",
+				description = "FAIL(회원 미존재)",
 				content = @Content(	
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"글작성자만수정가능합니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 					)
 				) 
 			),
 		@ApiResponse( 
-				responseCode = "404-글 수정 실패",
-				description = "FAIL",
+				responseCode = "403-글 수정 실패",
+				description = "FAIL(글작성자 아님)",
 				content = @Content(	
 					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는회원입니다\"}}"
+						value = "{\"success\":0,\"response\":{\"message\":\"글작성자만수정가능합니다\"}}"
 					)
 				) 
 			)
@@ -377,7 +379,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
@@ -421,14 +423,24 @@ public class PostsController {
 	@Operation( summary = "글 삭제", description = "글 삭제 API" )
 	@ApiResponses({
 		@ApiResponse( 
-			responseCode = "404-글 삭제 실패",
-			description = "FAIL",
-			content = @Content(	
-				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는회원입니다\"}}"
-				)
-			) 
-		),
+				responseCode = "200-글 삭제 성공",
+				description = "SUCCESS",
+				content = @Content(	
+					schema = @Schema(implementation = PostsResponseDto.class),
+					examples = @ExampleObject(
+						value = "{\"success\":1,\"response\":{\"data\":{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "401-글 삭제 실패",
+				description = "FAIL(회원 미존재)",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+					)
+				) 
+			),
 		@ApiResponse( 
 				responseCode = "403-글 삭제 실패",
 				description = "FAIL",
@@ -438,43 +450,7 @@ public class PostsController {
 					)
 				) 
 			),
-		@ApiResponse( 
-				responseCode = "400-글 삭제 실패",
-				description = "FAIL",
-				content = @Content(	
-					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"이미삭제된글입니다\"}}"
-					)
-				) 
-			),
-		@ApiResponse( 
-				responseCode = "400-글 삭제 실패",
-				description = "FAIL",
-				content = @Content(	
-					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"존재하지않는글입니다\"}}"
-					)
-				) 
-			),
-		@ApiResponse( 
-				responseCode = "400-글 삭제 실패",
-				description = "FAIL",
-				content = @Content(	
-					examples = @ExampleObject(
-						value = "{\"success\":0,\"response\":{\"message\":\"글삭제실패\"}}"
-					)
-				) 
-			),
-		@ApiResponse( 
-				responseCode = "200-글 삭제 성공",
-				description = "SUCCESS",
-				content = @Content(	
-					schema = @Schema(implementation = PostsResponseDto.class),
-					examples = @ExampleObject(
-						value = "{\"success\":1,\"response\":{\"data\":{\"id\":23,\"author\":29,\"post_title\":\"글제목2\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T20:57:31.119668\",\"post_modified_at\":\"2025-03-11T20:57:31.104365\",\"comment_status\":\"OPEN\",\"comment_count\":0}}}"
-					)
-				) 
-			)
+		
 	})
 	@DeleteMapping("/{pid}")
 	public ResponseEntity<?> deletePost(
@@ -484,7 +460,7 @@ public class PostsController {
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		//회원이 존재하지 않는 경우
 		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);

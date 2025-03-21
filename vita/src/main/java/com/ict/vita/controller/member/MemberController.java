@@ -85,7 +85,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "400-모든 회원 조회 실패",
+			responseCode = "401-모든 회원 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
@@ -94,7 +94,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "401-모든 회원 조회 실패",
+				responseCode = "403-모든 회원 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
@@ -110,9 +110,9 @@ public class MemberController {
 		
 		//접근권한이 없는 경우
 		if ( findedMember == null )
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		else if ( ! findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) 
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		//관리자인 경우
 		List<MemberResponseDto> members = memberService.getAllMembers().stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
@@ -139,7 +139,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "400-모든 일반회원(USER) 조회 실패",
+			responseCode = "401-모든 일반회원(USER) 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
@@ -148,7 +148,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "401-모든 일반회원(USER) 조회 실패",
+				responseCode = "403-모든 일반회원(USER) 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
@@ -164,9 +164,9 @@ public class MemberController {
 				
 		//접근권한이 없는 경우
 		if ( findedMember == null )
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		else if ( ! findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) 
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		//관리자인 경우
 		List<MemberResponseDto> members = memberService.findMemberByRole(Commons.ROLE_USER).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "400-상태별 회원 조회 실패",
+			responseCode = "401-상태별 회원 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
@@ -203,7 +203,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "401-상태별 회원 조회 실패",
+				responseCode = "403-상태별 회원 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
@@ -221,9 +221,9 @@ public class MemberController {
 		
 		//접근권한이 없는 경우
 		if ( findedMember == null )
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		else if ( ! findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) 
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		
 		//관리자인 경우
@@ -252,7 +252,7 @@ public class MemberController {
 			)
 		),
 		@ApiResponse( 
-			responseCode = "400-역할별 회원 조회 실패",
+			responseCode = "401-역할별 회원 조회 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
@@ -261,7 +261,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "401-역할별 회원 조회 실패",
+				responseCode = "403-역할별 회원 조회 실패",
 				description = "FAIL", 
 				content = @Content(					
 					examples = @ExampleObject(
@@ -279,9 +279,9 @@ public class MemberController {
 		
 		//접근권한이 없는 경우
 		if ( findedMember == null )
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		else if ( ! findedMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) 
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		//관리자인 경우
 		List<MemberResponseDto> findedMembers = memberService.findMemberByRole(role).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
@@ -306,7 +306,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-			responseCode = "400-임시 회원가입 실패",
+			responseCode = "401-임시 회원가입 실패",
 			description = "FAIL", 
 			content = @Content(					
 				examples = @ExampleObject(
@@ -337,7 +337,7 @@ public class MemberController {
 	public ResponseEntity<?> tempJoin(@Parameter(description = "임시 회원가입 요청 객체") @RequestBody MemberJoinDto tempJoinDto){
 		//<회원이 이메일을 입력하지 않은 경우>
 		if(Commons.isNull(tempJoinDto.getEmail())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail", null, new Locale("ko")) ));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail", null, new Locale("ko")) ));
 		}
 		
 		//<회원이 이메일을 입력한 경우>
@@ -380,7 +380,7 @@ public class MemberController {
 			) 
 		),
 		@ApiResponse( 
-				responseCode = "403-회원가입 실패",
+				responseCode = "401-회원가입 실패",
 				description = "FAIL(이메일 인증 안 된 경우)", 
 				content = @Content(					
 					examples = @ExampleObject(
@@ -444,7 +444,7 @@ public class MemberController {
 		}
 		//<이메일 인증이 안 된 경우>
 		if(joinDto.getIsEmailAuth() != 1) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.join_fail_not_verified", null, new Locale("ko")))); 
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.join_fail_not_verified", null, new Locale("ko")))); 
 		}
 	
 		//<이메일 인증이 된 경우>
@@ -507,15 +507,20 @@ public class MemberController {
 	public ResponseEntity<?> login(
 			@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,
 			BindingResult bindingResult){
+		System.out.println("수정 전:"+loginDto.getPassword());
+		
 		//[이메일과 비밀번호가 일치하는 회원 조회]
 		try {
+			System.out.println("비번암호화:"+EncryptAES256.encrypt(loginDto.getPassword()));
+			System.out.println("비번암호화:"+EncryptAES256.encrypt(loginDto.getPassword()));
 			loginDto.setPassword(EncryptAES256.encrypt(loginDto.getPassword()));
-			
+			System.out.println("loginDto:"+loginDto.getPassword());
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("[로그인]비밀번호 암호화 실패");
 		}
 		
+		System.out.println("수정 후:"+loginDto.getPassword());
 		// <로그인 시도>
 		MemberDto findedMember = memberService.validateLogin(loginDto);
 		//<회원이 아닌 경우>
