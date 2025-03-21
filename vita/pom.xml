@@ -49,7 +49,6 @@
 		</dependency>
 		
 		<!-- OAuth2 사용(SNS로그인) 위한 의존성 -->
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
@@ -60,6 +59,11 @@
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-webflux</artifactId>
 		    <version>3.4.3</version>
+		</dependency> 
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		
 		<!-- 웹 요청을 처리하기 위한 의존성(REST API 또는 웹 애플리케이션을 만들 때 필수) -->
@@ -103,13 +107,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		
-		<!-- Spring Security와 관련된 기능을 테스트할 때 사용하는 라이브러리 -->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		

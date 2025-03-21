@@ -1,7 +1,6 @@
 spring:
   messages:
-    basename:
-    - i18n/messages
+    basename: i18n/messages
     encoding: UTF-8
   #데이터 베이스 연결을 위한 설정
   #데이터베이스 다중화
