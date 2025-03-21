@@ -46,6 +46,13 @@ public class MemberSnsLoginsController {
 		
 		//[sns회원 존재시]
 		if(snsDto != null) {
+			
+			snsDto.setLogin_modified_at(LocalDateTime.now());
+			snsDto.setProvider_id("aaaaab"); //****임시
+			snsDto.setAccess_token(snsReqDto.getToken().trim());
+			
+			memberSnsLoginsService.update(snsDto);
+			
 			//회원 테이블에 존재
 			if(findedMember.getStatus() != 1) { 
 				findedMember.setStatus(1); //status를 1로(가입상태)
@@ -85,8 +92,8 @@ public class MemberSnsLoginsController {
 								.status(1) //status를 1로
 								.login_created_at(LocalDateTime.now())
 								.login_modified_at(LocalDateTime.now())
-								.provider(Commons.TEMPORARY)
-								//.provider_id(Commons.TEMPORARY) //유니크한 값
+								.provider(Commons.TEMPORARY) //****값 임시로 넣어놓음
+								.provider_id("providerrr") //****유니크한 값
 								.build();
 		memberSnsLoginsService.save(snsDto);
 		

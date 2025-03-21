@@ -29,4 +29,10 @@ public class MemberSnsLoginsService {
 		return entity != null ? MemberSnsLoginsDto.toDto(entity) : null;
 	}
 	
+	//[sns회원 수정]
+	public MemberSnsLoginsDto update(MemberSnsLoginsDto loginDto) {
+		MemberSnsLoginsEntity entity = memberSnsLoginsRepository.save(loginDto.toEntity());
+		return MemberSnsLoginsDto.toDto(entity);
+	}
+	
 }
