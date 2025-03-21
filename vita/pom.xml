@@ -48,26 +48,19 @@
 		    <artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 		
-		<!--
-			- Spring Boot에서 보안 기능을 쉽게 적용할 수 있도록 도와주는 의존성
-			- 기본 로그인/로그아웃 기능, 인증 & 인가(권한) 처리, 암호화, CSRF 보호,세션관리 등을 제공
-			- 스프링 시큐리티 기본 설정이 돼 있어 사용 안 하면 주석처리하기
-			- 스프링 시큐리티 적용시 주석 해제하기
-		-->
-		<!--
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		-->
-		
 		<!-- OAuth2 사용(SNS로그인) 위한 의존성 -->
-		<!--
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
-		-->
+		
+		<!-- WebClient 사용하기 위한 의존성 (HTTP 클라이언트) -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-webflux</artifactId>
+		    <version>3.4.3</version>
+		</dependency>
 		
 		<!-- 웹 요청을 처리하기 위한 의존성(REST API 또는 웹 애플리케이션을 만들 때 필수) -->
 		<dependency>
