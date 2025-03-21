@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 //import reactor.core.publisher.Mono;
 
 @RestController
+@CrossOrigin
 //[WebClient 테스트용]
 public class WebClientTestController {
 
@@ -28,7 +30,7 @@ public class WebClientTestController {
 	@PostMapping("/wc")
 	public ResponseEntity<?> wcTest(){
 		//파이썬으로 요청
-		System.out.println("wcTest");
+		System.out.println("wcTest1");
 		//"https://jsonplaceholder.typicode.com/posts"
 
 		Map<String, Object> map = new HashMap<>();
@@ -42,10 +44,11 @@ public class WebClientTestController {
 		
 		//리액트로 리다이렉트
 		HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "http://192.168.0.5:9000/auth/login");
-        return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 Redirect
-		
-		//return ResponseEntity.status(HttpStatus.OK).body(result);
+        headers.add(HttpHeaders.LOCATION, "http://192.168.0.55:8080/where");
+
+        return ResponseEntity.status(HttpStatus.FOUND).body(ResultUtil.fail("http://192.168.0.55:8080/where"));
+        // return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 Redirect
+
 	}
 	
 	public Mono<String> sendDataToPython(Map<String, Object> map) {
