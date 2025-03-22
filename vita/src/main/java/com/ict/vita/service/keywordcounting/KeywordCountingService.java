@@ -14,6 +14,7 @@ import com.ict.vita.repository.termcategory.TermCategoryRepository;
 import com.ict.vita.repository.terms.TermsEntity;
 import com.ict.vita.repository.terms.TermsRepository;
 import com.ict.vita.service.termcategory.TermCategoryDto;
+import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.TermsDto;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class KeywordCountingService {
 	//리포지토리 주입
 	private final KeywordCountingRepository keywordCountingRepository;
-	private final TermCategoryRepository termCategoryRepository;
+	private final TermCategoryService termCategoryService;
 	//날짜 형식 상수 설정
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 	
@@ -61,11 +62,22 @@ public class KeywordCountingService {
 	}
 	//시작일자~지정일자 사이에 그키워드가 얼마나 검색되었는지?
 	@Transactional
-	public List<KeywordCountingDto> getCountBtweenDates(TermCategoryDto termCategoryDto, String startDate,String endDate){
-		TermsEntity termsEntity = termCategoryDto.toEntity().getTermsEntity();
-		List<Object[]> results = keywordCountingRepository.findKeywordCountBetweenDates(termsEntity,startDate,endDate);
-		
-		return List.of();
+	public List<KeywordCountingResponseDto> getCountBetweenDates(KeywordCountingRequestDto requestDto,String startDate,String endDate ){
+		System.out.println("id값"+requestDto.getId());
+		TermCategoryDto termCategoryDto = termCategoryService.findById(requestDto.getId());
+	    TermsEntity termsEntity = termCategoryDto.toEntity().getTermsEntity();
+	    
+	    List<Object[]> results =
+	        keywordCountingRepository.findKeywordCountBetweenDates(termsEntity, startDate, endDate);
+
+	    return results.stream()
+	        .map(row -> KeywordCountingResponseDto.builder()
+	            .keyword((String) row[0])
+	            .count((Long) row[1])
+	            
+	            .build())
+	        .collect(Collectors.toList());
+						
 	}
 	
 }

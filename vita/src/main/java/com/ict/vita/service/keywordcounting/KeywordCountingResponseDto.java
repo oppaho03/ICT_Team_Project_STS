@@ -18,10 +18,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class KeywordCountingResponseDto {
 
-	private Long id;
+	private String keyword;
 	private Long count;
-	private String searched_at;
 	
 
-	
+
 }
