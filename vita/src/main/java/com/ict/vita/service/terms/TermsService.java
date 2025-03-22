@@ -101,7 +101,7 @@ public class TermsService {
 	@Transactional(readOnly = true)
 	public List<TermCategoryDto> findAll(int p, int ol) { 
 
-		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("id")) );
+		Pageable pageable = PageRequest.of( p - 1, ol, Sort.by(Sort.Order.asc("id")) );
 		Page page = termsRepository.findAll(pageable);
 		
 		/*

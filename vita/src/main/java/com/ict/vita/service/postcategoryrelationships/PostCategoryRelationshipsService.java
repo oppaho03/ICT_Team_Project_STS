@@ -71,7 +71,7 @@ public class PostCategoryRelationshipsService {
 	@Transactional(readOnly = true)
 	public List<PostCategoryRelationshipsDto> findAllByTermCategoryId( Long id, int p, int ol ) {
 
-		Pageable pageable = PageRequest.of( p, ol, Sort.by(Sort.Order.asc("term_category_id")) );
+		Pageable pageable = PageRequest.of( p - 1, ol, Sort.by(Sort.Order.asc("term_category_id")) );
 		Page page = postCategoryRelationshipsRepository.findByTermCategoryId(id, pageable);
 
 		if ( page.isEmpty() || page.getContent().isEmpty() ) return null;

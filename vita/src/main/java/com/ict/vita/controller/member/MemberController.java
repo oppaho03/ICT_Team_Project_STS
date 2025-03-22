@@ -158,7 +158,7 @@ public class MemberController {
 				) 
 			)
 	})
-	@GetMapping("/members/users")
+	@GetMapping("/members/user")
 	public ResponseEntity<?> getUserMembers(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
 		
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);

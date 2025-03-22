@@ -149,7 +149,7 @@ public class PostsController {
 				) 
 			)
 	})
-	@GetMapping("/user")
+	@GetMapping("/member")
 	public ResponseEntity<?> getPostsByUser(
 			@Parameter(description = "카테고리id") @RequestParam("cid") Long cid,
 			@Parameter(description = "조회할 회원id") @RequestParam("uid") Long uid,

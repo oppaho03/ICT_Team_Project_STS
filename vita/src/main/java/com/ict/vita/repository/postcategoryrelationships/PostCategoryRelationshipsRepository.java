@@ -40,6 +40,4 @@ public interface PostCategoryRelationshipsRepository extends JpaRepository<PostC
 		nativeQuery = true )
     Page<List<PostCategoryRelationshipsEntity>> findByTermCategoryId( @Param("term_category_id") Long term_category_id, Pageable pageable );
 
-
-
 }
