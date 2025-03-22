@@ -19,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 //[질문들어올때 세션정보와 함께 넘어오는 요청을 받기 위한 DTO]
 public class ChatQuestionWithSessionRequestDto {
-	private Long sid; //세션id
+	private Long sid; //세션id -> 요청으로 전달 안 해도 됨
 	private String contents; //질문 내용
 	private List<String> keywords; //질문 내용의 키워드
 }

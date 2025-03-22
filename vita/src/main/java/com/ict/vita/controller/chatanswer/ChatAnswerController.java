@@ -113,6 +113,7 @@ public class ChatAnswerController {
 		List<ChatAnswerResponseDto> responses = new Vector<>(); //카테고리 목록이 포함된 답변 응답 객체 목록
 		//키워드와 검색결과 반환 객체 생성
 		Map<String, Object> result = new HashMap<>();
+		
 		for ( ChatAnswerDto answerDto : answerList ) {
 			//ANC관계테이블에서 답변id로 관계객체 조회
 			List<AncDto> ancDtos = ancService.findAllByAnswerId(answerDto.getId());
