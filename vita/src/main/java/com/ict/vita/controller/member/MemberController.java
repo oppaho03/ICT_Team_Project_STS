@@ -36,6 +36,7 @@ import com.ict.vita.service.member.MemberJoinDto;
 import com.ict.vita.service.member.MemberLoginDto;
 import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.member.MemberTempJoinDto;
 import com.ict.vita.service.member.MemberUpdateDto;
 import com.ict.vita.util.EncryptAES256;
 import com.ict.vita.util.Commons;
@@ -290,7 +291,7 @@ public class MemberController {
 	
 	/**
 	 * [임시 회원가입] - 임시 회원가입시 회원의 status는 9(대기)
-	 * @param joinDto 회원가입 임시 요청 DTO
+	 * @param tempJoinDto 임시 회원가입용 DTO
 	 * @return ResponseEntity
 	 */
 	@Operation( summary = "임시 회원가입", description = "임시 회원가입 API" )
@@ -334,7 +335,7 @@ public class MemberController {
 			)
 	})
 	@PostMapping("/temp_members")
-	public ResponseEntity<?> tempJoin(@Parameter(description = "임시 회원가입 요청 객체") @RequestBody MemberJoinDto tempJoinDto){
+	public ResponseEntity<?> tempJoin(@Parameter(description = "임시 회원가입 요청 객체") @RequestBody MemberTempJoinDto tempJoinDto){
 		//<회원이 이메일을 입력하지 않은 경우>
 		if(Commons.isNull(tempJoinDto.getEmail())) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail", null, new Locale("ko")) ));
@@ -346,7 +347,7 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
 		}
 		
-		//임시 회원가입 처리
+		//임시 회원가입 처리								
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
 		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
 				ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
@@ -453,9 +454,10 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_contact_exist", null, new Locale("ko")) ));
 		
 		//회원가입에 성공한 경우
-		//DB에 저장한 회원을 회원가입할때 입력한 정보로 설정
+		//DB에 저장한 회원을 회원가입할 때 입력한 정보로 설정
 		try {
 			findedMember.setPassword(joinDto.getPassword());
+			findedMember.setRole(joinDto.getRole());
 			findedMember.setName(joinDto.getName());
 			findedMember.setNickname(joinDto.getNickname());
 			findedMember.setBirth(joinDto.getBirth());
@@ -471,6 +473,7 @@ public class MemberController {
 		} 
 		
 		MemberDto memberDto = memberService.join(findedMember);
+		
 		return memberDto != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(memberDto))) :
 					ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
 	}

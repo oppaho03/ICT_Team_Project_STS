@@ -102,36 +102,55 @@ public class MemberService {
 	
 	/**
 	 * [임시 회원가입]
-	 * @param tempJoinDto 회원가입 임시 요청 DTO
-	 * @return MemberDto 임시 회원가입 된 회원 DTO
+	 * @param tempJoinDto 임시 회원가입용 DTO
+	 * @return MemberDto 임시로 가입된 회원 DTO
 	 */
-	public MemberDto tempJoin(MemberJoinDto tempJoinDto) {
+	public MemberDto tempJoin(MemberTempJoinDto tempJoinDto) {
+		
+		MemberJoinDto joinDto = MemberJoinDto.builder()
+									.email(tempJoinDto.getEmail())
+									.password(tempJoinDto.getPassword()) 
+									.role(tempJoinDto.getRole())
+									.name(tempJoinDto.getName())
+									.nickname(tempJoinDto.getNickname())
+									.birth(tempJoinDto.getBirth())
+									.gender(tempJoinDto.getGender())
+									.contact(tempJoinDto.getContact())
+									.address(tempJoinDto.getAddress())
+									.token(tempJoinDto.getToken())
+									.created_at(tempJoinDto.getCreated_at())
+									.updated_at(tempJoinDto.getUpdated_at())
+									.status(9) //임시 가입 상태
+									.isEmailAuth(0) //이메일 인증 안됐다 처리
+									.build(); 
+		
 		//원래 회원가입할때 꼭 회원이 입력해야 하는 값들
-		String password = tempJoinDto.getPassword();
-		String nickname = tempJoinDto.getNickname();
+		String password = joinDto.getPassword();
+		String nickname = joinDto.getNickname();
 		//임시 회원이 비밀번호를 입력하지 않은 경우
 		if(Commons.isNull(tempJoinDto.getPassword())) {
-			password = Commons.TEMPORARY; //임시 비밀번호 지정
+			password = Commons.TEMPORARY; //**** 비밀번호에 이메일 인증코드값 넣어야 함
 		}
 		//닉네임 미입력시
 		if(Commons.isNull(nickname)) {
 			nickname = Commons.TEMPORARY;
 		}
+		
 		//회원 저장
 		MemberEntity entity = null;
 		try {
 			entity = memberRepository.save(MemberEntity.builder()
-									.email(tempJoinDto.getEmail())
-									.password(EncryptAES256.encrypt(password))
-									.role(tempJoinDto.getRole())
-									.name(tempJoinDto.getName())
+									.email(joinDto.getEmail())
+									.password(password) 
+									.role(joinDto.getRole())
+									.name(joinDto.getName())
 									.nickname(nickname)
-									.birth(tempJoinDto.getBirth())
-									.gender(tempJoinDto.getGender())
-									.contact(tempJoinDto.getContact())
-									.address(tempJoinDto.getAddress())
-									.created_at(tempJoinDto.getCreated_at())
-									.updated_at(tempJoinDto.getUpdated_at())
+									.birth(joinDto.getBirth())
+									.gender(joinDto.getGender())
+									.contact(joinDto.getContact())
+									.address(joinDto.getAddress())
+									.created_at(joinDto.getCreated_at())
+									.updated_at(joinDto.getUpdated_at())
 									.status(9) //회원가입:1 / 탈퇴:0 / 대기:9
 									.build());
 		} catch (Exception e) {
@@ -146,60 +165,43 @@ public class MemberService {
 	 * @return
 	 */
 	public MemberDto join(MemberDto joinDto) {	
+		
+		MemberEntity entity = null;
+		
+		//<닉네임 입력시>
 		String nickname = joinDto.getNickname();
+			
 		//<닉네임 미입력시>
 		if(Commons.isNull(joinDto.getNickname())) { 
 			//이메일에서 @ 전까지를 닉네임으로 지정
 			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); 
 			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
-			//회원 저장
-			MemberEntity entity = null;
-			try {
-				entity = memberRepository.save(MemberEntity.builder()
-									.id(joinDto.getId())
-									.email(joinDto.getEmail())
-									.password(EncryptAES256.encrypt(joinDto.getPassword()))
-									.role(joinDto.getRole())
-									.name(joinDto.getName())
-									.nickname(nickname)
-									.birth(joinDto.getBirth())
-									.gender(joinDto.getGender())
-									.contact(joinDto.getContact())
-									.address(joinDto.getAddress())
-									.token(joinDto.getToken())
-									.created_at(joinDto.getCreated_at())
-									.updated_at(joinDto.getUpdated_at())
-									.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-									.build());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return MemberDto.toDto(entity);
 		}
-		//<닉네임 입력시>
-		//회원 저장
-		MemberEntity entity = null;
+		
+		//회원 저장		
 		try {
 			entity = memberRepository.save(MemberEntity.builder()
-									.id(joinDto.getId())
-									.email(joinDto.getEmail())
-									.password(EncryptAES256.encrypt(joinDto.getPassword()))
-									.role(joinDto.getRole())
-									.name(joinDto.getName())
-									.nickname(nickname)
-									.birth(joinDto.getBirth())
-									.gender(joinDto.getGender())
-									.contact(joinDto.getContact())
-									.address(joinDto.getAddress())
-									.token(joinDto.getToken())
-									.created_at(joinDto.getCreated_at())
-									.updated_at(joinDto.getUpdated_at())
-									.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-									.build());
+								.id(joinDto.getId()) //임시회원가입된 회원 정보 수정시 PK값 지정 필요
+								.email(joinDto.getEmail())
+								.password(EncryptAES256.encrypt(joinDto.getPassword())) //비밀번호 암호화
+								.role(joinDto.getRole())
+								.name(joinDto.getName())
+								.nickname(nickname)
+								.birth(joinDto.getBirth())
+								.gender(joinDto.getGender())
+								.contact(joinDto.getContact())
+								.address(joinDto.getAddress())
+								.token(joinDto.getToken())
+								.created_at(joinDto.getCreated_at())
+								.updated_at(joinDto.getUpdated_at())
+								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
+								.build());
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		return MemberDto.toDto(entity);
+		
 	}////
 	
 	/**

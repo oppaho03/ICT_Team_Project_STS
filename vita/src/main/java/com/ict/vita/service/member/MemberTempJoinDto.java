@@ -3,14 +3,11 @@ package com.ict.vita.service.member;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.ict.vita.util.Commons;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,21 +19,18 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "회원 DTO (회원가입)")
-//[회원 direct 회원가입용 DTO]
-public class MemberJoinDto { 
-	
+@Schema(description = "임시 회원 DTO (임시 회원가입)")
+//[회원 direct 임시 회원가입용 DTO]
+public class MemberTempJoinDto {
 	@Schema(description = "이메일", example = "test@example.com")
 	@NotBlank(message = "이메일을 입력하세요")
 	@Email(message = "올바른 이메일 주소를 입력하세요.") //이메일 형식에 맞는지 검사
 	private String email; //이메일
 	
 	@Schema(description = "비밀번호", example = "hashed_password")
-	@NotBlank(message = "비밀번호를 입력하세요")
 	private String password; //비밀번호
 	
 	@Schema(description = "사용자 역할", example = "USER")
-	@NotBlank(message = "role을 지정하세요")
 	private String role = Commons.ROLE_USER; //역할
 	
 	@Schema(description = "이름", example = "홍길동")
@@ -68,8 +62,5 @@ public class MemberJoinDto {
 	
 	@Schema(description = "상태 (1: 가입, 0: 탈퇴, 9: 대기)", example = "1")
 	private long status; //상태(가입/탈퇴/대기)
-	
-	@Schema(description = "이메일 인증이 됐는지 여부 확인(0: 인증X, 1: 인증O)",example = "1")
-	private int isEmailAuth; //이메일 인증여부(이메일 인증 후 회원가입 처리시 사용)
-	
+
 }
