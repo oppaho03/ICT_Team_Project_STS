@@ -82,7 +82,7 @@ public class ChatSessionService {
 	 * @return ChatSessionDto
 	 */
 	@Transactional(readOnly = true)
-	public List<ChatSessionDto> findByMember(Long mid,int p, int ol) {
+	public List<ChatSessionDto> findAllByMember(Long mid,int p, int ol) {
 		Pageable pageable = PageRequest.of(p-1, ol, Sort.by(Sort.Order.asc("id")) );
 		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember(mid,pageable);
 		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
@@ -94,9 +94,37 @@ public class ChatSessionService {
 	 * @return ChatSessionDto
 	 */
 	@Transactional(readOnly = true)
-	public List<ChatSessionDto> findByMember(Long mid) {
+	public List<ChatSessionDto> findAllByMember(Long mid) {
 		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember( mid, Sort.by(Sort.Order.asc("id")));
 		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
+	}
+	
+	/**
+	 * [회원id로 공개 세션 검색] - 페이징 적용
+	 * @param mid 회원 id
+	 * @param p : 페이지
+	 * @param ol : 출력 개수 제한
+	 * @return List<ChatSessionDto>
+	 */
+	@Transactional(readOnly = true)
+	public List<ChatSessionDto> findPublicsByMember(Long mid, int p, int ol) {
+		Pageable pageable = PageRequest.of(p - 1, ol, Sort.by(Sort.Order.asc("id")));
+		List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,pageable);
+		
+		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
+	}
+	
+	/**
+	 * [회원id로 공개 세션 검색] - 페이징 미적용
+	 * @param mid 회원 id
+	 * @return List<ChatSessionDto>
+	 */
+	@Transactional(readOnly = true)
+	public List<ChatSessionDto> findPublicsByMember(Long mid) {
+		
+		List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,Sort.by(Sort.Order.asc("id")) );
+		
+		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}
 	
 	/**

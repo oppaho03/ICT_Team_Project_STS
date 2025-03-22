@@ -138,12 +138,13 @@ public class ChatSessionController {
 		//<관리자거나 자신의 세션인 경우> - 공개/비공개 세션 조회 가능 & 페이징 적용
 		List<ChatSessionDto> sessions = null;
 		if(loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) || loginMember.getId() == mid ) {
-			if(p > 0) sessions = chatSessionService.findByMember(mid,p,ol);
-			else sessions = chatSessionService.findByMember(mid);
+			if(p > 0) sessions = chatSessionService.findAllByMember(mid,p,ol);
+			else sessions = chatSessionService.findAllByMember(mid);
 			
 		}	
 		else { //<자신의 세션이 아닌 경우> - 공개된 세션인 경우만 조회 가능 & 페이징 적용
-			
+			if(p > 0) sessions = chatSessionService.findPublicsByMember(mid,p,ol);
+			else sessions = chatSessionService.findPublicsByMember(mid);
 		}
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions));
