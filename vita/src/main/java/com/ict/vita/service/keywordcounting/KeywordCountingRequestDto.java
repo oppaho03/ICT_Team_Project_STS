@@ -19,17 +19,6 @@ public class KeywordCountingRequestDto {
 	private Long id;
 	private String startDate;
 	private String endDate;
-	private Long count;
-	
-	public KeywordCountingDto toDto(KeywordCountingDto countingDto, TermCategoryDto categoryDto) {
-		return KeywordCountingDto.builder()
-				.id(categoryDto.toEntity().getTermsEntity().getId())
-				.searched_at(startDate)
-				.searched_at(endDate)
-				.count(count)
-				.build();
-				
-	}
 	
 	
 }
