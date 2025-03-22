@@ -62,7 +62,7 @@ public class KeywordCountingService {
 	}
 	//시작일자~지정일자 사이에 그키워드가 얼마나 검색되었는지?
 	@Transactional
-	public List<KeywordCountingResponseDto> getCountBetweenDates(KeywordCountingRequestDto requestDto,String startDate,String endDate ){
+	public List<KeywordCountingResponseDto> getCountBetweenDates(KeywordCountingRequestDto requestDto,String startDate,String endDate){
 		System.out.println("id값"+requestDto.getId());
 		TermCategoryDto termCategoryDto = termCategoryService.findById(requestDto.getId());
 	    TermsEntity termsEntity = termCategoryDto.toEntity().getTermsEntity();

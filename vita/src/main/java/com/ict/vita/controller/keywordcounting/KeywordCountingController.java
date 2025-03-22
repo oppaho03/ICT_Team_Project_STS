@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,6 @@ import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.TermsDto;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -53,8 +53,8 @@ public class KeywordCountingController {
 		System.out.println("id값:"+requestDto.getId());
 
 		List<KeywordCountingResponseDto> result = keywordCountingService.getCountBetweenDates(requestDto, requestDto.getStartDate(), requestDto.getEndDate());
-		return null;
-//		return ResponseEntity.ok(result);
+		
+		return ResponseEntity.ok(result);
 		
 		
 	}
