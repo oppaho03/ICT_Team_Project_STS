@@ -29,19 +29,8 @@ public class ChatSessionService {
 	//리포지토리 주입
 	private final ChatSessionRepository chatSessionRepository;
 	
-	
 	private final DataSource dataSource;
 	private final EntityManager em;
-	
-	/*
-	// DB 종류를 가져오는 메서드
-	private String getDatabaseProductName() {
-		try (Connection connection = dataSource.getConnection()) { // DataSource로부터 Connection 가져오기
-            return connection.getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not get database product name", e);
-        }
-	} */
 	
 	/**
 	 * [세션 존재유무 판단]
