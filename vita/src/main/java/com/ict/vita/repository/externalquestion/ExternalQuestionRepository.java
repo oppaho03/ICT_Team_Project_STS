@@ -37,7 +37,7 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        END,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) sub
+			) AS sub
 			WHERE ROWNUM <= 5 AND sub.age_group = :age
 			""",
 			nativeQuery = true)
@@ -55,7 +55,7 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        gender,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) sub
+			) AS sub
 			WHERE ROWNUM <= 5 AND sub.gender = :gender
 			""",
 			nativeQuery = true)
@@ -91,7 +91,7 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        gender,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) sub
+			) AS sub
 			WHERE ROWNUM <= 5 AND sub.age_group = :age AND sub.gender = :gender
 			""",
 			nativeQuery = true)
@@ -109,7 +109,7 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        occupation,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) sub
+			) AS sub
 			WHERE ROWNUM <= 5 AND sub.occupation = :occupation
 			""",
 			nativeQuery = true)
