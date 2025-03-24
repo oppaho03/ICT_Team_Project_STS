@@ -4,9 +4,7 @@ package com.ict.vita.controller.posts;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
@@ -33,7 +31,6 @@ import com.ict.vita.service.posts.PostsRequestDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
-import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.service.terms.TermsService;
 import com.ict.vita.util.Commons;

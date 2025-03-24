@@ -1,7 +1,6 @@
 package com.ict.vita.controller.membersnslogins;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,7 @@ public class MemberSnsLoginsController {
 	 */
 	@PostMapping("/api/sns_login")
 	public ResponseEntity<?> snsLogin(@RequestBody MemberSnsLoginsRequestDto snsReqDto){
-		
+	
 		System.out.println(String.format("[sns]이메일:%s, 인증토큰:%s", snsReqDto.getEmail(), snsReqDto.getToken()));
 		
 		//<sns회원 테이블에서 조회>
