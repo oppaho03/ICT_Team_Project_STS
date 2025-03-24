@@ -24,22 +24,24 @@ public interface ChatSessionRepository extends JpaRepository<ChatSessionEntity, 
 			nativeQuery = true)
 	Optional<ChatSessionEntity> findPublicById(@Param(value = "id") Long sid); //세션id로 공개 세션 조회
 	
-	@Query(value = """
-			select * from APP_CHAT_SESSION s
-			where s.member_id = :mid \n-- #pageable\n
-			""",
-			countQuery = """
-			select count(*) from APP_CHAT_SESSION s
-			where s.member_id = :mid
-			""",
-			nativeQuery = true)
-	List<ChatSessionEntity> findAllByMember(@Param("mid") Long mid, Pageable pageable); //회원id로 세션 조회(페이징 적용)
+//	@Query(value = """
+//			select * from APP_CHAT_SESSION s
+//			where s.member_id = :mid \n-- #pageable\n
+//			""",
+//			countQuery = """
+//			select count(*) from APP_CHAT_SESSION s
+//			where s.member_id = :mid
+//			""",
+//			nativeQuery = true)
+//	Page<ChatSessionEntity> findAllByMember(@Param(value = "mid") Long mid, Pageable pageable); //회원id로 세션 조회(페이징 적용)
+	
+//	Page<ChatSessionEntity> findAllByMemberEntity_id(@Param(value = "mid") Long mid, Pageable pageable); //회원id로 세션 조회(페이징 적용)
 	
 	@Query(value = """
 			SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid
 			""",
 			nativeQuery = true)
-	List<ChatSessionEntity> findAllByMember(@Param("mid") Long mid, Sort sort); //회원id로 세션 조회(페이징 적용)
+	List<ChatSessionEntity> findAllByMember(@Param("mid") Long mid, Sort sort); //회원id로 세션 조회(페이징 미적용)
 	
 	
 	@Query(value = """
@@ -51,7 +53,7 @@ public interface ChatSessionRepository extends JpaRepository<ChatSessionEntity, 
 			where s.member_id = :mid and  s.status = 0
 			""",
 			nativeQuery = true)
-	List<ChatSessionEntity> findAllByMemberAndStatus(@Param("mid") Long mid, Pageable pageable); //회원id로 공개 세션 조회(페이징 적용)
+	Page<ChatSessionEntity> findAllByMemberAndStatus(@Param("mid") Long mid, Pageable pageable); //회원id로 공개 세션 조회(페이징 적용)
 	
 	@Query(value = """
 			SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0

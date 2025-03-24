@@ -128,6 +128,7 @@ public class ChatSessionController {
 			@Parameter(description = "회원 id") @PathVariable("id") Long mid,
 			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
 			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol){
+		
 		//로그인한 회원 조회
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
 		
@@ -140,8 +141,7 @@ public class ChatSessionController {
 		List<ChatSessionDto> sessions = null;
 		if(loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) || loginMember.getId() == mid ) {
 			if(p > 0) sessions = chatSessionService.findAllByMember(mid,p,ol);
-			else sessions = chatSessionService.findAllByMember(mid);
-			
+			else sessions = chatSessionService.findAllByMember(mid);		
 		}	
 		else { //<자신의 세션이 아닌 경우> - 공개된 세션인 경우만 조회 가능 & 페이징 적용
 			if(p > 0) sessions = chatSessionService.findPublicsByMember(mid,p,ol);

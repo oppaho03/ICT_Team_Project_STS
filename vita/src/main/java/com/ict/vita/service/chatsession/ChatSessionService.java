@@ -1,6 +1,11 @@
 package com.ict.vita.service.chatsession;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Vector;
+
+import javax.sql.DataSource;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ict.vita.repository.chatsession.ChatSessionEntity;
 import com.ict.vita.repository.chatsession.ChatSessionRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,6 +27,19 @@ import lombok.RequiredArgsConstructor;
 public class ChatSessionService {
 	//리포지토리 주입
 	private final ChatSessionRepository chatSessionRepository;
+	
+	
+	private final DataSource dataSource;
+	private final EntityManager em;
+	
+	// DB 종류를 가져오는 메서드
+	private String getDatabaseProductName() {
+		try (Connection connection = dataSource.getConnection()) { // DataSource로부터 Connection 가져오기
+            return connection.getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not get database product name", e);
+        }
+	}
 	
 	/**
 	 * [세션 존재유무 판단]
@@ -83,9 +103,50 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAllByMember(Long mid,int p, int ol) {
-		Pageable pageable = PageRequest.of(p-1, ol, Sort.by(Sort.Order.asc("id")) );
-		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember(mid,pageable);
-		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
+		//Pageable pageable = PageRequest.of(p - 1, ol, Sort.by(Sort.Order.asc("id")) );
+		
+		//Page<ChatSessionEntity> page = chatSessionRepository.findAllByMember(mid,pageable);
+		
+		/*
+		Page<ChatSessionEntity> page = chatSessionRepository.findAllByMemberEntity_id(mid,pageable);
+		
+		List<ChatSessionEntity> sessions = page.getContent();
+		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList(); */
+		
+		// 현재 사용 중인 DB 종류 확인
+	    String databaseProductName = getDatabaseProductName();
+	    
+	    List<ChatSessionEntity> sessions = new Vector<>();
+	    
+	    if (databaseProductName.equalsIgnoreCase("PostgreSQL")) {
+	        // PostgreSQL에서의 페이징 처리
+	        String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid ORDER BY s.id asc LIMIT :limit OFFSET :offset";
+	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
+	        query.setParameter("mid", mid);
+	        query.setParameter("limit", ol);
+	        query.setParameter("offset", (p - 1) * ol);
+	        sessions = query.getResultList();
+	    } else if (databaseProductName.equalsIgnoreCase("Oracle")) {
+	        // Oracle에서의 페이징 처리 (ROWNUM)
+	        int startRow = (p - 1) * ol + 1;
+	        int endRow = p * ol;
+
+	        String sql = "SELECT * FROM ( " +
+	                     "    SELECT s.*, ROWNUM AS rn " +
+	                     "    FROM APP_CHAT_SESSION s " +
+	                     "    WHERE s.member_id = :mid " +
+	                     "    ORDER BY s.id asc " +
+	                     ") WHERE rn BETWEEN :startRow AND :endRow";
+
+	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
+	        query.setParameter("mid", mid);
+	        query.setParameter("startRow", startRow);
+	        query.setParameter("endRow", endRow);
+	        sessions = query.getResultList();
+	    }
+	    
+	    return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
+		
 	}
 	
 	/**
@@ -109,7 +170,8 @@ public class ChatSessionService {
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findPublicsByMember(Long mid, int p, int ol) {
 		Pageable pageable = PageRequest.of(p - 1, ol, Sort.by(Sort.Order.asc("id")));
-		List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,pageable);
+		Page<ChatSessionEntity> page = chatSessionRepository.findAllByMemberAndStatus(mid,pageable);
+		List<ChatSessionEntity> list = page.getContent();
 		
 		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}
