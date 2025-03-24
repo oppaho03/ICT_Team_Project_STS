@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.ict.vita.repository.termcategory.TermCategoryEntity;
+
 
 @Repository
 public interface PostCategoryRelationshipsRepository extends JpaRepository<PostCategoryRelationshipsEntity, PostCategory> {
@@ -31,13 +33,16 @@ public interface PostCategoryRelationshipsRepository extends JpaRepository<PostC
 
 	@Query(value="""
 		SELECT * FROM APP_POST_CATEGORY_RELATIONSHIPS m
-		WHERE m.term_category_id = :term_category_id  \n-- #pageable\n
+		WHERE m.term_category_id = :term_category_id  -- #pageable
 		""", 
 		countQuery = """
 		SELECT COUNT(*) FROM APP_POST_CATEGORY_RELATIONSHIPS m 
 		WHERE m.term_category_id = :term_category_id
 		""",
 		nativeQuery = true )
-    Page<List<PostCategoryRelationshipsEntity>> findByTermCategoryId( @Param("term_category_id") Long term_category_id, Pageable pageable );
+    Page<List<PostCategoryRelationshipsEntity>> findByTermCategoryId( @Param("term_category_id") Long term_category_id, @Param("pageable") Pageable pageable );
+
+	Page<List<PostCategoryRelationshipsEntity>> findAllByTermCategoryEntity( @Param("term_category_id") TermCategoryEntity termCategoryEntity, Pageable pageable );
+
 
 }
