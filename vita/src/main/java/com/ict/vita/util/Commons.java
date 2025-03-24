@@ -1,7 +1,11 @@
 package com.ict.vita.util;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.springframework.context.MessageSource;
 import org.springframework.lang.Nullable;
@@ -102,6 +106,15 @@ public class Commons {
 			return findedMember;
 		//<찾은 회원이 존재하지 않는 경우>
 		return null;
+	}
+	
+	// DB 종류를 가져오는 메서드
+	public static String getDatabaseProductName(DataSource dataSource) {
+		try (Connection connection = dataSource.getConnection()) { // DataSource로부터 Connection 가져오기
+            return connection.getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not get database product name", e);
+        }
 	}
 	
 }
