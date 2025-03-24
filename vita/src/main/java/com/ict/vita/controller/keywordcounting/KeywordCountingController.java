@@ -20,6 +20,11 @@ import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termcategory.TermCategoryService;
 import com.ict.vita.service.terms.TermsDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,6 +35,14 @@ public class KeywordCountingController {
 	// 서비스 주입
 	private final KeywordCountingService keywordCountingService;
 	private final TermCategoryService termCategoryService;
+	
+	
+	
+	
+	
+	@Operation(summary = "키워드 카운팅",description = "키워드로 검색시 새로운 행 저장 또는 카운트 증가")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200",description = "SUCCESS",content = @Content)})
 	@GetMapping("/counting/{id}")
 	public ResponseEntity<String> getKeywordCounting(@PathVariable long id){
 		TermCategoryDto termCategoryDto = termCategoryService.findById(id);
@@ -58,6 +71,24 @@ public class KeywordCountingController {
 		
 		
 	}
+	@GetMapping("ranking")
+	public ResponseEntity<List<KeywordCountingResponseDto>> getRankCounting(@RequestBody KeywordCountingRequestDto requestDto){
+		List<KeywordCountingResponseDto> rank = keywordCountingService.getRankBetweenDates(requestDto, requestDto.getStartDate(), requestDto.getEndDate());
 	
+		return ResponseEntity.ok(rank);
+	}
+	@GetMapping("realtime")
+	public ResponseEntity<List<KeywordCountingResponseDto>> realTimeRanking(){
+		List<KeywordCountingResponseDto> realTime = keywordCountingService.realTimeRank();
+		
+		return ResponseEntity.ok(realTime);
+	}
+	
+	@GetMapping("monthRanking")
+	public ResponseEntity<List<KeywordCountingResponseDto>> getMonthRanking(){
+		List<KeywordCountingResponseDto> monthRank = keywordCountingService.monthRanking();
+		
+		return ResponseEntity.ok(monthRank);
+	}
 
 }

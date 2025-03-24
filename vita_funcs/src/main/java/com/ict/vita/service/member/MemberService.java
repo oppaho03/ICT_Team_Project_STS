@@ -2,11 +2,13 @@ package com.ict.vita.service.member;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.vita.repository.member.MemberEntity;
 import com.ict.vita.repository.member.MemberRepository;
+import com.ict.vita.util.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	//리포지토리 주입
 	private final MemberRepository memberRepository;
-	
 	/**
 	 * 이메일 중복 여부 판단
 	 * @param email 입력된 이메일 주소

@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KeywordCountingResponseDto {
-
+	private int rank;
 	private String keyword;
 	private Long count;
 	

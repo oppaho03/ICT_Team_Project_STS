@@ -1,10 +1,14 @@
 package com.ict.vita.service.keywordcounting;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.hibernate.internal.build.AllowSysOut;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,5 +83,79 @@ public class KeywordCountingService {
 	        .collect(Collectors.toList());
 						
 	}
+
+	
+	
+	//날짜지정 시 상위5개
+	@Transactional
+	public List<KeywordCountingResponseDto> getRankBetweenDates(KeywordCountingRequestDto requestDto,String startDate,String endDate){
+		PageRequest pageRequest = PageRequest.of(0,5);
+	    List<Object[]> rankCount = keywordCountingRepository.findKeywordRankingTop5BetweenDates(startDate,endDate,pageRequest);
+	    	
+	    AtomicInteger atomic = new AtomicInteger(1);
+	    
+	    return rankCount.stream()
+	    		.map(row -> KeywordCountingResponseDto.builder()
+	    				.rank(atomic.getAndIncrement())    				
+	    				.keyword((String) row[0])
+	    				.count((Long) row[1])
+	    				.build())
+	    				.collect(Collectors.toList());
+	    				
+	}
+	//실시간 랭킹
+	@Transactional
+	public List<KeywordCountingResponseDto> realTimeRank(){
+		/*실시간 시간단위까지 진행 시
+		Sring today = LocalDateTime.now().format(DateTimeFormatter.ofpattern("yyyyMMddHH"));
+		*/
+		String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		PageRequest pageRequest = PageRequest.of(0,10);
+		List<Object[]> rtRank = keywordCountingRepository.findRealtimeRankingTop10(today,pageRequest);
+		
+		AtomicInteger atomic = new AtomicInteger(1);
+		
+		return rtRank.stream()
+				.map(row -> KeywordCountingResponseDto.builder()
+						.rank(atomic.getAndIncrement())
+						.keyword((String) row[0])
+						.count((Long) row[1])
+						.build())
+				.collect(Collectors.toList());
+				
+				
+	}
+	
+	//월간 탑10
+	@Transactional
+	public List<KeywordCountingResponseDto> monthRanking(){
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		LocalDate today = LocalDate.now();
+		
+		String startOfMonth = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		String endOfMonth = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		
+		
+	
+		
+		
+		List<Object[]> monthRank = keywordCountingRepository.getMonthRanking(startOfMonth,endOfMonth,pageRequest);
+		AtomicInteger atomic = new AtomicInteger(1);
+		
+		return monthRank.stream()
+				.map(row ->KeywordCountingResponseDto.builder()
+				.rank(atomic.getAndIncrement())
+				.keyword((String) row[0])
+				.count((Long) row[1])
+				.build())
+				.collect(Collectors.toList());
+				
+				
+		
+				
+		
+	}
+	
+	
 	
 }
