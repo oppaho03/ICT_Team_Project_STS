@@ -35,19 +35,19 @@ public class ExternalQuestionEntity {
 	@Column(columnDefinition = "CHAR(1)")
 	private char gender; //성별
 	
-	@Column(columnDefinition = "NVARCHAR2(20 CHAR)")
+	@Column(columnDefinition = "NVARCHAR2(20)")
 	private String age; //나이
 	
-	@Column(columnDefinition = "NVARCHAR2(100 CHAR)")
+	@Column(columnDefinition = "NVARCHAR2(100)")
 	private String occupation; //직업
 	
-	@Column(name = "disease_category",columnDefinition = "NVARCHAR2(200 CHAR)")
+	@Column(name = "disease_category",columnDefinition = "NVARCHAR2(200)")
 	private String diseaseCategory; //질병 카테고리명
 	
-	@Column(name = "disease_name_kor",columnDefinition = "NVARCHAR2(200 CHAR)")
+	@Column(name = "disease_name_kor",columnDefinition = "NVARCHAR2(200)")
 	private String diseaseNameKor; //한글 질병명
 	
-	@Column(name = "disease_name_eng",columnDefinition = "NVARCHAR2(200 CHAR)")
+	@Column(name = "disease_name_eng",columnDefinition = "VARCHAR2(200)")
 	private String diseaseNameEng; //영어 질병명
 	
 	@Lob
