@@ -42,7 +42,7 @@ public class ExternalQuestionController {
 			@RequestParam(name = "gender",required = false) Character gender,
 			@RequestParam(name = "occupation",required = false) String occupation){
 		
-		List<ExternalQuestionDto> result = null;
+		List<?> result = null;
 		System.out.println(String.format("age:%s,gender:%s,occupation:%s", age,gender,occupation));
 
 		//나이+성별 별 조회

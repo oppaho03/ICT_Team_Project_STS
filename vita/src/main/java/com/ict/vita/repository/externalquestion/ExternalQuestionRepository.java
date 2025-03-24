@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface ExternalQuestionRepository extends JpaRepository<ExternalQuestionEntity, Long> {
 	
 	@Query(value = """
-			SELECT * FROM (
+			SELECT age_group,category,question_count FROM (
 			    SELECT 
 			        CASE 
 			            WHEN INSTR(age, '10') > 0 THEN '10대'
@@ -37,15 +37,15 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        END,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) AS sub
-			WHERE ROWNUM <= 5 AND sub.age_group = :age
+			) sub
+			WHERE ROWNUM <= 5 AND age_group = :age
 			""",
 			nativeQuery = true)
 	//나이대별 많이 질문한 외부질문 조회
-	List<ExternalQuestionEntity> findTopQuestionsByAgeGroup(@Param(value = "age") String age);
+	List<Object> findTopQuestionsByAgeGroup(@Param(value = "age") String age);
 	
 	@Query(value = """
-			SELECT * FROM (
+			SELECT gender,category,question_count FROM (
 			    SELECT 
 			        gender,
 			        disease_category as category, 
@@ -55,15 +55,15 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        gender,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) AS sub
-			WHERE ROWNUM <= 5 AND sub.gender = :gender
+			) sub
+			WHERE ROWNUM <= 5 AND gender = :gender
 			""",
 			nativeQuery = true)
 	//성별별 많이 질문한 외부질문 조회
-	List<ExternalQuestionEntity> findTopQuestionsByGenderGroup(@Param(value = "gender") char gender);
+	List<Object> findTopQuestionsByGenderGroup(@Param(value = "gender") char gender);
 	
 	@Query(value = """
-			SELECT * FROM (
+			SELECT age_group,gender,category,question_count FROM (
 			    SELECT 
 			        CASE 
 			            WHEN INSTR(age, '10') > 0 THEN '10대'
@@ -91,15 +91,15 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        gender,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) AS sub
-			WHERE ROWNUM <= 5 AND sub.age_group = :age AND sub.gender = :gender
+			)sub
+			WHERE ROWNUM <= 5 AND age_group = :age AND gender = :gender
 			""",
 			nativeQuery = true)
 	//나이+성별 별 많이 질문한 외부질문 조회
-	List<ExternalQuestionEntity> findTopQuestionsByAgeAndGenderGroup(@Param(value = "age") String age,@Param(value = "gender") char gender);
+	List<Object> findTopQuestionsByAgeAndGenderGroup(@Param(value = "age") String age,@Param(value = "gender") char gender);
 	
 	@Query(value = """
-			SELECT * FROM (
+			SELECT occupation,category,question_count FROM (
 			    SELECT 
 			        occupation,
 			        disease_category as category, 
@@ -109,10 +109,10 @@ public interface ExternalQuestionRepository extends JpaRepository<ExternalQuesti
 			        occupation,
 			        disease_category
 			    ORDER BY question_count DESC  
-			) AS sub
-			WHERE ROWNUM <= 5 AND sub.occupation = :occupation
+			) sub
+			WHERE ROWNUM <= 5 AND occupation = :occupation
 			""",
 			nativeQuery = true)
 	//직업별 많이 질문한 외부질문 조회
-	List<ExternalQuestionEntity> findTopQuestionsByOccupationGroup(@Param(value = "occupation") String occupation);
+	List<Object> findTopQuestionsByOccupationGroup(@Param(value = "occupation") String occupation);
 }

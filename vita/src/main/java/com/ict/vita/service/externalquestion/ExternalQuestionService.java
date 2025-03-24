@@ -1,7 +1,13 @@
 package com.ict.vita.service.externalquestion;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,32 +37,96 @@ public class ExternalQuestionService {
 	}
 
 	//나이+성별 별 가장 많이 질문한 외부질문 조회
-	public List<ExternalQuestionDto> getTopQuestionsByAgeAndGender(String age, char gender) {
+	public List<ExternalQuestionResponseDto> getTopQuestionsByAgeAndGender(String age, char gender) {
 		age = toAgeGroup(age);	
-		List <ExternalQuestionEntity> result = externalQuestionRepository.findTopQuestionsByAgeAndGenderGroup(age, gender);
+		List <Object> result = externalQuestionRepository.findTopQuestionsByAgeAndGenderGroup(age, gender);
 		
-		return result.stream().map(entity -> ExternalQuestionDto.toDto(entity)).toList();
+		List<ExternalQuestionResponseDto> list = new Vector<>();
+		for(Object obj : result) {
+			Object[] row = (Object[]) obj; 
+			ExternalQuestionResponseDto respDto = ExternalQuestionResponseDto.builder()
+												.age_group(String.valueOf(row[0])) //age_group
+												.gender((char)row[1])
+												.category(String.valueOf(row[2])) //category
+												.question_count(Integer.valueOf(String.valueOf(row[3]))) //question_count
+												.build();
+			list.add(respDto);
+		}
+		
+		return list;
 	}
 
 	//나이별 가장 많이 질문한 외부질문 조회
-	public List<ExternalQuestionDto> getTopQuestionsByAge(String age) {
+	public List<ExternalQuestionResponseDto> getTopQuestionsByAge(String age) {
 		age = toAgeGroup(age);
-		System.out.println("나이 변환:"+age);
-		List <ExternalQuestionEntity> result = externalQuestionRepository.findTopQuestionsByAgeGroup(age);
+
+		List <Object> result = externalQuestionRepository.findTopQuestionsByAgeGroup(age);
 		
-		return result.stream().map(entity -> ExternalQuestionDto.toDto(entity)).toList();
+		/*
+		List<Map<String, Object>> response = new Vector<>();
+		    for (Object r : result) {
+		        Object[] row = (Object[]) r; // Object[]로 캐스팅
+		        Map<String, Object> map = new HashMap<>();
+		        
+		        System.out.println( row[0] );
+		        System.out.println( row[1] );
+		        System.out.println( row[2] );
+		        map.put("age_group", row[0]);     // age_group
+		        map.put("category", row[1]);      // category
+		        map.put("question_count", row[2]); // question_count
+		        response.add(map);
+		 } */
+		
+		List<ExternalQuestionResponseDto> list = new Vector<>();
+		
+		for(Object obj : result) {
+			Object[] row = (Object[]) obj; 
+			ExternalQuestionResponseDto respDto = ExternalQuestionResponseDto.builder()
+												.age_group(String.valueOf(row[0])) //age_group
+												.category(String.valueOf(row[1])) //category
+												.question_count(Integer.valueOf(String.valueOf(row[2]))) //question_count
+												.build();
+			list.add(respDto);
+		}
+		
+		return list;
+		
 	}
 
 	//성별별 가장 많이 질문한 외부질문 조회
-	public List<ExternalQuestionDto> getTopQuestionsByGender(char gender) {
-		List <ExternalQuestionEntity> result = externalQuestionRepository.findTopQuestionsByGenderGroup(gender);
-		return result.stream().map(entity -> ExternalQuestionDto.toDto(entity)).toList();
+	public List<ExternalQuestionResponseDto> getTopQuestionsByGender(char gender) {
+		List <Object> result = externalQuestionRepository.findTopQuestionsByGenderGroup(gender);
+		
+		List<ExternalQuestionResponseDto> list = new Vector<>();
+		for(Object obj : result) {
+			Object[] row = (Object[])obj;
+			ExternalQuestionResponseDto respDto = ExternalQuestionResponseDto.builder()
+					.gender((char) (row[0])) //gender
+					.category(String.valueOf(row[1])) //category
+					.question_count(Integer.valueOf(String.valueOf(row[2]))) //question_count
+					.build();
+			list.add(respDto);
+		}
+		
+		return list;
 	}
 
 	//직업별 가장 많이 질문한 외부질문 조회
-	public List<ExternalQuestionDto> getTopQuestionsByOccupation(String occupation) {
-		List <ExternalQuestionEntity> result = externalQuestionRepository.findTopQuestionsByOccupationGroup(occupation);
-		return result.stream().map(entity -> ExternalQuestionDto.toDto(entity)).toList();
+	public List<ExternalQuestionResponseDto> getTopQuestionsByOccupation(String occupation) {
+		List <Object> result = externalQuestionRepository.findTopQuestionsByOccupationGroup(occupation);
+		
+		List<ExternalQuestionResponseDto> list = new Vector<>();
+		for(Object obj : result) {
+			Object[] row = (Object[])obj;
+			ExternalQuestionResponseDto respDto = ExternalQuestionResponseDto.builder()
+					.occupation(String.valueOf((row[0]))) //occupation
+					.category(String.valueOf(row[1])) //category
+					.question_count(Integer.valueOf(String.valueOf(row[2]))) //question_count
+					.build();
+			list.add(respDto);
+		}
+		
+		return list;
 	}
 	
 	
