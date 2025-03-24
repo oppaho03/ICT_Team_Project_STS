@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.chatsession.ChatSessionDto;
+import com.ict.vita.service.chatsession.ChatSessionResponseDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
@@ -68,7 +69,7 @@ public class ChatSessionController {
 		else 
 			sessions = chatSessionService.findAll();
 			
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
 		
 	}
 	
@@ -100,7 +101,7 @@ public class ChatSessionController {
 			//세션 조회(공개/비공개)
 			ChatSessionDto session = chatSessionService.findById(sid);
 			
-			return session != null ? ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(session)) :
+			return session != null ? ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(ChatSessionResponseDto.toDto(session))) :
 				ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		}
 		
@@ -111,7 +112,7 @@ public class ChatSessionController {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		
 		//공개 세션인 경우
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedSession));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(ChatSessionResponseDto.toDto(findedSession)));
 
 	}
 	
@@ -147,7 +148,7 @@ public class ChatSessionController {
 			else sessions = chatSessionService.findPublicsByMember(mid);
 		}
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions));
+		return ResponseEntity.status(HttpStatus.OK).body( ResultUtil.success( sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ) );
 	}
 	
 }
