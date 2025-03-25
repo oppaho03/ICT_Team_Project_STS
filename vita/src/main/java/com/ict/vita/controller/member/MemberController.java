@@ -396,6 +396,12 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
 		}
 		
+		System.out.println("===== 임시회원가입 =====");
+		System.out.println("email:"+tempJoinDto.getEmail());
+		System.out.println("password:"+tempJoinDto.getPassword());
+		System.out.println("name:"+tempJoinDto.getName());
+		System.out.println("nickname:"+tempJoinDto.getNickname());
+		
 		//임시 회원가입 처리								
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
 		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
@@ -487,7 +493,7 @@ public class MemberController {
 		//<DTO 객체 필드의 유효성 검증 성공시>
 		//입력한 이메일로 회원 조회
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
-		System.out.println("===============회원: "+findedMember.getStatus());
+		System.out.println("=============== 회원 status: "+findedMember.getStatus());
 		//<이미 회원가입된 경우 - status가 1>
 		if(findedMember.getStatus() == 1) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.join_fail_already_user", null, new Locale("ko")))); 
