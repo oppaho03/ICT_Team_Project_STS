@@ -63,7 +63,7 @@ public class MemberService {
 			return MemberDto.toDto(findedMember);
 		}
 		return null;
-	}
+	} 
 	
 	/**
 	 * [이메일로 회원 찾기]

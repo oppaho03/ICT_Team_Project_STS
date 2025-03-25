@@ -42,8 +42,8 @@ public class ChatSessionResponseDto {
 		return ChatSessionResponseDto.builder()
 				.id(entity.getId())
 				.member(entity.getMemberEntity().getId())
-				.created_at(entity.getCreated_at())
-				.updated_at(entity.getUpdated_at())
+				.created_at(entity.getCreatedAt())
+				.updated_at(entity.getUpdatedAt())
 				.status(entity.getStatus())
 				.count(entity.getCount())
 				.build();

@@ -47,14 +47,14 @@ public class ChatSessionEntity {
 	private MemberEntity memberEntity; //회원
 	
 	@NotNull
-	@Column(columnDefinition = "TIMESTAMP")
+	@Column(name = "created_at",columnDefinition = "TIMESTAMP")
 	@ColumnDefault("SYSDATE")
 	@CreationTimestamp
-	private LocalDateTime created_at; //생성일
+	private LocalDateTime createdAt; //생성일
 	
 	@NotNull
-	@Column(columnDefinition = "TIMESTAMP")
-	private LocalDateTime updated_at; //수정일
+	@Column(name = "updated_at",columnDefinition = "TIMESTAMP")
+	private LocalDateTime updatedAt; //수정일
 	
 	@NotNull
 	@Column(columnDefinition = "NUMBER(1,0)")

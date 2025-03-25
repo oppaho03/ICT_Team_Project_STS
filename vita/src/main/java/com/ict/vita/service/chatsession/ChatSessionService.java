@@ -51,7 +51,7 @@ public class ChatSessionService {
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAll(int p, int ol){
 		//Pageable객체 생성
-		Pageable pageable = PageRequest.of( p-1, ol, Sort.by(Sort.Order.asc("id")) );
+		Pageable pageable = PageRequest.of( p-1, ol, Sort.by(Sort.Order.desc("updatedAt")) );
 		
 		Page page = chatSessionRepository.findAll(pageable);
 		
@@ -65,7 +65,7 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAll(){
-		List <ChatSessionEntity> list = chatSessionRepository.findAll( Sort.by(Sort.Order.asc("id")) );
+		List <ChatSessionEntity> list = chatSessionRepository.findAll( Sort.by(Sort.Order.desc("updatedAt")) );
 		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}
 	
@@ -111,7 +111,7 @@ public class ChatSessionService {
 	    
 	    if (databaseProductName.equalsIgnoreCase("PostgreSQL")) {
 	        // PostgreSQL에서의 페이징 처리
-	        String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid ORDER BY s.id asc LIMIT :limit OFFSET :offset";
+	        String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid ORDER BY s.updated_at desc LIMIT :limit OFFSET :offset";
 	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
 	        query.setParameter("mid", mid);
 	        query.setParameter("limit", ol);
@@ -126,7 +126,7 @@ public class ChatSessionService {
 	                     "    SELECT s.*, ROWNUM AS rn " +
 	                     "    FROM APP_CHAT_SESSION s " +
 	                     "    WHERE s.member_id = :mid " +
-	                     "    ORDER BY s.id asc " +
+	                     "    ORDER BY s.updated_at desc " +
 	                     ") WHERE rn BETWEEN :startRow AND :endRow";
 
 	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
@@ -147,7 +147,7 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAllByMember(Long mid) {
-		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember( mid, Sort.by(Sort.Order.asc("id")));
+		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember( mid, Sort.by(Sort.Order.desc("updatedAt")));
 		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}
 	
@@ -172,7 +172,7 @@ public class ChatSessionService {
 	    
 	    if (databaseProductName.equalsIgnoreCase("PostgreSQL")) {
 	        // PostgreSQL에서의 페이징 처리
-	        String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0 ORDER BY s.id asc LIMIT :limit OFFSET :offset";
+	        String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0 ORDER BY s.updated_at desc LIMIT :limit OFFSET :offset";
 	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
 	        query.setParameter("mid", mid);
 	        query.setParameter("limit", ol);
@@ -187,7 +187,7 @@ public class ChatSessionService {
 	                     "    SELECT s.*, ROWNUM AS rn " +
 	                     "    FROM APP_CHAT_SESSION s " +
 	                     "    WHERE s.member_id = :mid and s.status = 0 " +
-	                     "    ORDER BY s.id asc " +
+	                     "    ORDER BY s.updated_at desc " +
 	                     ") WHERE rn BETWEEN :startRow AND :endRow";
 
 	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
@@ -208,7 +208,11 @@ public class ChatSessionService {
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findPublicsByMember(Long mid) {
 		
-		List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,Sort.by(Sort.Order.asc("id")) );
+		//List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,Sort.by(Sort.Order.desc("updated_at")) );
+		
+		String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0 ORDER BY s.updated_at DESC ";
+		Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
+		List<ChatSessionEntity> list = null;
 		
 		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}

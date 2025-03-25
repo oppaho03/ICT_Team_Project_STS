@@ -32,8 +32,8 @@ public class ChatSessionDto {
 		return ChatSessionEntity.builder()
 				.id(id)
 				.memberEntity(memberDto.toEntity())
-				.created_at(created_at)
-				.updated_at(updated_at)
+				.createdAt(created_at)
+				.updatedAt(updated_at)
 				.status(status)
 				.count(count)
 				.build();
@@ -44,8 +44,8 @@ public class ChatSessionDto {
 		return ChatSessionDto.builder()
 				.id(entity.getId())
 				.memberDto(MemberDto.toDto(entity.getMemberEntity()))
-				.created_at(entity.getCreated_at())
-				.updated_at(entity.getUpdated_at())
+				.created_at(entity.getCreatedAt())
+				.updated_at(entity.getUpdatedAt())
 				.status(entity.getStatus())
 				.count(entity.getCount())
 				.build();

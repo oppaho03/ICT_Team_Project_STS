@@ -131,6 +131,45 @@ public class MemberController {
 	}
 	
 	/**
+	 * [본인 정보 조회]
+	 * @param token 로그인한 회원 토큰값
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "본인 정보 조회", description = "본인 정보 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-본인 정보 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = MemberResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":49,\"email\":\"baekjongwon333@naver.com\",\"name\":\"백종원\",\"nickname\":\"슈가보이\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-19T08:38:45.637745\",\"updated_at\":\"2025-03-19T08:38:45.637745\",\"status\":1}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-본인 정보 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
+	@GetMapping("/members/me")
+	public ResponseEntity<?> getMyInfo(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+		
+		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
+				
+		//접근권한이 없는 경우
+		if ( findedMember == null )
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberResponseDto.toDto(findedMember) ));
+	}
+	
+	/**
 	 * [모든 일반회원(USER) 조회]
 	 * @param token 로그인한 회원 토큰값
 	 * @return ResponseEntity
@@ -520,11 +559,11 @@ public class MemberController {
 	public ResponseEntity<?> login(
 			@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,
 			BindingResult bindingResult){
+		
 		System.out.println("수정 전:"+loginDto.getPassword());
 		
 		//[이메일과 비밀번호가 일치하는 회원 조회]
 		try {
-			System.out.println("비번암호화:"+EncryptAES256.encrypt(loginDto.getPassword()));
 			System.out.println("비번암호화:"+EncryptAES256.encrypt(loginDto.getPassword()));
 			loginDto.setPassword(EncryptAES256.encrypt(loginDto.getPassword()));
 			System.out.println("loginDto:"+loginDto.getPassword());
@@ -534,10 +573,11 @@ public class MemberController {
 		}
 		
 		System.out.println("수정 후:"+loginDto.getPassword());
+		
 		// <로그인 시도>
 		MemberDto findedMember = memberService.validateLogin(loginDto);
 		//<회원이 아닌 경우>
-		if(findedMember == null) {
+		if(findedMember == null || ( findedMember != null && findedMember.getStatus() != 1 ) ) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.login_fail", null, new Locale("ko")) ));
 		}
 	
