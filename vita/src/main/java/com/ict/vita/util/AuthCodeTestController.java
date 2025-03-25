@@ -68,7 +68,8 @@ public class AuthCodeTestController {
 	//[direct 회원가입 테스트 메서드]
 	@PostMapping("/test/join")
 	public ResponseEntity<?> join(@RequestBody MemberJoinDto joinDto){
-		System.out.println("direct회원가입:"+joinDto.getAddress());
+		System.out.println("direct회원가입 address:"+joinDto.getAddress());
+		System.out.println("direct회원가입 birth:"+joinDto.getBirth().toString());
 		
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
 		
