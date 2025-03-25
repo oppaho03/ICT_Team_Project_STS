@@ -774,11 +774,8 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail(messageSource.getMessage("user.invalid_role", null, new Locale("ko"))));
 		}
 		
-		//탈퇴할 회원이 없는 경우
-		if(findedMember == null) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
-		
-		//이미 탈퇴한 경우
-		if(findedMember.getStatus() == 0) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+		//탈퇴할 회원이 없거나 이미 탈퇴한 경우
+		if(findedMember == null || (findedMember != null && findedMember.getStatus() == 0) ) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		
 		//<<탈퇴 가능한 경우>>
 		//<회원 정보 수정>
@@ -791,6 +788,7 @@ public class MemberController {
 		List<PostsResponseDto> deletedPosts = new Vector<>();
 		//<회원이 쓴 글 삭제>
 		for(PostsDto post : selectedPosts) {
+			
 			PostsDto deleted = postsService.deletePost(post.getId());
 			
 			List <PostCategoryRelationshipsDto> pcrList = pcrService.findAllByPostId(deleted.getId());
