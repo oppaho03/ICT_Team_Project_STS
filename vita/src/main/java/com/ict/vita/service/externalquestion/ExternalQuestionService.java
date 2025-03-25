@@ -35,6 +35,12 @@ public class ExternalQuestionService {
 		
 		return age;
 	}
+	
+	//모든 외부질문 조회
+	public List<ExternalQuestionDto> getAll(){
+		List <ExternalQuestionEntity> list = externalQuestionRepository.findAll();
+		return list.stream().map(entity -> ExternalQuestionDto.toDto(entity)).toList();
+	}
 
 	//나이+성별 별 가장 많이 질문한 외부질문 조회
 	public List<ExternalQuestionResponseDto> getTopQuestionsByAgeAndGender(String age, char gender) {

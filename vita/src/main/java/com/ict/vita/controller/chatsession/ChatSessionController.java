@@ -115,10 +115,34 @@ public class ChatSessionController {
 	}
 	
 	/**
-	 * [본인 세션 조회]
+	 * [본인 세션 조회] - 페이징 적용
 	 * @param token 로그인한 회원 토큰
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "본인 세션 조회", description = "본인 세션 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-본인 세션 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = ChatSessionResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0},{\"id\":53,\"member\":37,\"created_at\":\"2025-03-25T09:28:49.36277\",\"updated_at\":\"2025-03-25T09:28:49.360769\",\"status\":1,\"count\":0},{\"id\":44,\"member\":37,\"created_at\":\"2025-03-13T09:27:46.403825\",\"updated_at\":\"2025-03-13T09:27:46.388614\",\"status\":1,\"count\":0}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-본인 세션 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
 	@GetMapping("/sessions/me")
 	public ResponseEntity<?> getMySessions(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
@@ -134,8 +158,8 @@ public class ChatSessionController {
 		
 		List<ChatSessionDto> sessions;
 		
-		if(p > 0) sessions = chatSessionService.findAllByMember(loginMember.getId(), p, ol);
-		else sessions = chatSessionService.findAllByMember(loginMember.getId());
+		if(p > 0) sessions = chatSessionService.findAllByMember(loginMember.getId(), p, ol); //페이징 적용
+		else sessions = chatSessionService.findAllByMember(loginMember.getId()); //페이징 미적용
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
 	}

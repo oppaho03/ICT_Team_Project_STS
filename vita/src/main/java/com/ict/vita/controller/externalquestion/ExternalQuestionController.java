@@ -66,7 +66,7 @@ public class ExternalQuestionController {
 			@RequestParam(name = "gender",required = false) Character gender,
 			@RequestParam(name = "occupation",required = false) String occupation){
 		
-		List<ExternalQuestionResponseDto> result = null;
+		List<?> result = null;
 		System.out.println(String.format("age:%s,gender:%s,occupation:%s", age,gender,occupation));
 
 		//나이+성별 별 조회
@@ -88,6 +88,11 @@ public class ExternalQuestionController {
 		else if(!Commons.isNull(occupation)) {
 			System.out.println("직업별 조회");
 			result = externalQuestionService.getTopQuestionsByOccupation(occupation);
+		}
+		
+		else { //전체 조회
+			System.out.println("외부 질문 전체 조회");
+			result = externalQuestionService.getAll();
 		}
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(result));
