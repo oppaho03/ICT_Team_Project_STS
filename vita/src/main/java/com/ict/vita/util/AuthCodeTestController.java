@@ -39,7 +39,7 @@ public class AuthCodeTestController {
 		//코드 생성
 		String authCode = AuthCode.generateAuthCode();
 		
-		MemberTempJoinDto memberDto = MemberTempJoinDto.builder()
+		MemberTempJoinDto joinDto = MemberTempJoinDto.builder()
 									.email(parameters.get("email").trim())
 									.password(authCode)
 									.role("USER")
@@ -48,8 +48,13 @@ public class AuthCodeTestController {
 									.updated_at(LocalDateTime.now())
 									.status(9) //임시가입
 									.build();
+		
+		if(memberService.isExistsEmail(joinDto.getEmail())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
+		}
+		
 		//임시 회원가입
-		MemberDto tempJoinedMember = memberService.tempJoin(memberDto);
+		MemberDto tempJoinedMember = memberService.tempJoin(joinDto);
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("member", tempJoinedMember);
