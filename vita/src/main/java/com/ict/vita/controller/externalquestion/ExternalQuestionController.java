@@ -13,11 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.externalquestion.ExternalQuestionDto;
+import com.ict.vita.service.externalquestion.ExternalQuestionResponseDto;
 import com.ict.vita.service.externalquestion.ExternalQuestionService;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,13 +45,28 @@ public class ExternalQuestionController {
 	 * @param occupation 직업
 	 * @return
 	 */
+	@Operation( summary = "외부질문 통계 조회", description = "외부질문 통계 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-외부질문 통계 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = ExternalQuestionResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"age_group\":\"40대\",\"gender\":\"F\",\"occupation\":null,\"category\":\"Health\",\"question_count\":3},{\"age_group\":\"40대\",\"gender\":\"F\",\"occupation\":null,\"category\":\"Technology\",\"question_count\":1}]}}"
+				)
+			) 
+		)
+	})
 	@GetMapping
 	public ResponseEntity<?> getTopQuestionsByGroup(
 			@RequestParam(name = "age",required = false) String age,
 			@RequestParam(name = "gender",required = false) Character gender,
 			@RequestParam(name = "occupation",required = false) String occupation){
 		
-		List<?> result = null;
+		List<ExternalQuestionResponseDto> result = null;
 		System.out.println(String.format("age:%s,gender:%s,occupation:%s", age,gender,occupation));
 
 		//나이+성별 별 조회

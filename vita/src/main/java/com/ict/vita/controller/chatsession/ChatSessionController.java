@@ -20,11 +20,19 @@ import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionResponseDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -43,6 +51,39 @@ public class ChatSessionController {
 	 * @param token 로그인한 회원 토큰
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "전체 세션 조회", description = "전체 세션 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-전체 세션 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = ChatSessionResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-06T15:23:27.440789\",\"status\":1,\"count\":0},{\"id\":44,\"member\":37,\"created_at\":\"2025-03-13T09:27:46.403825\",\"updated_at\":\"2025-03-13T09:27:46.388614\",\"status\":1,\"count\":0}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-전체 세션 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "403-전체 세션 조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
+					)
+				) 
+			)
+	})
 	@GetMapping("/sessions")
 	public ResponseEntity<?> getAllSessions(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
@@ -79,6 +120,28 @@ public class ChatSessionController {
 	 * @param id 세션id
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "세션id로 세션 조회", description = "세션id로 세션 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-세션id로 세션 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = ChatSessionResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-06T15:23:27.440789\",\"status\":1,\"count\":0}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-세션id로 세션 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
 	@GetMapping("/sessions/{id}")
 	public ResponseEntity<?> getSessionById(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
@@ -122,6 +185,30 @@ public class ChatSessionController {
 	 * @param mid 회원id
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "회원id로 세션 조회", description = "회원id로 세션 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-회원id로 세션 조회 성공",
+			description = "SUCCESS",
+			content = @Content(
+				array = @ArraySchema(
+						schema = @Schema(implementation = ChatSessionResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":53,\"member\":37,\"created_at\":\"2025-03-25T09:28:49.36277\",\"updated_at\":\"2025-03-25T09:28:49.360769\",\"status\":1,\"count\":0},{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-회원id로 세션 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
 	@GetMapping("/sessions/member/{id}")
 	public ResponseEntity<?> getSessionsByMember(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
