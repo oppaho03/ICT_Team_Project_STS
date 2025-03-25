@@ -513,7 +513,7 @@ public class MemberController {
 			findedMember.setGender(joinDto.getGender());
 			findedMember.setContact(joinDto.getContact());
 			findedMember.setAddress(joinDto.getAddress());
-			findedMember.setCreated_at(LocalDateTime.now());
+			findedMember.setCreated_at(joinDto.getCreated_at());
 			findedMember.setUpdated_at(LocalDateTime.now());
 		}
 		catch(Exception e) {
@@ -688,6 +688,7 @@ public class MemberController {
 		findedMember.setNickname(updateDto.getNickname());
 		findedMember.setContact(updateDto.getContact());
 		findedMember.setAddress(updateDto.getAddress());
+		findedMember.setUpdated_at(LocalDateTime.now());
 		//변경된 회원 정보로 회원 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));

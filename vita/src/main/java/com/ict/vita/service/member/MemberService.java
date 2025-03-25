@@ -215,7 +215,7 @@ public class MemberService {
 	public MemberDto validateLogin(MemberLoginDto loginDto) {
 		//리포지토리 호출해서 이메일과 비밀번호가 일치하면 해당하는 DTO를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
-		MemberEntity findedMember = memberRepository.findByEmailIsAndPasswordIs(loginDto.getEmail(), loginDto.getPassword()).orElse(null);
+		MemberEntity findedMember = memberRepository.findByEmailIsAndPasswordIs(loginDto.getEmail(), EncryptAES256.encrypt(loginDto.getPassword()) ).orElse(null);
 		if(findedMember != null && findedMember.getStatus() == 1)
 			return MemberDto.toDto(findedMember);
 		return null;

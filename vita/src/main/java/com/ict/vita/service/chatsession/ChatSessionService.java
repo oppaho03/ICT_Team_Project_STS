@@ -210,9 +210,12 @@ public class ChatSessionService {
 		
 		//List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,Sort.by(Sort.Order.desc("updated_at")) );
 		
+		List<ChatSessionEntity> list = null;
+		
 		String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0 ORDER BY s.updated_at DESC ";
 		Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
-		List<ChatSessionEntity> list = null;
+		query.setParameter("mid", mid);
+		list = query.getResultList();
 		
 		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}

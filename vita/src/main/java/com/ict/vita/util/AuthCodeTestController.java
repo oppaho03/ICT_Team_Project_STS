@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 //[이메일 인증코드 생성 관련 테스트 컨트롤러]
 public class AuthCodeTestController {
 	
@@ -86,7 +88,7 @@ public class AuthCodeTestController {
 			findedMember.setGender(joinDto.getGender());
 			findedMember.setContact(joinDto.getContact());
 			findedMember.setAddress(joinDto.getAddress());
-			findedMember.setCreated_at(LocalDateTime.now());
+			findedMember.setCreated_at(joinDto.getCreated_at());
 			findedMember.setUpdated_at(LocalDateTime.now());
 		}
 		catch(Exception e) {
