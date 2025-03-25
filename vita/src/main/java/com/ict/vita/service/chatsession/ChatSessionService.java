@@ -147,7 +147,14 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAllByMember(Long mid) {
-		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember( mid, Sort.by(Sort.Order.desc("updatedAt")));
+//		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember( mid, Sort.by(Sort.Order.desc("updatedAt")));
+		
+		List <ChatSessionEntity> sessions = null;
+		String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid ORDER BY s.updated_at desc";
+		Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
+		query.setParameter("mid", mid);
+		sessions = query.getResultList();
+		
 		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}
 	

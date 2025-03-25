@@ -115,6 +115,32 @@ public class ChatSessionController {
 	}
 	
 	/**
+	 * [본인 세션 조회]
+	 * @param token 로그인한 회원 토큰
+	 * @return ResponseEntity
+	 */
+	@GetMapping("/sessions/me")
+	public ResponseEntity<?> getMySessions(
+			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
+			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol){
+		//로그인한 회원 조회
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		}
+		
+		List<ChatSessionDto> sessions;
+		
+		if(p > 0) sessions = chatSessionService.findAllByMember(loginMember.getId(), p, ol);
+		else sessions = chatSessionService.findAllByMember(loginMember.getId());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
+	}
+	
+	/**
 	 * [세션id로 세션 조회] - 본인 세션은 다 조회,남의 세션은 공개만 조회,관리자는 다 조회
 	 * @param token 로그인한 회원 토큰
 	 * @param id 세션id
