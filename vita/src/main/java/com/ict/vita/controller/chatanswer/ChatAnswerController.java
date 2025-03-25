@@ -52,7 +52,7 @@ public class ChatAnswerController {
 	private final TermsService termsService;
 
 	/**
-	 * 키워드로 검색
+	 * [키워드로 검색]
 	 * @param searchRequest 사용자가 입력한 키워드(JSON형식)
 	 * @return ResponseEntity
 	 * @throws UnsupportedEncodingException 
@@ -63,11 +63,9 @@ public class ChatAnswerController {
 			responseCode = "200-검색 결과 조회",
 			description = "SUCCESS", 
 			content = @Content(	
-				array = @ArraySchema(
-						schema = @Schema(implementation = ChatAnswerResponseDto.class)
-				),
+				schema = @Schema(implementation = Map.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는~~\",\"body\":\"HIV는주로~~\",\"conclusion\":\"HIV감염을예방하기위해서는~~\"},{\"id\":17,\"file_name\":\"HC-A-06128457000017\",\"intro\":\"HIV감염검진은~~\",\"body\":\"HIV감염검진은~~~\",\"conclusion\":\"HIV감염검진은~~~\"}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"keywords\":[\"감염\",\"여부\",\"확인\",\"HIV\",\"항체\",\"검사\",\"항원\",\"결합\",\"실시\"],\"answers\":[{\"id\":60394,\"file_name\":\"HC-A-06137307000394\",\"intro\":\"에이즈는인체면역결핍바이러스인HIV에의해인체내에서일어나는감염성질환을의미합니다.HIV는주로성접촉을통해전파되며,일부경우에는혈액을통한전파가가능합니다.HIV는HIV-1,HIV-2,HIV-3세가지유형으로나뉘며,각각다른바이러스로분류됩니다.HIV는인체간에감염이이루어지며,이로인해심각한합병증이발생할수있습니다.\",\"body\":\"HIV는주로감염된사람의정액또는혈액을통해전파됩니다.이바이러스는감염된사람이기침,재채기,말하기등을통해다른사람에게도전파될수있습니다.이로인해감염된사람은심각한바이러스질환과감염된물질에노출될수있습니다.HIV는후천성면역결핍증을일으키는원인바이러스이며,이를제거하기위해HIV의유전자를포함한혈액이나체액을제거하는치료가시행됩니다.HIV는HIV-1과HIV-2유형의바이러스로나뉘며,HIV-1유형은HIV-1a바이러스를포함하고있으며,HIV-2유형은HIV-2b바이러스를포함하고있습니다.치료방법은약물치료와외과수술로나뉩니다.감염된조직의사용은혈액내바이러스에대한면역을강화시키기위해사용될수있으며,이러한치료법은HIV바이러스의지속적인복제를방지하기위해시행됩니다.\",\"conclusion\":\"HIV감염을예방하기위해서는HIV-1유형의바이러스에대한백신접종이중요합니다.HIV-1a감염은성적접촉을통해감염될수있으며,HIV-1b,HIV-2,HIV-3,HIV-4유형으로나뉘어집니다.HIV-1b유형에감염된사람은생식기를통해HIV바이러스를전파하여심각한합병증을유발할수있습니다.HIV-1b유형감염자는적절한치료를받지않을경우생명을위협받을수있습니다.또한,HIV-1a감염자는면역기능이심각하게손상되어감염으로부터의회복이어려울수있으며,심각한사망률이발생할수있습니다.따라서HIV-1b유형에감염되지않도록정기적인검사와조치가필요합니다.\",\"categories\":[{\"id\":1630,\"name\":\"답변\",\"slug\":\"answer\",\"group_number\":0,\"category\":\"chat\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":826,\"name\":\"HIV감염\",\"slug\":\"hiv_infection\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":825},{\"id\":1547,\"name\":\"피부과\",\"slug\":\"%ED%94%BC%EB%B6%80%EA%B3%BC\",\"group_number\":0,\"category\":\"department\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":1625,\"name\":\"정의\",\"slug\":\"%EC%A0%95%EC%9D%98\",\"group_number\":0,\"category\":\"intention\",\"description\":null,\"count\":0,\"parent\":0}]}]}}}"
 				)
 			) 
 		),

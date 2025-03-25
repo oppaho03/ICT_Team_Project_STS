@@ -35,7 +35,7 @@ public class ChatQnaService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatQnaDto> findAllBySession(Long sid){
-		List<ChatQnaEntity> qnaEntities = chatQnaRepository.findAllByChatSessionEntity_Id(sid);
+		List<ChatQnaEntity> qnaEntities = chatQnaRepository.findAllByChatSessionEntity_id(sid);
 		List<ChatQnaDto> qnaDtoes = qnaEntities.stream().map(entity -> ChatQnaDto.toDto(entity)).collect(Collectors.toList());
 		return qnaDtoes;
 	}

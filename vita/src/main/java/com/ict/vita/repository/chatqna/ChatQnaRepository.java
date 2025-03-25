@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatQnaRepository extends JpaRepository<ChatQnaEntity, Long> {
 	@Query(value = "SELECT * FROM APP_CHAT_QNA WHERE s_id = :sessionId ORDER BY id ASC",nativeQuery = true)
-	List<ChatQnaEntity> findAllByChatSessionEntity_Id(@Param("sessionId") Long sessionId); //세션 아이디로 조회
+	List<ChatQnaEntity> findAllByChatSessionEntity_id(@Param("sessionId") Long sessionId); //세션 아이디로 조회
 }
