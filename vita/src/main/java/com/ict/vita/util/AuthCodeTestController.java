@@ -43,7 +43,7 @@ public class AuthCodeTestController {
 									.email(parameters.get("email").trim())
 									.password(authCode)
 									.role("USER")
-									.nickname("authCodeTest")
+									.nickname("authCodeTest") // ***임시로 해놓음
 									.created_at(LocalDateTime.now())
 									.updated_at(LocalDateTime.now())
 									.status(9) //임시가입
