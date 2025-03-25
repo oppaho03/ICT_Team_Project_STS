@@ -71,6 +71,8 @@ public class AuthCodeTestController {
 		System.out.println("direct회원가입 address:"+joinDto.getAddress());
 		System.out.println("direct회원가입 birth:"+joinDto.getBirth().toString());
 		
+		System.out.println();
+		
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
 		
 		//<이미 회원가입된 경우 - status가 1>
