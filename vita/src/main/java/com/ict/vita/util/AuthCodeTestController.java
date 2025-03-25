@@ -36,6 +36,8 @@ public class AuthCodeTestController {
 	//[이메일 인증코드 생성 + 임시 회원가입 테스트 메서드]
 	@PostMapping("/test/authcode")
 	public ResponseEntity<?> getAuthCode(@RequestBody Map<String, String> parameters){
+		System.out.println("*** email:"+parameters.get("email"));
+		
 		//코드 생성
 		String authCode = AuthCode.generateAuthCode();
 		
@@ -66,6 +68,8 @@ public class AuthCodeTestController {
 	//[direct 회원가입 테스트 메서드]
 	@PostMapping("/test/join")
 	public ResponseEntity<?> join(@RequestBody MemberJoinDto joinDto){
+		System.out.println("direct회원가입:"+joinDto.getAddress());
+		
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
 		
 		//<이미 회원가입된 경우 - status가 1>
