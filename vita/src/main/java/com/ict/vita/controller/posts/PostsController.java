@@ -425,7 +425,7 @@ public class PostsController {
 				content = @Content(	
 					schema = @Schema(implementation = PostsResponseDto.class),
 					examples = @ExampleObject(
-						value = "{\"success\":1,\"response\":{\"data\":{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}}}"
+						value = "{\"success\":1,\"response\":{\"data\":{\"id\":63,\"author\":29,\"post_title\":\"글제목2\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:06:55.460514\",\"post_modified_at\":\"2025-03-11T21:06:55.450154\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[]}}}"
 					)
 				) 
 			),
@@ -472,11 +472,11 @@ public class PostsController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( "글 작성자만 삭제 가능합니다" ));
 		}
 		
-		boolean result = postsService.deletePost(findedPost.getId());
+		PostsDto deletedPost = postsService.deletePost(findedPost.getId());
 		
 		List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
 		List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(findedPost.toEntity(),responses )) );
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(deletedPost.toEntity(),responses )) );
 
 	}
 	

@@ -91,13 +91,25 @@ public class PostsService {
 	}
 	
 	/**
-	 * [특정 회원의 모든 게시글을 조회]
-	 * @param memberId 조회하고 싶은 회원id
+	 * [특정 회원의 모든 게시글을 조회] - 카테고리id 존재
+	 * @param cid 조회하고 싶은 카테고리id
+	 * @param uid 조회하고 싶은 회원id
 	 * @return List<PostsDto>
 	 */
 	@Transactional(readOnly = true)
 	public List<PostsDto> getPostsByMember(Long cid,Long uid){
 		List<PostsEntity> entityList = postsRepository.findByMember(cid,uid);
+		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * [특정 회원의 모든 게시글을 조회] - 카테고리id 미존재
+	 * @param uid 조회하고 싶은 회원id
+	 * @return List<PostsDto>
+	 */
+	@Transactional(readOnly = true)
+	public List<PostsDto> getPostsByMember(Long uid){
+		List<PostsEntity> entityList = postsRepository.findByMember(uid);
 		return entityList.stream().map(entity -> PostsDto.toDto(entity)).collect(Collectors.toList());
 	}
 	
@@ -153,15 +165,15 @@ public class PostsService {
 	 * [글 삭제]
 	 * @param id 삭제할 게시글 id
 	 */
-	public boolean deletePost(Long id) {
+	public PostsDto deletePost(Long id) {
 		PostsEntity findedPost = postsRepository.findById(id).orElse(null);
 		if(findedPost != null) {
 			findedPost.setPostStatus(Commons.POST_STATUS_DELETE);
-			postsRepository.save(findedPost);
-			return true;
+			PostsEntity deletedPost = postsRepository.save(findedPost);
+			return PostsDto.toDto(findedPost);
 		}
 		
-		return false;
+		return null;
 	}
 	
 }

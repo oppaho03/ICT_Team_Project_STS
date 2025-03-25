@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.anc.AncService;
 import com.ict.vita.service.chatanswer.ChatAnswerDto;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberJoinDto;
@@ -38,6 +40,12 @@ import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberTempJoinDto;
 import com.ict.vita.service.member.MemberUpdateDto;
+import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
+import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
+import com.ict.vita.service.posts.PostsDto;
+import com.ict.vita.service.posts.PostsResponseDto;
+import com.ict.vita.service.posts.PostsService;
+import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.EncryptAES256;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.JwtUtil;
@@ -62,6 +70,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	//서비스 주입
 	private final MemberService memberService;
+	private final PostsService postsService;
+	private final PostCategoryRelationshipsService pcrService;
 	
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	private final MessageSource messageSource;
@@ -684,7 +694,7 @@ public class MemberController {
 	@PatchMapping("/members")
 	public ResponseEntity<?> updatePassword(
 			@Parameter(description = "수정할 비밀번호") @RequestBody Map<String, String> newPwd,
-			@RequestHeader(name = "authorization") String token){
+			@Parameter(description = "회원의 토큰값") @RequestHeader(name = "authorization") String token){
 		//토큰값으로 회원 조회
 		MemberDto findedMember = Commons.findMemberByToken(token, memberService);
 		
@@ -708,6 +718,94 @@ public class MemberController {
 		System.out.println("비번 수정 후:"+updatedMember.getPassword());
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
+		
+	}
+	
+	/**
+	 * [회원탈퇴]
+	 * @param token 회원 토큰값
+	 * @param mid 탈퇴할 회원 id
+	 * @return ResponseEntity
+	 */
+	@Operation( summary = "회원탈퇴", description = "회원탈퇴 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-회원탈퇴 성공",
+			description = "SUCCESS", 
+			content = @Content(	
+				schema = @Schema(implementation = Map.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"member\":{\"id\":47,\"email\":\"baekjongwon1@naver.com\",\"name\":\"박종원원\",\"nickname\":\"빽다방\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-15T13:58:21.560432\",\"updated_at\":\"2025-03-17T09:32:32.773729\",\"status\":0},\"posts\":[{\"id\":67,\"author\":47,\"post_title\":\"title123\",\"post_content\":\"contents입니다\",\"post_summary\":\"글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-17T20:52:30.204812\",\"post_modified_at\":\"2025-03-17T20:52:30.194811\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":68,\"author\":47,\"post_title\":\"수수title123\",\"post_content\":\"수수contents입니다\",\"post_summary\":\"수수정글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-17T20:53:32.206184\",\"post_modified_at\":\"2025-03-17T21:11:59.990984\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":68,\"author\":47,\"post_title\":\"수수title123\",\"post_content\":\"수수contents입니다\",\"post_summary\":\"수수정글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-17T20:53:32.206184\",\"post_modified_at\":\"2025-03-17T21:11:59.990984\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":69,\"author\":47,\"post_title\":\"글하고질병글입니다.\",\"post_content\":\"contents입니다\",\"post_summary\":\"황조롱이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-18T17:42:18.876855\",\"post_modified_at\":\"2025-03-18T17:42:18.721348\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":69,\"author\":47,\"post_title\":\"글하고질병글입니다.\",\"post_content\":\"contents입니다\",\"post_summary\":\"황조롱이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-18T17:42:18.876855\",\"post_modified_at\":\"2025-03-18T17:42:18.721348\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":70,\"author\":47,\"post_title\":\"수수정22\",\"post_content\":\"22수contents입니다\",\"post_summary\":\"22수정글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-19T21:02:49.671588\",\"post_modified_at\":\"2025-03-21T11:58:44.211468\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":70,\"author\":47,\"post_title\":\"수수정22\",\"post_content\":\"22수contents입니다\",\"post_summary\":\"22수정글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-19T21:02:49.671588\",\"post_modified_at\":\"2025-03-21T11:58:44.211468\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]}]}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-회원탈퇴 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "403-회원탈퇴 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
+					)
+				) 
+			)
+	})
+	@PatchMapping("/members/withdraw/{mid}")
+	public ResponseEntity<?> withdraw(
+			@Parameter(description = "회원의 토큰값") @RequestHeader(name = "authorization") String token,
+			@Parameter(description = "탈퇴할 회원 id") @PathVariable(name = "mid") Long mid){
+		//회원 조회
+		MemberDto loginMember = memberService.findMemberByToken(token); //로그인한 회원
+		MemberDto findedMember = memberService.findMemberById(mid); //탈퇴하고자 하는 회원
+		
+		//회원 미존재시
+		if(loginMember == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_token", null, new Locale("ko"))));
+		
+		//탈퇴할 회원이 자신이 아니면서 관리자도 아닌 경우 - 탈퇴 불가
+		if(loginMember.getId() != findedMember.getId() && !Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail(messageSource.getMessage("user.invalid_role", null, new Locale("ko"))));
+		}
+		
+		//탈퇴할 회원이 없는 경우
+		if(findedMember == null) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+		
+		//이미 탈퇴한 경우
+		if(findedMember.getStatus() == 0) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+		
+		//<<탈퇴 가능한 경우>>
+		//<회원 정보 수정>
+		MemberDto withdrawnMember = memberService.withdrawMember(mid);
+		MemberResponseDto respMember = MemberResponseDto.toDto(withdrawnMember);
+		
+		//회원이 작성한 모든 글 조회
+		List <PostsDto> selectedPosts = postsService.getPostsByMember(withdrawnMember.getId());
+		
+		List<PostsResponseDto> deletedPosts = new Vector<>();
+		//<회원이 쓴 글 삭제>
+		for(PostsDto post : selectedPosts) {
+			PostsDto deleted = postsService.deletePost(post.getId());
+			
+			List <PostCategoryRelationshipsDto> pcrList = pcrService.findAllByPostId(deleted.getId());
+			List<TermsResponseDto> termsRespList = pcrList.stream().map(pcr -> TermsResponseDto.toDto( pcr.getTermCategoryDto() )).toList();
+			
+			PostsResponseDto respPost = PostsResponseDto.toDto(deleted.toEntity(), termsRespList);
+			
+			deletedPosts.add(respPost);
+		}
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("member", respMember);
+		result.put("posts", deletedPosts);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(result));
 		
 	}
 	

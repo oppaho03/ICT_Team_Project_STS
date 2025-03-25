@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.vita.repository.member.MemberEntity;
 import com.ict.vita.repository.member.MemberRepository;
+import com.ict.vita.repository.posts.PostsRepository;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.EncryptAES256;
 
@@ -129,7 +130,7 @@ public class MemberService {
 		String nickname = joinDto.getNickname();
 		//임시 회원이 비밀번호를 입력하지 않은 경우
 		if(Commons.isNull(tempJoinDto.getPassword())) {
-			password = Commons.TEMPORARY; //**** 비밀번호에 이메일 인증코드값 넣어야 함
+			password = Commons.TEMPORARY; //**** 비밀번호에 암호화 안 한 이메일 인증코드값 넣어야 함
 		}
 		//닉네임 미입력시
 		if(Commons.isNull(nickname)) {
@@ -254,6 +255,20 @@ public class MemberService {
 			.stream()
 			.map(entity -> MemberDto.toDto(entity))
 			.collect(Collectors.toList());
+	}
+
+	/**
+	 * [회원 탈퇴]
+	 * @param mid 탈퇴할 회원 id
+	 * @return MemberDto 탈퇴한 회원 객체
+	 */
+	public MemberDto withdrawMember(Long mid) {
+		MemberDto findedMember = findMemberById(mid);
+		//<회원의 status를 0 으로 수정>
+		findedMember.setStatus(0); //탈퇴 처리
+		MemberDto withdrawnMember = updateMember(findedMember);
+		
+		return withdrawnMember;
 	}
 	
 }

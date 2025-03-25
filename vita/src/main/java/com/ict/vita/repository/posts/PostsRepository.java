@@ -26,7 +26,16 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 				where r.term_category_id = :cid and p.post_author = :uid
 			"""
 			,nativeQuery = true)
-	List<PostsEntity> findByMember(@Param("cid") Long cid,@Param("uid") Long uid); //해당 회원의 모든 글 조회용
+	List<PostsEntity> findByMember(@Param("cid") Long cid,@Param("uid") Long uid); //해당 회원의 모든 글 조회용(카테고리id 존재)
+	
+	@Query(value = """
+			select p.*
+			from APP_POSTS p
+			join APP_POST_CATEGORY_RELATIONSHIPS r on p.id = r.post_id
+			where p.post_author = :uid
+		"""
+		,nativeQuery = true)
+	List<PostsEntity> findByMember(@Param("uid") Long uid); //해당 회원의 모든 글 조회용(카테고리id 미존재)
 	
 	@Query(value = """
 				select p.* 
