@@ -89,7 +89,7 @@ public class AuthCodeController {
 		
 		//이메일 인증코드 전달할 객체 생성
 		Map<String, String> authInfo = new HashMap<>();
-		authInfo.put("authCode", authCode);
+		authInfo.put("code", authCode);
 		
 		//파이썬으로 인증 코드 전달
 		sendAuthCodeToPython(pythonServerUrl,authInfo);

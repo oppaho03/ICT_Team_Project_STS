@@ -591,6 +591,7 @@ public class MemberController {
 		
 		//회원 정보 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
+		System.out.println("direct로그인 성공!!");
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
 	}
 
