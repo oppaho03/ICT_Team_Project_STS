@@ -1,6 +1,5 @@
 package com.ict.vita.controller.member;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -9,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,10 +54,10 @@ public class AuthCodeController {
 	
 	/**
 	 * [이메일 인증코드 발급 및 임시 회원가입 처리 메서드]
-	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 (이메일 포함)
+	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 ( email )
 	 * @return 
 	 */
-	@PostMapping("/temporary-registration")
+	@PostMapping
 	public ResponseEntity<?> initiateEmailVerification(@RequestBody Map<String, String> parameters){
 		
 		String email = parameters.get("email"); //입력한 이메일
@@ -70,7 +70,7 @@ public class AuthCodeController {
 		//임시 회원가입 실패 - 이미 사용중인 아이디 입력시
 		if(memberService.isExistsEmail(email.trim())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
-		}
+		}	
 		
 		//이메일 인증 코드 생성
 		String authCode = AuthUtil.generateEmailAuthCode();
@@ -98,4 +98,39 @@ public class AuthCodeController {
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(authInfo));
 	}
 	
+	/**
+	 * [이메일 인증코드 검증 메서드]
+	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 ( email, code )
+	 * @return
+	 */
+	@GetMapping
+	public ResponseEntity<?> verifyEmailAuthCode(@RequestBody Map<String, String> parameters){
+		//서버로 넘어온 정보
+		String email = parameters.get("email");
+		String authCode = parameters.get("code");
+		
+		//이메일로 회원 조회
+		MemberDto findedMember = memberService.findMemberByEmail(email);
+		
+		//회원 미존재
+		if(findedMember == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("member.notfound", null, new Locale("ko")) ));
+		}
+		//이미 가입된 회원인 경우
+		if(findedMember.getStatus() == 1) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")) ));
+		}
+		
+		//이메일 인증코드 검증
+		//실패시
+		if(authCode != findedMember.getPassword()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("auth.invalid", null, new Locale("ko"))));
+		}
+		//성공시
+		Map<String, Boolean> result = new HashMap<>();
+		result.put("isAuth", true);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
+		
+	}
 }
