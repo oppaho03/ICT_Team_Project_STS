@@ -566,21 +566,9 @@ public class MemberController {
 			@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,
 			BindingResult bindingResult){
 		
-		System.out.println(loginDto.getEmail());
-		System.out.println("수정 전:"+loginDto.getPassword());
+		System.out.println("[로그인]이메일:"+loginDto.getEmail());
 		
-		//[이메일과 비밀번호가 일치하는 회원 조회]
-		try {
-			System.out.println("비번암호화:"+EncryptAES256.encrypt(loginDto.getPassword()));
-			System.out.println("loginDto:"+loginDto.getPassword());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("[로그인]비밀번호 암호화 실패");
-		}
-		
-		System.out.println("수정 후:"+loginDto.getPassword());
-		
-		// <로그인 시도>
+		//[이메일과 비밀번호가 일치하는 회원 조회]	
 		MemberDto findedMember = memberService.validateLogin(loginDto);
 		//<회원이 아닌 경우>
 		if(findedMember == null || ( findedMember != null && findedMember.getStatus() != 1 ) ) {
