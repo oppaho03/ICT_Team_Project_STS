@@ -71,6 +71,20 @@ public class WebClientTestController {
 		 - 0 또는 하나 이상의 데이터 항목과 에러를 가짐
 		 
 		*/
+		
+		/* <테스트용>
+		Mono<ResponseEntity<Void>> response = webClient.post() //post요청
+		        .uri("/posts") 
+		        .header("Content-Type", "application/json") 
+		        .bodyValue(map) 
+		        .retrieve()
+		        .toBodilessEntity(); //응답바디 필요없을때
+		System.out.println("[sendDataToPython]status:"+response.block().getStatusCode());
+		System.out.println("[sendDataToPython]headers:"+response.block().getHeaders());
+		System.out.println("[sendDataToPython]body:"+response.block().getBody());
+		*/
+		
+		
         return webClient.post() //post요청
                 .uri("/posts") // 요청할 엔드포인트
                 .header("Content-Type", "application/json") // JSON 데이터 전송
@@ -78,6 +92,16 @@ public class WebClientTestController {
                 .retrieve() // 응답을 가져오기 위한 호출
                 .bodyToMono(String.class); // 응답바디의 데이터를 String 형태로 변환
                 //.block(); // 동기 처리: 응답이 올 때까지 기다림  <->  subscribe() : 비동기 처리
+        
+        
+        /*
+         - bodyToMono()는 응답바디의 값을 가져올때 사용
+         
+         < 응답바디가 필요없는 경우> - 3가지 방법
+         - releaseBody()
+         - toBodilessEntity(): responseBody는 없으나, Http StatusCode와 Headers를 가진 ResponseEntity
+         - bodyToMono(Void.class)
+        */
     }
 	
 }

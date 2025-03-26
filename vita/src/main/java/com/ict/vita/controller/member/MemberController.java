@@ -395,15 +395,12 @@ public class MemberController {
 		if(memberService.isExistsEmail(tempJoinDto.getEmail())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
 		}
-		
-		System.out.println("===== 임시회원가입 =====");
-		System.out.println("email:"+tempJoinDto.getEmail());
-		System.out.println("password:"+tempJoinDto.getPassword());
-		System.out.println("name:"+tempJoinDto.getName());
-		System.out.println("nickname:"+tempJoinDto.getNickname());
+
+		tempJoinDto.setRole(Commons.ROLE_USER);
 		
 		//임시 회원가입 처리								
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
+		
 		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
 				ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
 	}

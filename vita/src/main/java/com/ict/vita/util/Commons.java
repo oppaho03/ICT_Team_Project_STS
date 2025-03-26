@@ -108,7 +108,11 @@ public class Commons {
 		return null;
 	}
 	
-	// DB 종류를 가져오는 메서드
+	/**
+	 * [DB 종류를 가져오는 메서드]
+	 * @param dataSource
+	 * @return
+	 */
 	public static String getDatabaseProductName(DataSource dataSource) {
 		try (Connection connection = dataSource.getConnection()) { // DataSource로부터 Connection 가져오기
             return connection.getMetaData().getDatabaseProductName();
@@ -117,4 +121,21 @@ public class Commons {
         }
 	}
 	
+	/**
+	 * [닉네임 설정 메서드] - 입력 안 하면 기본값, 입력하면 입력값으로 설정
+	 * @param email 입력한 이메일
+	 * @param nickname 입력한 닉네임
+	 * @return
+	 */
+	//닉네임 설정 메서드 - 입력 안 하면 기본값, 입력하면 입력값으로 설정
+	public static String getAutoNickname(String email,String nickname) {
+		String autoNickname = nickname;
+		//<닉네임 미입력시>
+		if(Commons.isNull(autoNickname)) {
+			//이메일에서 @ 전까지를 닉네임으로 지정
+			autoNickname = email.substring(0, email.indexOf("@")); 
+		}
+		
+		return autoNickname;
+	}
 }
