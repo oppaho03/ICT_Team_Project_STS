@@ -551,9 +551,9 @@ public class MemberController {
 			responseCode = "200-로그인 성공",
 			description = "SUCCESS",
 			content = @Content(	
-				schema = @Schema(implementation = MemberResponseDto.class),
+				schema = @Schema(implementation = Map.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":47,\"email\":\"baekjongwon1@naver.com\",\"name\":\"백종원\",\"nickname\":\"빽햄구속\",\"birth\":\"1916-03-15\",\"gender\":\"M\",\"contact\":null,\"address\":null,\"created_at\":\"2025-03-15T13:58:21.560432\",\"updated_at\":\"2025-03-15T15:50:05.083318\",\"status\":1}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":56,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoiYWFhYWF1dGhAbmF2ZXIuY29tIiwic3ViIjoiNTYiLCJpYXQiOjE3NDI5ODc1NjUsImV4cCI6MTc0Mjk4ODQ2NX0.hi0ZWwYI0DcvNDH81IU_tSsdWPqtuHAoOtOkooiC3ME\"}}}"
 				)
 			) 
 		),
@@ -572,9 +572,6 @@ public class MemberController {
 			@Parameter(description = "로그인 요청 객체") @RequestBody @Valid MemberLoginDto loginDto,
 			BindingResult bindingResult){
 		
-		System.out.println("[로그인]이메일:"+loginDto.getEmail());
-		System.out.println("[로그인]비번:"+ EncryptAES256.decrypt(loginDto.getPassword()) );
-		
 		//[이메일과 비밀번호가 일치하는 회원 조회]	
 		MemberDto findedMember = memberService.validateLogin(loginDto);
 		//<회원이 아닌 경우>
@@ -588,15 +585,17 @@ public class MemberController {
 		 * id, email -> JWT token 생성 및 업데이트 
 		 * - jwtutil.ParseToken(String token) 을 사용해 Map<String, Object> 반환 
 		 * - 예 { sub=1, iat=1741051044, exp=1741051944 } 
-		 */	
+		 */
+		
+		String token = null;
+		
 		try {
 			Map<String, Object> claims = new HashMap<>();
 			claims.put( "email" , findedMember.getEmail());
 			claims.put( "role" , findedMember.getRole());
 			
-			String token = jwtutil.CreateToken(findedMember.getId().toString(), claims);			
+			token = jwtutil.CreateToken(findedMember.getId().toString(), claims);			
 			findedMember.setToken(token); 
-			System.out.println("[로그인]토큰:"+token);
 		}
 		catch( Exception ex ) {
 			return ResponseEntity
@@ -606,8 +605,14 @@ public class MemberController {
 		
 		//회원 정보 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
-		System.out.println("direct로그인 성공!!");
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
+		
+		Long id = updatedMember.getId();
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("id", id);
+		result.put("token", token);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(result));
 	}
 
 	/**

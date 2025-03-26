@@ -31,7 +31,6 @@ public class AuthTestController {
 	//[이메일 인증코드 생성 + 임시 회원가입 테스트 메서드]
 	@PostMapping("/test/authcode")
 	public ResponseEntity<?> getAuthCode(@RequestBody Map<String, String> parameters){
-		System.out.println("*** email:"+parameters.get("email"));
 		
 		//<회원이 이메일을 입력하지 않은 경우>
 		if(Commons.isNull(parameters.get("email"))) {
