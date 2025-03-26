@@ -6,7 +6,6 @@ import java.util.Random;
 public class AuthUtil {
 	
 	/**[6자리 이메일 인증코드 생성 메서드]
-	 * 
 	 */
 	public static String generateEmailAuthCode() {
 		Random random = new Random();

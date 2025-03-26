@@ -345,7 +345,7 @@ public class MemberController {
 	 * @param tempJoinDto 임시 회원가입용 DTO
 	 * @return ResponseEntity
 	 */
-	
+	/*
 	@Operation( summary = "임시 회원가입", description = "임시 회원가입 API" )
 	@ApiResponses({
 		@ApiResponse( 
@@ -406,15 +406,15 @@ public class MemberController {
 		
 		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
 				ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
-	} 
+	} */
 	
 	/**
-	 * [회원가입] - 최종 회원가입 처리 -> 최종 회원가입시 회원의 status는 1(일반)
+	 * [direct 회원가입] - 최종 회원가입 처리 -> 최종 회원가입시 회원의 status는 1(일반)
 	 * @param joinDto(회원가입 요청 DTO) 
 	 * @param bindingResult joinDto의 유효성 검증 실패시 에러가 담기는 객체(앞의 DTO객체의 유효성 검증 실패시 담기는 에러)
 	 * @return ResponseEntity(사용자의 HttpRequest에 대한 HTTP 응답을 감싸는 클래스로 HttpStatus, HttpHeaders, HttpBody를 포함)
 	 */
-	@Operation( summary = "회원가입", description = "회원가입 API" )
+	@Operation( summary = "direct 회원가입", description = "direct 회원가입 API" )
 	@ApiResponses({
 		@ApiResponse( 
 			responseCode = "201-회원가입 성공",
@@ -435,6 +435,15 @@ public class MemberController {
 				)
 			) 
 		),
+		@ApiResponse( 
+				responseCode = "400-회원가입 실패",
+				description = "FAIL(회원 미존재)", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"회원을찾을수없습니다.\"}}"
+					)
+				) 
+			),
 		@ApiResponse( 
 				responseCode = "401-회원가입 실패",
 				description = "FAIL(이메일 인증 안 된 경우)", 
@@ -493,6 +502,11 @@ public class MemberController {
 		//<DTO 객체 필드의 유효성 검증 성공시>
 		//입력한 이메일로 회원 조회
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
+		
+		//회원이 존재하지 않는 경우
+		if(findedMember == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("member.notfound", null, new Locale("ko")) ));
+		}
 		
 		//<이미 회원가입된 경우 - status가 1>
 		if(findedMember.getStatus() == 1) {

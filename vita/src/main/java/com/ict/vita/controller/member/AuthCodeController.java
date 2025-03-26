@@ -16,12 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberTempJoinDto;
 import com.ict.vita.util.AuthUtil;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -57,8 +65,8 @@ public class AuthCodeController {
 	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 ( email )
 	 * @return 
 	 */
-	@PostMapping
-	public ResponseEntity<?> initiateEmailVerification(@RequestBody Map<String, String> parameters){
+	@PostMapping("/temporary-registration")
+	public ResponseEntity<?> initiateEmailVerification(@Parameter(description = "서버로 넘어온 정보(email)") @RequestBody Map<String, String> parameters){
 		
 		String email = parameters.get("email"); //입력한 이메일
 		
@@ -103,8 +111,48 @@ public class AuthCodeController {
 	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 ( email, code )
 	 * @return
 	 */
-	@GetMapping
-	public ResponseEntity<?> verifyEmailAuthCode(@RequestBody Map<String, String> parameters){
+	@Operation( summary = "이메일 인증코드 검증", description = "이메일 인증코드 검증 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-이메일 인증코드 검증 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = Map.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"isAuth\":true}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "400-이메일 인증코드 검증 실패",
+			description = "FAIL(회원 미존재)", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"회원을찾을수없습니다.\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "400-이메일 인증코드 검증 실패",
+				description = "FAIL(이미 가입된 회원)", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"사용중인이메일입니다.\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+				responseCode = "400-이메일 인증코드 검증 실패",
+				description = "FAIL(검증 실패)", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"검증에실패했습니다.\"}}"
+					)
+				) 
+			)
+	})
+	@PostMapping
+	public ResponseEntity<?> verifyEmailAuthCode(@Parameter(description = "서버로 넘어온 정보(email,code)") @RequestBody Map<String, String> parameters){
 		//서버로 넘어온 정보
 		String email = parameters.get("email");
 		String authCode = parameters.get("code");
@@ -123,7 +171,7 @@ public class AuthCodeController {
 		
 		//이메일 인증코드 검증
 		//실패시
-		if(authCode != findedMember.getPassword()) {
+		if(!authCode.equals(findedMember.getPassword())) {		
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("auth.invalid", null, new Locale("ko"))));
 		}
 		//성공시
