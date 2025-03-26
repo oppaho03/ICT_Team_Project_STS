@@ -490,7 +490,7 @@ public class MemberController {
 		//<DTO 객체 필드의 유효성 검증 성공시>
 		//입력한 이메일로 회원 조회
 		MemberDto findedMember = memberService.findMemberByEmail(joinDto.getEmail()); //임시 가입된 회원
-		System.out.println("=============== 회원 status: "+findedMember.getStatus());
+		
 		//<이미 회원가입된 경우 - status가 1>
 		if(findedMember.getStatus() == 1) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.join_fail_already_user", null, new Locale("ko")))); 
@@ -507,22 +507,14 @@ public class MemberController {
 		
 		//회원가입에 성공한 경우
 		//DB에 저장한 회원을 회원가입할 때 입력한 정보로 설정
-		try {
-			findedMember.setPassword(joinDto.getPassword());
-			findedMember.setRole(joinDto.getRole());
-			findedMember.setName(joinDto.getName());
-			findedMember.setNickname(joinDto.getNickname());
-			findedMember.setBirth(joinDto.getBirth());
-			findedMember.setGender(joinDto.getGender());
-			findedMember.setContact(joinDto.getContact());
-			findedMember.setAddress(joinDto.getAddress());
-			findedMember.setCreated_at(joinDto.getCreated_at());
-			findedMember.setUpdated_at(LocalDateTime.now());
-		}
-		catch(Exception e) {
-			System.out.println("회원가입 실패:"+e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail( messageSource.getMessage("user.join_fail", null, new Locale("ko")) ));
-		} 
+		findedMember.setPassword(joinDto.getPassword());
+		findedMember.setRole(Commons.ROLE_USER);
+		findedMember.setName(joinDto.getName());
+		findedMember.setNickname(joinDto.getNickname());
+		findedMember.setBirth(joinDto.getBirth());
+		findedMember.setGender(joinDto.getGender());
+		findedMember.setContact(joinDto.getContact());
+		findedMember.setAddress(joinDto.getAddress());
 		
 		MemberDto memberDto = memberService.join(findedMember);
 		

@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 //[이메일 인증코드 관련 컨트롤러]
 public class AuthCodeController {
-	//비동기 처리를 위해 WebClient 객체 생성
+	//비동기 작업을 위한 WebClient 객체 생성
 	private WebClient webClient = WebClient.builder().build();
 	
 	//서비스 주입
@@ -38,7 +38,7 @@ public class AuthCodeController {
 	private final MessageSource messageSource;
 	
 	/**
-	 * [파이썬 서버로 이메일 인증 코드 전송하는 메서드]
+	 * [파이썬 서버로 이메일 인증 코드 전송하는 메서드] - 비동기
 	 * @param url 요청url
 	 * @param authInfo 이메일 인증코드가 포함된 Map객체
 	 */

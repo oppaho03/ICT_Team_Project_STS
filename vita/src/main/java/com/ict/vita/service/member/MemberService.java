@@ -148,7 +148,7 @@ public class MemberService {
 								.status(9) //임시 회원가입(9)
 								.build());
 		
-		return MemberDto.toDto(entity);
+		return entity != null ? MemberDto.toDto(entity) : null;
 	}
 	
 	/**
@@ -175,21 +175,21 @@ public class MemberService {
 		//회원 저장		
 		try {
 			entity = memberRepository.save(MemberEntity.builder()
-								.id(joinDto.getId()) //임시회원가입된 회원 정보 수정시 PK값 지정 필요
-								.email(joinDto.getEmail())
-								.password(EncryptAES256.encrypt(joinDto.getPassword())) //비밀번호 암호화
-								.role(joinDto.getRole())
-								.name(joinDto.getName())
-								.nickname(nickname)
-								.birth(joinDto.getBirth())
-								.gender(joinDto.getGender())
-								.contact(joinDto.getContact())
-								.address(joinDto.getAddress())
-								.token(joinDto.getToken())
-								.created_at(joinDto.getCreated_at())
-								.updated_at(joinDto.getUpdated_at())
-								.status(1) //회원가입:1 / 탈퇴:0 / 대기:9
-								.build());
+							.id(joinDto.getId()) //임시회원가입된 회원 정보 수정시 PK값 지정 필요
+							.email(joinDto.getEmail())
+							.password(EncryptAES256.encrypt(joinDto.getPassword())) //비밀번호 암호화
+							.role(joinDto.getRole())
+							.name(joinDto.getName())
+							.nickname(nickname)
+							.birth(joinDto.getBirth())
+							.gender(joinDto.getGender())
+							.contact(joinDto.getContact())
+							.address(joinDto.getAddress())
+							.token(joinDto.getToken())
+							.created_at(LocalDateTime.now())
+							.updated_at(LocalDateTime.now())
+							.status(1) //회원가입 처리(1)
+							.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
