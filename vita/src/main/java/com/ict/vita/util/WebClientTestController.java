@@ -40,7 +40,7 @@ public class WebClientTestController {
 		map.put("body", "바디");
 
 		Mono<String> response = sendDataToPython(map);
-		String result = response.block(); //동기 처리
+		String result = response.block(); // block(): 동기 처리 | subscribe(): 비동기 처리
 		
 		//리액트로 리다이렉트
 		HttpHeaders headers = new HttpHeaders();
@@ -52,7 +52,26 @@ public class WebClientTestController {
 	}
 	
 	public Mono<String> sendDataToPython(Map<String, Object> map) {
-        return webClient.post()
+		/* [HJH 정리] - 참고: https://thalals.tistory.com/381
+		 << WebFlux 모듈 >>
+		 - client, server 에서 reactive 스타일의 어플리케이션의 개발을 도와주는 스프링 모듈
+		 - 요청을 처리하는 방식이 비동기 논블러킹 방식
+		 - 리액터 라이브러리(Reactor library)와 넷티(Netty)를 기반으로 동작함
+		 - 리액티브 프로그래밍 : 데이터 스트림을 이용하여 데이터를 전달하는 비동기 프로그래밍
+		 - 리액터는 리액티브 스트림을 구현하는 라이브러리로 Mono 와 Flux 2가지 데이터 타입으로 스트림을 정의
+		 - WebFlux 에서는 모든 응답을 Mono 혹은 Flux 에 담아서 반환해주어야 함!!
+		 
+		 < Mono >
+		 - 비동기적으로 데이터를 처리하기 위한 객체다.
+		 - 0-1개의 결과만을 처리하기 위한 Reactor의 객체
+		 - 0 또는 하나의 데이터 항목과 에러를 가짐
+		 
+		 < Flux >
+		 - 0-N개인 여러 개의 결과를 처리하는 객체
+		 - 0 또는 하나 이상의 데이터 항목과 에러를 가짐
+		 
+		*/
+        return webClient.post() //post요청
                 .uri("/posts") // 요청할 엔드포인트
                 .header("Content-Type", "application/json") // JSON 데이터 전송
                 .bodyValue(map) // 요청 바디에 JSON 데이터 추가
