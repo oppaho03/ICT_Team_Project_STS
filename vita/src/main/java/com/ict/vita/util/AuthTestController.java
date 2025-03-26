@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin
 //[이메일 인증코드 생성 관련 테스트 컨트롤러]
-public class AuthCodeTestController {
+public class AuthTestController {
 	
 	private final MemberService memberService;
 	private final MessageSource messageSource;
@@ -33,22 +33,24 @@ public class AuthCodeTestController {
 	public ResponseEntity<?> getAuthCode(@RequestBody Map<String, String> parameters){
 		System.out.println("*** email:"+parameters.get("email"));
 		
+		//<회원이 이메일을 입력하지 않은 경우>
+		if(Commons.isNull(parameters.get("email"))) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail", null, new Locale("ko")) ));
+		}
+		//임시 회원가입 실패 - 이미 사용중인 아이디 입력시
+		if(memberService.isExistsEmail( parameters.get("email").trim() )) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
+		}
+		
 		//코드 생성
-		String authCode = AuthCode.generateAuthCode();
+		String authCode = AuthUtil.generateEmailAuthCode();
 		
 		MemberTempJoinDto joinDto = MemberTempJoinDto.builder()
 									.email(parameters.get("email").trim())
 									.password(authCode)
 									.role(Commons.ROLE_USER)
-									.nickname("authCodeTest") // ***임시로 해놓음
-									.created_at(LocalDateTime.now())
-									.updated_at(LocalDateTime.now())
-									.status(9) //임시가입
+									//.nickname("authCodeTest") // ***임시로 해놓음
 									.build();
-		
-		if(memberService.isExistsEmail(joinDto.getEmail())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
-		}
 		
 		//임시 회원가입
 		MemberDto tempJoinedMember = memberService.tempJoin(joinDto);

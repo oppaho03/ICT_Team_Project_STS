@@ -161,16 +161,8 @@ public class MemberService {
 		MemberEntity entity = null;
 		
 		//닉네임 설정
-		String nickname = Commons.getAutoNickname(joinDto.getEmail(), joinDto.getNickname());
-		/*
-		//<닉네임 입력시>
-		String nickname = joinDto.getNickname();	
-		//<닉네임 미입력시>
-		if(Commons.isNull(joinDto.getNickname())) { 
-			//이메일에서 @ 전까지를 닉네임으로 지정
-			nickname = joinDto.getEmail().substring(0, joinDto.getEmail().indexOf("@")); 
-			System.out.println("MemberService 회원가입 - 회원 닉네임: "+nickname);
-		} */
+		String nickname = joinDto.getNickname();
+		if(Commons.isNull(joinDto.getNickname())) nickname = Commons.getAutoNickname(joinDto.getEmail(), joinDto.getNickname());
 		
 		//회원 저장		
 		try {

@@ -47,6 +47,7 @@ import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.EncryptAES256;
+import com.ict.vita.util.AuthUtil;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.JwtUtil;
 import com.ict.vita.util.Result;
@@ -338,11 +339,13 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
 	}
 	
+	
 	/**
 	 * [임시 회원가입] - 임시 회원가입시 회원의 status는 9(대기)
 	 * @param tempJoinDto 임시 회원가입용 DTO
 	 * @return ResponseEntity
 	 */
+	/*
 	@Operation( summary = "임시 회원가입", description = "임시 회원가입 API" )
 	@ApiResponses({
 		@ApiResponse( 
@@ -403,7 +406,7 @@ public class MemberController {
 		
 		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
 				ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
-	}
+	} */
 	
 	/**
 	 * [회원가입] - 최종 회원가입 처리 -> 최종 회원가입시 회원의 status는 1(일반)

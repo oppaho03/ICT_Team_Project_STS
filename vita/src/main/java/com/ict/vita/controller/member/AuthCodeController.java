@@ -18,7 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberTempJoinDto;
-import com.ict.vita.util.AuthCode;
+import com.ict.vita.util.AuthUtil;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @CrossOrigin
 //[이메일 인증코드 관련 컨트롤러]
 public class AuthCodeController {
@@ -57,8 +57,8 @@ public class AuthCodeController {
 	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 (이메일 포함)
 	 * @return 
 	 */
-	@PostMapping("/authcode")
-	public ResponseEntity<?> generateAuthCode(@RequestBody Map<String, String> parameters){
+	@PostMapping("/temporary-registration")
+	public ResponseEntity<?> initiateEmailVerification(@RequestBody Map<String, String> parameters){
 		
 		String email = parameters.get("email"); //입력한 이메일
 		
@@ -66,13 +66,14 @@ public class AuthCodeController {
 		if(Commons.isNull(email)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail", null, new Locale("ko")) ));
 		}
+		
 		//임시 회원가입 실패 - 이미 사용중인 아이디 입력시
 		if(memberService.isExistsEmail(email.trim())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
 		}
 		
 		//이메일 인증 코드 생성
-		String authCode = AuthCode.generateAuthCode();
+		String authCode = AuthUtil.generateEmailAuthCode();
 		
 		MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
 				.email(email.trim())
@@ -94,7 +95,7 @@ public class AuthCodeController {
 		sendAuthCodeToPython(pythonServerUrl,authInfo);
 		
 		//리액트로 이메일 인증 코드 반환
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(authCode));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(authInfo));
 	}
 	
 }
