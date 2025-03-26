@@ -345,7 +345,7 @@ public class MemberController {
 	 * @param tempJoinDto 임시 회원가입용 DTO
 	 * @return ResponseEntity
 	 */
-	/*
+	
 	@Operation( summary = "임시 회원가입", description = "임시 회원가입 API" )
 	@ApiResponses({
 		@ApiResponse( 
@@ -406,7 +406,7 @@ public class MemberController {
 		
 		return tempJoinedMember != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(tempJoinedMember))) :
 				ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
-	} */
+	} 
 	
 	/**
 	 * [회원가입] - 최종 회원가입 처리 -> 최종 회원가입시 회원의 status는 1(일반)
@@ -559,6 +559,7 @@ public class MemberController {
 			BindingResult bindingResult){
 		
 		System.out.println("[로그인]이메일:"+loginDto.getEmail());
+		System.out.println("[로그인]비번:"+ EncryptAES256.decrypt(loginDto.getPassword()) );
 		
 		//[이메일과 비밀번호가 일치하는 회원 조회]	
 		MemberDto findedMember = memberService.validateLogin(loginDto);
