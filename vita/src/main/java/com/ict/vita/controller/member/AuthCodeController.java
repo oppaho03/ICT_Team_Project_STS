@@ -3,6 +3,7 @@ package com.ict.vita.controller.member;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberResponseDto;
@@ -31,6 +33,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,13 +54,15 @@ public class AuthCodeController {
 	 * @param authInfo 이메일 인증코드가 포함된 Map객체
 	 */
 	private void sendAuthCodeToPython(String url, Map<String, String> authInfo) {
+		
 		webClient.post()
 			.uri(url)
 			.header("Content-Type", "application/json")
 			.bodyValue(authInfo) //요청바디에 추가
 			.retrieve() //응답 가져오기 위한 메서드
 			.toBodilessEntity() //응답바디 필요없을때
-			.subscribe(); //비동기 처리
+			.subscribe(); //비동기 처리 
+
 	}
 	
 	/**
@@ -93,10 +98,11 @@ public class AuthCodeController {
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
 		
 		//파이썬 서버 url 설정
-		String pythonServerUrl = ""; //****설정해야함!!
+		String pythonServerUrl = "http://192.168.0.65:8000/auth/email/send/"; 
 		
 		//이메일 인증코드 전달할 객체 생성
 		Map<String, String> authInfo = new HashMap<>();
+		authInfo.put("email", email);
 		authInfo.put("code", authCode);
 		
 		//파이썬으로 인증 코드 전달

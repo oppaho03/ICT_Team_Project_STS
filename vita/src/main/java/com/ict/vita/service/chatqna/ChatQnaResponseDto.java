@@ -25,13 +25,16 @@ public class ChatQnaResponseDto {
 	private long is_matched; //매칭여부(1:매칭됨,0:매칭X)
 	
 	//[ChatQnaDto 를 ChatQnaResponseDto로 변환]
-	public static ChatQnaResponseDto toDto(ChatQnaDto dto) {
+	public static ChatQnaResponseDto toDto(ChatQnaDto qna, ChatSessionDto session, String qContent) {
+		ChatSessionResponseDto sessionResponse = ChatSessionResponseDto.toDto(qna.getChatSessionDto());
+		sessionResponse.setLastQuestion(qContent);
+		
 		return ChatQnaResponseDto.builder()
-				.id(dto.getId())
-				.session( ChatSessionResponseDto.toDto(dto.getChatSessionDto()) )
-				.question(dto.getChatQuestionDto())
-				.answer(dto.getChatAnswerDto())
-				.is_matched(dto.getIs_matched())
+				.id(qna.getId())
+				.session( sessionResponse )
+				.question(qna.getChatQuestionDto())
+				.answer(qna.getChatAnswerDto())
+				.is_matched(qna.getIs_matched())
 				.build();
 	}
 }
