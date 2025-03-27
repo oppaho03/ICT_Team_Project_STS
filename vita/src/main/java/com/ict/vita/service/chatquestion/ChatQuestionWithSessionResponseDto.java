@@ -20,6 +20,6 @@ import lombok.Setter;
 //[질문과 세션 정보를 함께 반환하는 DTO]
 public class ChatQuestionWithSessionResponseDto {
 	public Long sid; //세션id
+	public String question; //질문내용
 	public List<ChatAnswerResponseDto> answers; //질문의 키워드로 검색한 답변 리스트
-
 }
