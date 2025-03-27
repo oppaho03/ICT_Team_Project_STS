@@ -148,7 +148,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0},{\"id\":53,\"member\":37,\"created_at\":\"2025-03-25T09:28:49.36277\",\"updated_at\":\"2025-03-25T09:28:49.360769\",\"status\":1,\"count\":0},{\"id\":44,\"member\":37,\"created_at\":\"2025-03-13T09:27:46.403825\",\"updated_at\":\"2025-03-13T09:27:46.388614\",\"status\":1,\"count\":0}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":49,\"member\":46,\"created_at\":\"2025-03-14T18:45:23.850458\",\"updated_at\":\"2025-03-27T19:11:21.335883\",\"status\":1,\"count\":0,\"lastQuestion\":\"zzzzz\"},{\"id\":48,\"member\":46,\"created_at\":\"2025-03-14T18:45:23.113093\",\"updated_at\":\"2025-03-14T18:45:23.096088\",\"status\":1,\"count\":0,\"lastQuestion\":null}]}}"
 				)
 			) 
 		),
@@ -211,7 +211,7 @@ public class ChatSessionController {
 			content = @Content(	
 				schema = @Schema(implementation = ChatSessionResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-06T15:23:27.440789\",\"status\":1,\"count\":0}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-27T17:53:40.439132\",\"status\":1,\"count\":0,\"lastQuestion\":\"하하하하하핳\"}}}"
 				)
 			) 
 		),
@@ -289,7 +289,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":53,\"member\":37,\"created_at\":\"2025-03-25T09:28:49.36277\",\"updated_at\":\"2025-03-25T09:28:49.360769\",\"status\":1,\"count\":0},{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":45,\"member\":37,\"created_at\":\"2025-03-13T09:32:27.156683\",\"updated_at\":\"2025-03-27T15:50:18.658097\",\"status\":0,\"count\":0,\"lastQuestion\":\"질문이지렁\"},{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"}]}}"
 				)
 			) 
 		),
