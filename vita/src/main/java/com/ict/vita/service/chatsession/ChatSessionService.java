@@ -248,4 +248,14 @@ public class ChatSessionService {
 		return ChatSessionDto.toDto(sessionEntity);
 	}
 	
+	/**
+	 * [세션 수정]
+	 * @param sessionDto 수정할 세션 DTO객체
+	 * @return ChatSessionDto 수정한 세션 DTO객체
+	 */
+	public ChatSessionDto updateSession(ChatSessionDto sessionDto) {
+		ChatSessionEntity updatedSession = chatSessionRepository.save(sessionDto.toEntity());
+		return ChatSessionDto.toDto(updatedSession);
+	}
+	
 }

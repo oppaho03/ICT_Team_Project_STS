@@ -167,7 +167,6 @@ public class ChatQuestionController {
 		//질문에 대한 키워드 검색한 답변 DTO객체
 		ChatQuestionWithSessionResponseDto qwsResponseDto = ChatQuestionWithSessionResponseDto.builder().sid(sid).answers(answerResponses).build();
 		
-		
 		//<ChatQna에 저장>
 		//답변이 1개인 경우
 		if(answers.size() == 1) {
@@ -196,6 +195,10 @@ public class ChatQuestionController {
 				
 			} // end for
 		}
+		
+		//세션 수정일 변경
+		sessionDto.setUpdated_at(LocalDateTime.now());
+		chatSessionService.updateSession(sessionDto);
 		
 		//세션id와 검색한 답변 리스트 반환
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(qwsResponseDto));
