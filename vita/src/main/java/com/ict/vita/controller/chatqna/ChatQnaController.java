@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.anc.AncDto;
+import com.ict.vita.service.anc.AncService;
+import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatqna.ChatQnaDto;
 import com.ict.vita.service.chatqna.ChatQnaResponseDto;
 import com.ict.vita.service.chatqna.ChatQnaService;
@@ -22,6 +25,8 @@ import com.ict.vita.service.chatquestion.ChatQuestionService;
 import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.termcategory.TermCategoryDto;
+import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
@@ -45,6 +50,7 @@ public class ChatQnaController {
 	private final MemberService memberService;
 	private final ChatSessionService chatSessionService;
 	private final ChatQuestionService chatQuestionService;
+	private final AncService ancService;
 	
 	private final MessageSource messageSource;
 	
@@ -99,7 +105,12 @@ public class ChatQnaController {
 			ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
 			String qContent = question != null ? question.getContent() : null;
 			
-			ChatQnaResponseDto responseSession = ChatQnaResponseDto.toDto(dto,session,qContent);
+			//카테고리 정보
+			List<TermsResponseDto> categories = new Vector<>();
+			List <TermCategoryDto> categoryDtos = ancService.findAllByAnswerId(dto.getChatAnswerDto().getId()).stream().map(anc -> anc.getTermCategoryDto()).toList();
+			categories = categoryDtos.stream().map(cate -> TermsResponseDto.toDto(cate)).toList();
+
+			ChatQnaResponseDto responseSession = ChatQnaResponseDto.toDto(dto,session,qContent,categories);
 
 			result.add(responseSession);	
 			

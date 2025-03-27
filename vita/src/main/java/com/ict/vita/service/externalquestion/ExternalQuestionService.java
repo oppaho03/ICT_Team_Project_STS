@@ -65,6 +65,7 @@ public class ExternalQuestionService {
 	//나이별 가장 많이 질문한 외부질문 조회
 	public List<ExternalQuestionResponseDto> getTopQuestionsByAge(String age) {
 		age = toAgeGroup(age);
+		System.out.println("나이대:"+age);
 
 		List <Object> result = externalQuestionRepository.findTopQuestionsByAgeGroup(age);
 		
