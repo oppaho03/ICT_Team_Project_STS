@@ -122,12 +122,17 @@ public class ChatSessionService {
 	        int startRow = (p - 1) * ol + 1;
 	        int endRow = p * ol;
 
-	        String sql = "SELECT * FROM ( " +
-	                     "    SELECT s.*, ROWNUM AS rn " +
-	                     "    FROM APP_CHAT_SESSION s " +
-	                     "    WHERE s.member_id = :mid " +
-	                     "    ORDER BY s.updated_at desc " +
-	                     ") WHERE rn BETWEEN :startRow AND :endRow";
+	        String sql = "SELECT * "
+	        		+ "FROM ( "
+	        		+ "    SELECT sub.*, ROWNUM AS rn "
+	        		+ "    FROM ( "
+	        		+ "        SELECT s.* "
+	        		+ "        FROM APP_CHAT_SESSION s "
+	        		+ "        WHERE s.member_id = :mid "
+	        		+ "        ORDER BY s.updated_at DESC "
+	        		+ "    ) sub "
+	        		+ " ) sub2 "
+	        		+ " WHERE sub2.rn BETWEEN :startRow AND :endRow";
 
 	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
 	        query.setParameter("mid", mid);
@@ -189,13 +194,19 @@ public class ChatSessionService {
 	        // Oracle에서의 페이징 처리 (ROWNUM)
 	        int startRow = (p - 1) * ol + 1;
 	        int endRow = p * ol;
-
-	        String sql = "SELECT * FROM ( " +
-	                     "    SELECT s.*, ROWNUM AS rn " +
-	                     "    FROM APP_CHAT_SESSION s " +
-	                     "    WHERE s.member_id = :mid and s.status = 0 " +
-	                     "    ORDER BY s.updated_at desc " +
-	                     ") WHERE rn BETWEEN :startRow AND :endRow";
+	        
+	        String sql = "SELECT * "
+	        		+ " FROM ( "
+	        		+ "    select sub.*, rownum as rn "
+	        		+ "    from "
+	        		+ "    ( "
+	        		+ "        SELECT s.* "
+	        		+ "        FROM APP_CHAT_SESSION s "
+	        		+ "        WHERE s.member_id = :mid and s.status = 0 "
+	        		+ "        ORDER BY s.updated_at desc "
+	        		+ "     ) sub "
+	        		+ " ) sub2 "
+	        		+ " WHERE sub2.rn BETWEEN :startRow AND :endRow";
 
 	        Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
 	        query.setParameter("mid", mid);

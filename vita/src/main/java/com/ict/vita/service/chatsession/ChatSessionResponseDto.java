@@ -25,6 +25,8 @@ public class ChatSessionResponseDto {
 	private long status; //상태(공개(0) / 비공개(1)(디폴트))
 	private long count; //카운트(공개상태일때 외부인이 조회한 횟수)
 	
+	private String lastQuestion; //해당 세션의 마지막 질문 내용
+	
 	//ChatSessionDto 를 ChatSessionResponseDto 로 변환
 	public static ChatSessionResponseDto toDto(ChatSessionDto sessionDto) {
 		return ChatSessionResponseDto.builder()

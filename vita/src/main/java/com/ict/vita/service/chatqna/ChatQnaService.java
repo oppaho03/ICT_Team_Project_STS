@@ -39,4 +39,16 @@ public class ChatQnaService {
 		List<ChatQnaDto> qnaDtoes = qnaEntities.stream().map(entity -> ChatQnaDto.toDto(entity)).collect(Collectors.toList());
 		return qnaDtoes;
 	}
+	
+	/**
+	 * [해당 세션의 마지막 질문 조회]
+	 * @param sid 세션아이디
+	 * @return ChatQnaDto
+	 */
+	@Transactional(readOnly = true)
+	public ChatQnaDto findLastQuestionOfSession(Long sid) {
+		ChatQnaEntity findedQna = chatQnaRepository.findLastQuestionBySession(sid);
+		return findedQna != null ? ChatQnaDto.toDto(findedQna) : null;
+	}
+	
 }

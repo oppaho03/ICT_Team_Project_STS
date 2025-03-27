@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ict.vita.service.chatqna.ChatQnaDto;
+import com.ict.vita.service.chatqna.ChatQnaService;
+import com.ict.vita.service.chatquestion.ChatQuestionDto;
+import com.ict.vita.service.chatquestion.ChatQuestionService;
 import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionResponseDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
@@ -43,6 +47,8 @@ public class ChatSessionController {
 	//서비스 주입
 	private final ChatSessionService chatSessionService;
 	private final MemberService memberService;
+	private final ChatQnaService chatQnaService;
+	private final ChatQuestionService chatQuestionService;
 	
 	private final MessageSource messageSource;
 	
@@ -61,7 +67,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-06T15:23:27.440789\",\"status\":1,\"count\":0},{\"id\":44,\"member\":37,\"created_at\":\"2025-03-13T09:27:46.403825\",\"updated_at\":\"2025-03-13T09:27:46.388614\",\"status\":1,\"count\":0}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":45,\"member\":37,\"created_at\":\"2025-03-13T09:32:27.156683\",\"updated_at\":\"2025-03-27T15:50:18.658097\",\"status\":0,\"count\":0,\"lastQuestion\":\"질문이지렁\"},{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"},{\"id\":53,\"member\":37,\"created_at\":\"2025-03-25T09:28:49.36277\",\"updated_at\":\"2025-03-25T09:28:49.360769\",\"status\":1,\"count\":0,\"lastQuestion\":null},{\"id\":52,\"member\":29,\"created_at\":\"2025-03-21T12:32:18.544977\",\"updated_at\":\"2025-03-21T12:32:18.469986\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"},{\"id\":51,\"member\":49,\"created_at\":\"2025-03-20T20:57:07.869708\",\"updated_at\":\"2025-03-20T20:57:07.860856\",\"status\":1,\"count\":0,\"lastQuestion\":\"시무시무\"},{\"id\":50,\"member\":47,\"created_at\":\"2025-03-17T10:34:22.946939\",\"updated_at\":\"2025-03-17T10:34:22.930933\",\"status\":1,\"count\":0,\"lastQuestion\":\"심심한질문\"},{\"id\":49,\"member\":46,\"created_at\":\"2025-03-14T18:45:23.850458\",\"updated_at\":\"2025-03-14T18:45:23.848459\",\"status\":1,\"count\":0,\"lastQuestion\":null},{\"id\":48,\"member\":46,\"created_at\":\"2025-03-14T18:45:23.113093\",\"updated_at\":\"2025-03-14T18:45:23.096088\",\"status\":1,\"count\":0,\"lastQuestion\":null},{\"id\":47,\"member\":37,\"created_at\":\"2025-03-13T14:09:06.679719\",\"updated_at\":\"2025-03-13T14:09:06.665218\",\"status\":0,\"count\":0,\"lastQuestion\":null},{\"id\":46,\"member\":37,\"created_at\":\"2025-03-13T09:32:52.674851\",\"updated_at\":\"2025-03-13T09:32:52.671372\",\"status\":0,\"count\":0,\"lastQuestion\":null},{\"id\":44,\"member\":37,\"created_at\":\"2025-03-13T09:27:46.403825\",\"updated_at\":\"2025-03-13T09:27:46.388614\",\"status\":1,\"count\":0,\"lastQuestion\":null},{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-06T15:23:27.440789\",\"status\":1,\"count\":0,\"lastQuestion\":null}]}}"
 				)
 			) 
 		),
@@ -110,7 +116,20 @@ public class ChatSessionController {
 		else 
 			sessions = chatSessionService.findAll();
 			
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ResultUtil.success(sessions.stream()
+						.map(session -> {
+								ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session);
+								
+								//세션의 마지막 질문내용 조회 로직
+								ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
+								ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
+								String qContent = question != null ? question.getContent() : null;
+								responseSession.setLastQuestion( qContent );
+								
+								return responseSession;
+							})
+						.toList() ));
 		
 	}
 	
@@ -161,7 +180,21 @@ public class ChatSessionController {
 		if(p > 0) sessions = chatSessionService.findAllByMember(loginMember.getId(), p, ol); //페이징 적용
 		else sessions = chatSessionService.findAllByMember(loginMember.getId()); //페이징 미적용
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success(sessions.stream()
+						.map(session -> {
+								ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session);
+								
+								//세션의 마지막 질문내용 조회 로직
+								ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
+								ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
+								String qContent = question != null ? question.getContent() : null;
+								responseSession.setLastQuestion( qContent );
+								
+								return responseSession;
+							})
+						.toList() ));
 	}
 	
 	/**
@@ -214,8 +247,19 @@ public class ChatSessionController {
 			//세션 조회(공개/비공개)
 			ChatSessionDto session = chatSessionService.findById(sid);
 			
-			return session != null ? ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(ChatSessionResponseDto.toDto(session))) :
-				ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+			ChatSessionResponseDto response = null;
+			if(session != null) {
+				response = ChatSessionResponseDto.toDto(session);
+				
+				//세션의 마지막 질문내용 조회 로직
+				ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
+				ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
+				String qContent = question != null ? question.getContent() : null;
+				
+				response.setLastQuestion( qContent );
+			}
+			
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( response ));
 		}
 		
 		//<자신의 세션이 아닌 경우> - 공개된 세션인 경우만 조회 가능
@@ -285,7 +329,19 @@ public class ChatSessionController {
 			else sessions = chatSessionService.findPublicsByMember(mid);
 		}
 		
-		return ResponseEntity.status(HttpStatus.OK).body( ResultUtil.success( sessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ) );
+		return ResponseEntity.status(HttpStatus.OK)
+				.body( ResultUtil.success( sessions.stream()
+						.map(session -> {
+							ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session);
+							
+							//세션의 마지막 질문내용 조회 로직
+							ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
+							ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
+							String qContent = question != null ? question.getContent() : null;
+							responseSession.setLastQuestion( qContent );
+							
+							return responseSession;
+						}).toList() ) );
 	}
 	
 }
