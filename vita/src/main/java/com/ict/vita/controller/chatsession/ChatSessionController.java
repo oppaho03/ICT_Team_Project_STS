@@ -55,6 +55,8 @@ public class ChatSessionController {
 	/**
 	 * [전체 세션 조회] - 관리자만 전체 세션 조회 가능 & 페이징 적용
 	 * @param token 로그인한 회원 토큰
+	 * @param p 페이지
+	 * @param ol 출력갯수
 	 * @return ResponseEntity
 	 */
 	@Operation( summary = "전체 세션 조회", description = "전체 세션 조회 API" )
@@ -136,6 +138,8 @@ public class ChatSessionController {
 	/**
 	 * [본인 세션 조회] - 페이징 적용
 	 * @param token 로그인한 회원 토큰
+	 * @param p 페이지
+	 * @param ol 출력갯수
 	 * @return ResponseEntity
 	 */
 	@Operation( summary = "본인 세션 조회", description = "본인 세션 조회 API" )
@@ -177,6 +181,7 @@ public class ChatSessionController {
 		
 		List<ChatSessionDto> sessions;
 		
+		//페이징
 		if(p > 0) sessions = chatSessionService.findAllByMember(loginMember.getId(), p, ol); //페이징 적용
 		else sessions = chatSessionService.findAllByMember(loginMember.getId()); //페이징 미적용
 		
@@ -277,6 +282,8 @@ public class ChatSessionController {
 	 * [회원id로 세션 조회] - 본인 세션은 다 조회,남의 세션은 공개만 조회,관리자는 다 조회 & 페이징 적용
 	 * @param token 로그인한 회원 토큰
 	 * @param mid 회원id
+	 * @param p 페이지
+	 * @param ol 출력갯수
 	 * @return ResponseEntity
 	 */
 	@Operation( summary = "회원id로 세션 조회", description = "회원id로 세션 조회 API" )

@@ -55,9 +55,11 @@ public class ChatQnaController {
 	private final MessageSource messageSource;
 	
 	/**
-	 * [세션id(PK)로 QNA테이블에서 질문-답변 쌍 조회]
+	 * [세션id(PK)로 QNA테이블에서 질문-답변 쌍 조회 (페이징 적용)]
 	 * @param token 로그인한 회원의 토큰값
 	 * @param sid 세션id(PK)로 쿼리파라미터로 넘어옴
+	 * @param p 페이지
+	 * @param ol 출력갯수
 	 * @return
 	 */
 	@Operation( summary = "질문-답변 쌍 조회", description = "질문-답변 쌍 조회 API" )
@@ -75,6 +77,15 @@ public class ChatQnaController {
 			) 
 		),
 		@ApiResponse( 
+				responseCode = "400-조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+						examples = @ExampleObject(
+							value = ""
+						)
+				) 
+			),
+		@ApiResponse( 
 			responseCode = "401-조회 실패",
 			description = "FAIL", 
 			content = @Content(					
@@ -87,19 +98,31 @@ public class ChatQnaController {
 	@GetMapping("/qna")
 	public ResponseEntity<?> getQna(
 			@Parameter(description = "회원의 토큰값") @RequestHeader(name = "Authorization") String token,
-			@Parameter(description = "세션 아이디") @RequestParam(name = "sid") Long sid) {
+			@Parameter(description = "세션 아이디") @RequestParam(name = "sid") Long sid,
+			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol) {
 		//<찾은 회원이 존재하지 않는 경우>
 		if(Commons.findMemberByToken(token, memberService) == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_token", null, new Locale("ko"))));
 		}
-		//<찾은 회원이 존재하는 경우>
-		//세션id로 qna 조회
-		List<ChatQnaDto> findedQna = chatQnaService.findAllBySession(sid);
 		
-		List<ChatQnaResponseDto> result = new Vector<>();
+		//<찾은 회원이 존재하는 경우>
+		ChatSessionDto session = chatSessionService.findById(sid);
+		//세션 존재하지 않을때
+		if(session == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "세션이 존재하지 않습니다." ));
+		
+		//세션id에 해당하는 qna
+		List<ChatQnaDto> findedQna;
+		
+		//페이징 
+		if(p > 0) findedQna = chatQnaService.findAllBySession(sid,p,ol);
+		else findedQna = chatQnaService.findAllBySession(sid);		
+		
+		List<ChatQnaResponseDto> result = new Vector<>(); //반환값
 		
 		for(ChatQnaDto dto: findedQna) {
-			ChatSessionDto session = chatSessionService.findById(sid);
+			
 			//세션의 마지막 질문내용 조회 로직
 			ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
 			ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
