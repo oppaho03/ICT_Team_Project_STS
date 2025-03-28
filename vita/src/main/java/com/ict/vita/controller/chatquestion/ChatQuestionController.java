@@ -154,9 +154,13 @@ public class ChatQuestionController {
 		List <String> keywords = qwsDto.getKeywords();
 		List<ChatAnswerDto> answers = chatAnswerService.findAnswerByKeywords(keywords.stream().collect(Collectors.joining(" OR ")));
 		
+		//질문에 대한 키워드 검색한 답변 DTO객체
+		ChatQuestionWithSessionResponseDto qwsResponseDto;
+		
 		//<답변 검색 결과가 없는 경우>
 		if(answers.size() == 0) {
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+			qwsResponseDto = ChatQuestionWithSessionResponseDto.builder().sid(sid).question(qwsDto.getContents()).answers(null).build();
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( qwsResponseDto ));
 		}
 		
 		//<답변 검색 결과가 있는 경우>
@@ -179,7 +183,7 @@ public class ChatQuestionController {
 		}
 
 		//질문에 대한 키워드 검색한 답변 DTO객체
-		ChatQuestionWithSessionResponseDto qwsResponseDto = ChatQuestionWithSessionResponseDto.builder().sid(sid).question(qwsDto.getContents()).answers(answerResponses).build();
+		qwsResponseDto = ChatQuestionWithSessionResponseDto.builder().sid(sid).question(qwsDto.getContents()).answers(answerResponses).build();
 		
 		//<ChatQna에 저장>
 		//답변이 1개인 경우
