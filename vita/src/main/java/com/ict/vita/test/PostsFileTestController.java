@@ -62,42 +62,42 @@ public class PostsFileTestController {
   
     @PostMapping(value = "/upload")
     public ResponseEntity<?> uploadFile(
-//    		@RequestHeader(name = Commons.AUTHORIZATION) String token,
-    		@RequestPart(value = "file",required = false) FileUploadDto fileInfo) {
+    		@RequestHeader(name = Commons.AUTHORIZATION) String token,
+    		FileUploadDto fileInfo) {
 //    		@RequestPart(value = "file",required = false) MultipartFile file) {
 //    		@RequestParam(value = "file",required = false) MultipartFile file) {
-    	/*
+    	
     	//토큰으로 회원 조회
     	MemberDto loginMember = memberService.findMemberByToken(token); 
     	//회원이 존재하지 않는 경우
 		if(loginMember == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
-		} */
+		} 
 		
 		System.out.println("[파일업로드]");
-//		System.out.println("파일명:"+file.getOriginalFilename());
-//		System.out.println("파일타입:"+file.getContentType());
+		System.out.println("파일명:"+fileInfo.getFile().getOriginalFilename());
+		System.out.println("파일타입:"+fileInfo.getFile().getContentType());
 		
-//		PostsDto post = PostsDto.builder()
-//							.memberDto(loginMember)
-//							.post_title( fileInfo.getFile().getOriginalFilename() )
-//							.post_content(null)
-//							.post_summary(null)
-//							.post_status(Commons.POST_STATUS_PUBLISH)
-////							.post_pass( fileInfo.getPassword() )
-//							.post_pass( null )
-//							.post_name( UriEncoder.encode( fileInfo.getFile().getOriginalFilename() ) )
-//							.post_mime_type( fileInfo.getFile().getContentType() )
-//							.post_created_at(LocalDateTime.now())
-//							.post_modified_at(LocalDateTime.now())
-//							.comment_status(Commons.COMMENT_STATUS_OPEN)
-//							.comment_count(0)
-//							.build();  
-//							
+		System.out.println(fileInfo.getFile());
+		
+		PostsDto post = PostsDto.builder()
+							.memberDto(loginMember)
+							.post_title( fileInfo.getFile().getOriginalFilename() )
+							.post_content(null)
+							.post_summary(null)
+							.post_status(Commons.POST_STATUS_PUBLISH)
+							.post_pass( null )
+							.post_name( UriEncoder.encode( fileInfo.getFile().getOriginalFilename() ) )
+							.post_mime_type( fileInfo.getFile().getContentType() )
+							.post_created_at(LocalDateTime.now())
+							.post_modified_at(LocalDateTime.now())
+							.comment_status(Commons.COMMENT_STATUS_OPEN)
+							.comment_count(0)
+							.build();  
+							
 //		// 1. 파일을 기본적으로 APP_POSTS 테이블에 저장
-//        postsFileService.savePostFile(post);
-//        System.out.println("파일 APP_POSTS 테이블에 저장");
-//    	
+        postsFileService.savePostFile(post);
+        System.out.println("파일 APP_POSTS 테이블에 저장");
     	
        return null;
     }
