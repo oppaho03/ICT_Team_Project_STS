@@ -45,7 +45,9 @@ spring:
     multipart:
       max-file-size: 10MB #파일 하나의 최대 용량(디폴트가 1MB)
       max-request-size: 20MB #멀티파일 업로드시 총 합계 용량
-      location: C:\\Temp\\Upload #업로드된 파일을 서버의 임시 디렉토리에 저장하는 경로
+
+file:
+  upload-dir: src/main/resources/static/uploads/ #업로드 디렉터리 지정
 
 logging:
   level:

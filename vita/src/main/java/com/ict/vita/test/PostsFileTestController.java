@@ -1,8 +1,13 @@
 package com.ict.vita.test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +42,9 @@ public class PostsFileTestController {
     private final MemberService memberService;
     
     private final MessageSource messageSource;
+    
+    @Value("${file.upload-dir}")
+    private String uploadDir; //업로드 디렉터리
 
     // 파일 업로드 및 암호화 후 처리
     /*
@@ -77,8 +85,20 @@ public class PostsFileTestController {
 		System.out.println("[파일업로드]");
 		System.out.println("파일명:"+fileInfo.getFile().getOriginalFilename());
 		System.out.println("파일타입:"+fileInfo.getFile().getContentType());
+
+		//업로드 디렉터리 경로에 회원id 추가
+		uploadDir += String.valueOf(loginMember.getId());
 		
-		System.out.println(fileInfo.getFile());
+		// 업로드 디렉터리가 없으면 디렉터리 생성
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            try {
+				Files.createDirectories(uploadPath);
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("[파일 업로드]업로드 디렉터리 생성 실패");
+			}
+        }
 		
 		PostsDto post = PostsDto.builder()
 							.memberDto(loginMember)
