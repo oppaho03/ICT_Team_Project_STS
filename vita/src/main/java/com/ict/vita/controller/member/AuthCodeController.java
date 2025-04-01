@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,9 @@ import reactor.core.publisher.Mono;
 public class AuthCodeController {
 	//비동기 작업을 위한 WebClient 객체 생성
 	private WebClient webClient = WebClient.builder().build();
+	
+	@Value("${url.python}")
+	String pythonServer;
 	
 	//서비스 주입
 	private final MemberService memberService;
@@ -98,7 +102,8 @@ public class AuthCodeController {
 		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
 		
 		//파이썬 서버 url 설정
-		String pythonServerUrl = "http://192.168.0.65:8000/auth/email/send/"; 
+		String pythonServerUrl = pythonServer;
+		System.out.println("python server:"+pythonServerUrl);
 		
 		//이메일 인증코드 전달할 객체 생성
 		Map<String, String> authInfo = new HashMap<>();
