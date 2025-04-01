@@ -359,6 +359,46 @@ public class ChatSessionController {
 	 * @param params 세션 status 변경 요청 객체(id,status)
 	 * @return
 	 */
+	@Operation( summary = "세션 status 변경", description = "세션 status 변경 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-세션 status 변경 성공",
+			description = "SUCCESS",
+			content = @Content(
+				schema = @Schema(implementation = ChatSessionResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":59,\"member\":73,\"created_at\":\"2025-03-29T19:00:54.790221\",\"updated_at\":\"2025-03-29T19:00:54.787217\",\"status\":0,\"count\":0,\"lastQuestion\":null}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "400-세션 status 변경 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"세션을찾을수없습니다.\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+			responseCode = "401-세션 status 변경 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "403-세션 status 변경 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
+					)
+				) 
+			)
+	})
 	@PatchMapping("/sessions")
 	public ResponseEntity<?> changeSessionStatus(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
