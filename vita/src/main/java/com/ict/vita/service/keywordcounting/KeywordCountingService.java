@@ -1,13 +1,12 @@
 package com.ict.vita.service.keywordcounting;
 
+//import java.time.LocalDateTime;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import com.ict.vita.repository.terms.TermsEntity;
 import com.ict.vita.repository.terms.TermsRepository;
 import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termcategory.TermCategoryService;
-import com.ict.vita.service.terms.TermsDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -109,7 +107,7 @@ public class KeywordCountingService {
 		/*실시간 시간단위까지 진행 시
 		Sring today = LocalDateTime.now().format(DateTimeFormatter.ofpattern("yyyyMMddHH"));
 		*/
-		String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		String today = LocalDate.now().format(DATE_FORMATTER);
 		PageRequest pageRequest = PageRequest.of(0,10);
 		List<Object[]> rtRank = keywordCountingRepository.findRealtimeRankingTop10(today,pageRequest);
 		
@@ -132,8 +130,8 @@ public class KeywordCountingService {
 		PageRequest pageRequest = PageRequest.of(0, 10);
 		LocalDate today = LocalDate.now();
 		
-		String startOfMonth = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		String endOfMonth = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		String startOfMonth = today.withDayOfMonth(1).format(DATE_FORMATTER);
+		String endOfMonth = today.format(DATE_FORMATTER);
 		
 		
 	
