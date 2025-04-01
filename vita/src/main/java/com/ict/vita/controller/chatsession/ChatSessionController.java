@@ -2,12 +2,14 @@ package com.ict.vita.controller.chatsession;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -349,6 +351,43 @@ public class ChatSessionController {
 							
 							return responseSession;
 						}).toList() ) );
+	}
+	
+	/**
+	 * [세션 status 변경] - 관리자 또는 본인의 세션만 상태 변경 가능
+	 * @param token 로그인한 회원 토큰
+	 * @param params 세션 status 변경 요청 객체(id,status)
+	 * @return
+	 */
+	@PatchMapping("/sessions")
+	public ResponseEntity<?> changeSessionStatus(
+			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
+			@Parameter(description = "세션 status 변경 요청 객체") @RequestBody Map<String, Long> params){
+		//로그인한 회원 조회
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		}
+		
+		Long sid = params.get("id"); //세션id
+		long status = params.get("status"); //요청하는 세션status
+		
+		ChatSessionDto findedSession = chatSessionService.findById(sid);
+		//세션 미존재
+		if(findedSession == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("session.notfound", null,new Locale("ko")) ));
+		}
+		//관리자나 본인 세션이 아닌 경우
+		if( ( !loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) && findedSession.getMemberDto().getId() != loginMember.getId() ) || !loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null,new Locale("ko")) ));
+		}
+		
+		findedSession.setStatus(status);
+		ChatSessionDto updatedSession = chatSessionService.updateSession(findedSession);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(ChatSessionResponseDto.toDto(updatedSession)));
 	}
 	
 }
