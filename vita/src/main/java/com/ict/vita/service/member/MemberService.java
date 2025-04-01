@@ -58,7 +58,7 @@ public class MemberService {
 	public MemberDto findMemberByToken(String token) {
 		//회원을 찾으면 찾은 회원 Entity객체를,
 		// 일치하는 회원이 존재하지 않으면 null을 반환
-		MemberEntity findedMember = memberRepository.findByToken(token).orElse(null);
+		MemberEntity findedMember = memberRepository.findByToken(Commons.parseHTTPHeaderToken(token)).orElse(null);
 		if(findedMember != null) {
 			return MemberDto.toDto(findedMember);
 		}
