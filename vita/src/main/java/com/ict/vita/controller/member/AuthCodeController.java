@@ -84,29 +84,39 @@ public class AuthCodeController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail", null, new Locale("ko")) ));
 		}
 		
+		MemberDto findedMember = memberService.findMemberByEmail(email.trim());
 		//임시 회원가입 실패 - 이미 사용중인 아이디 입력시
-		if(memberService.isExistsEmail(email.trim()) && memberService.findMemberByEmail(email).getStatus() == 1 ) {
+		if(findedMember != null && findedMember.getStatus() == 1 ) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
 		}	
 		
 		//이메일 인증 코드 생성
 		String authCode = AuthUtil.generateEmailAuthCode();
 		
-		MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
-				.email(email.trim())
-				.password(authCode) //비밀번호를 인증코드로 설정
-				.role(Commons.ROLE_USER)
-				.build();
+		Map<String, String> authInfo = new HashMap<>();
 		
-		//임시 회원가입 처리
-		MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
+		if(findedMember != null) {
+			if(findedMember.getStatus() != 9) {
+				MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
+						.email(email.trim())
+						.password(authCode) //비밀번호를 인증코드로 설정
+						.role(Commons.ROLE_USER)
+						.build();
+				
+				//임시 회원가입 처리
+				MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
+			}
+			
+			findedMember.setPassword(authCode);
+			memberService.updateMember(findedMember);
+			
+		}
 		
 		//파이썬 서버 url 설정
 		String pythonServerUrl = pythonServer;
 		System.out.println("python server:"+pythonServerUrl);
 		
 		//이메일 인증코드 전달할 객체 생성
-		Map<String, String> authInfo = new HashMap<>();
 		authInfo.put("email", email);
 		authInfo.put("code", authCode);
 		
