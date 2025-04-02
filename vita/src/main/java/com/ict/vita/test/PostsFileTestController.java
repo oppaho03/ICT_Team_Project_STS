@@ -28,6 +28,7 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.util.Commons;
+import com.ict.vita.util.FileUtil;
 import com.ict.vita.util.ResultUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -81,11 +82,15 @@ public class PostsFileTestController {
 		if(loginMember == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		} 
-		
+
 		System.out.println("[파일업로드]");
 		System.out.println("파일명:"+fileInfo.getFile().getOriginalFilename());
 		System.out.println("파일타입:"+fileInfo.getFile().getContentType());
-
+		
+		//***** 아래부터 확인해봐야 함!!!!! 추가 수정 필요!
+		//***** 파일 업로드 저장 위치를 src/main/resources/static/계정아이디 폴더가 생성되고 거기다가 각 회원의 파일이 저장되게 하고싶어서 아래 추가해봄
+		
+		/*
 		//업로드 디렉터리 경로에 회원id 추가
 		uploadDir += String.valueOf(loginMember.getId());
 		
@@ -98,8 +103,8 @@ public class PostsFileTestController {
 				e.printStackTrace();
 				System.out.println("[파일 업로드]업로드 디렉터리 생성 실패");
 			}
-        }
-		
+        } */
+		/*
 		PostsDto post = PostsDto.builder()
 							.memberDto(loginMember)
 							.post_title( fileInfo.getFile().getOriginalFilename() )
@@ -115,8 +120,9 @@ public class PostsFileTestController {
 							.comment_count(0)
 							.build();  
 							
-//		// 1. 파일을 기본적으로 APP_POSTS 테이블에 저장
-        postsFileService.savePostFile(post);
+		// 1. 파일을 기본적으로 APP_POSTS 테이블에 저장
+        postsFileService.savePostFile(post); 
+        */
         System.out.println("파일 APP_POSTS 테이블에 저장");
     	
        return null;
