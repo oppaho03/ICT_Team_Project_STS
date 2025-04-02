@@ -73,6 +73,7 @@ public class PostsFileTestController {
     public ResponseEntity<?> uploadFile(
     		@RequestHeader(name = Commons.AUTHORIZATION) String token,
     		FileUploadDto fileInfo) {
+//    		MultipartFile file) {
 //    		@RequestPart(value = "file",required = false) MultipartFile file) {
 //    		@RequestParam(value = "file",required = false) MultipartFile file) {
     	
