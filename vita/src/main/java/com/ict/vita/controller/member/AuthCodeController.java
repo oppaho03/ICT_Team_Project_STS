@@ -93,30 +93,33 @@ public class AuthCodeController {
 		//이메일 인증 코드 생성
 		String authCode = AuthUtil.generateEmailAuthCode();
 		
+		//이메일 인증코드 전달할 객체 생성
 		Map<String, String> authInfo = new HashMap<>();
 		
+		MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
+				.email(email.trim())
+				.password(authCode) //비밀번호를 인증코드로 설정
+				.role(Commons.ROLE_USER)
+				.build();
+		
 		if(findedMember != null) {
-			if(findedMember.getStatus() != 9) {
-				MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
-						.email(email.trim())
-						.password(authCode) //비밀번호를 인증코드로 설정
-						.role(Commons.ROLE_USER)
-						.build();
-				
-				//임시 회원가입 처리
-				MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
-			}
-			
 			findedMember.setPassword(authCode);
-			memberService.updateMember(findedMember);
 			
+			if(findedMember.getStatus() == 0) 
+				findedMember.setStatus(9);
+			
+			memberService.updateMember(findedMember);
+
+		}
+		else {
+			//임시 회원가입 처리
+			MemberDto tempJoinedMember = memberService.tempJoin(tempJoinDto);
 		}
 		
 		//파이썬 서버 url 설정
 		String pythonServerUrl = pythonServer;
 		System.out.println("python server:"+pythonServerUrl);
 		
-		//이메일 인증코드 전달할 객체 생성
 		authInfo.put("email", email);
 		authInfo.put("code", authCode);
 		
