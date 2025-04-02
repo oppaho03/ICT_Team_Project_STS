@@ -354,6 +354,34 @@ public class ChatSessionController {
 	}
 	
 	/**
+	 * [공개 세션 조회] & 페이징 적용
+	 * @param token 로그인한 회원 토큰
+	 * @param p 페이지
+	 * @param ol 출력갯수
+	 * @return
+	 */
+	@GetMapping("/sessions/public")
+	public ResponseEntity<?> getPublicSessions(
+			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
+			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol){
+		//로그인한 회원 조회
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		
+		//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		}
+		
+		//공개 세션 조회
+		List<ChatSessionDto> publicSessions = chatSessionService.findPublics(p,ol);
+		
+		
+		return null;
+		
+	}
+	
+	/**
 	 * [세션 status 변경] - 관리자 또는 본인의 세션만 상태 변경 가능
 	 * @param token 로그인한 회원 토큰
 	 * @param params 세션 status 변경 요청 객체(id,status)

@@ -250,6 +250,17 @@ public class ChatSessionService {
 	}
 	
 	/**
+	 * [공개 세션 조회]
+	 * @param p : 페이지
+	 * @param ol : 출력 개수 제한
+	 * @return
+	 */
+	public List<ChatSessionDto> findPublics(int p, int ol) {
+		return null;
+		
+	}
+	
+	/**
 	 * [세션 생성]
 	 * @param sessionDto 세션 정보를 담아 요청하는 DTO객체
 	 * @return ChatSessionDto 생성된 세션 DTO 객체
