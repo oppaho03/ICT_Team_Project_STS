@@ -85,7 +85,7 @@ public class AuthCodeController {
 		}
 		
 		//임시 회원가입 실패 - 이미 사용중인 아이디 입력시
-		if(memberService.isExistsEmail(email.trim())) {
+		if(memberService.isExistsEmail(email.trim()) && memberService.findMemberByEmail(email).getStatus() == 1 ) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ResultUtil.fail(messageSource.getMessage("user.invalid_value_mail_exist", null, new Locale("ko")))); 
 		}	
 		
