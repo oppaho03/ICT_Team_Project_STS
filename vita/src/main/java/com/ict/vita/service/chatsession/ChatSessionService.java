@@ -226,13 +226,10 @@ public class ChatSessionService {
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findPublicsByMember(Long mid) {
 		
-		//List<ChatSessionEntity> list = chatSessionRepository.findAllByMemberAndStatus(mid,Sort.by(Sort.Order.desc("updated_at")) );
-		
 		List<ChatSessionEntity> list = null;
 		
-		String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0 ORDER BY s.updated_at DESC ";
+		String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.status = 0 ORDER BY s.updated_at DESC ";
 		Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
-		query.setParameter("mid", mid);
 		list = query.getResultList();
 		
 		return list.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
@@ -250,14 +247,62 @@ public class ChatSessionService {
 	}
 	
 	/**
-	 * [공개 세션 조회]
+	 * [공개 세션 조회] & 페이징 적용
 	 * @param p : 페이지
 	 * @param ol : 출력 개수 제한
-	 * @return
+	 * @return List<ChatSessionDto>
 	 */
 	public List<ChatSessionDto> findPublics(int p, int ol) {
-		return null;
+		// 현재 사용 중인 DB 종류 확인
+	    String databaseProductName = Commons.getDatabaseProductName(dataSource);
+	    
+	    List<ChatSessionEntity> sessions = new Vector<>();
+	    
+	    String sql = "";
+	    
+	    if (databaseProductName.equalsIgnoreCase("PostgreSQL")) {
+	    	sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.status = 0 ORDER BY s.updated_at desc LIMIT :limit OFFSET :offset";
+	    	Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
+	    	query.setParameter("limit", ol);
+	    	query.setParameter("offset", (p-1)*ol);
+	    	sessions = query.getResultList();
+	    }
+	    else if (databaseProductName.equalsIgnoreCase("Oracle")) {
+	    	// Oracle에서의 페이징 처리 (ROWNUM)
+	        int startRow = (p - 1) * ol + 1;
+	        int endRow = p * ol;
+	        
+	    	sql = "select sub2.* "
+	    			+ " from "
+	    			+ " ("
+	    			+ "    select sub.*,ROWNUM as rn "
+	    			+ "    from"
+	    			+ "    ("
+	    			+ "        select s.* "
+	    			+ "        from app_chat_session s"
+	    			+ "        where s.status = 0"
+	    			+ "        order by s.updated_at desc"
+	    			+ "    ) sub"
+	    			+ " ) sub2"
+	    			+ " where sub2.rn between :startRow and :endRow ";
+	    	Query query = em.createNativeQuery(sql, ChatSessionEntity.class);
+	    	query.setParameter("startRow", startRow);
+	    	query.setParameter("endRow", endRow);
+	    	sessions = query.getResultList();
+	    }
+	    
+	    return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 		
+	}
+	
+	/**
+	 * [공개 세션 조회] & 페이징 미적용
+	 * @return List<ChatSessionDto>
+	 */
+	public List<ChatSessionDto> findPublics() {
+		//공개(0)인 세션 조회
+		List<ChatSessionEntity> sessions = chatSessionRepository.findAllByStatus(0);
+		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList();
 	}
 	
 	/**

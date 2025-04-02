@@ -55,10 +55,17 @@ public interface ChatSessionRepository extends JpaRepository<ChatSessionEntity, 
 //			nativeQuery = true)
 //	Page<ChatSessionEntity> findAllByMemberAndStatus(@Param("mid") Long mid, Pageable pageable); //회원id로 공개 세션 조회(페이징 적용)
 	
+	/*
 	@Query(value = """
 			SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid and s.status = 0
 			""",
 			nativeQuery = true)
-	List<ChatSessionEntity> findAllByMemberAndStatus(@Param("mid") Long mid, Sort sort); //회원id로 공개 세션 조회(페이징 미적용)
+	List<ChatSessionEntity> findAllByMemberAndStatus(@Param("mid") Long mid, Sort sort); //회원id로 공개 세션 조회(페이징 미적용) */
+
+	@Query(value = """
+			SELECT * FROM APP_CHAT_SESSION s WHERE s.status = :status ORDER BY s.updated_at DESC
+			""",
+			nativeQuery = true)
+	List<ChatSessionEntity> findAllByStatus(@Param("status") int status); //공개(0) 세션 조회용 (페이징 미적용)
 
 }

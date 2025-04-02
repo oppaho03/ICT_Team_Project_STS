@@ -3,6 +3,7 @@ package com.ict.vita.controller.chatsession;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -360,6 +361,30 @@ public class ChatSessionController {
 	 * @param ol 출력갯수
 	 * @return
 	 */
+	@Operation( summary = "공개 세션 조회", description = "공개 세션 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-공개 세션 조회 성공",
+			description = "SUCCESS",
+			content = @Content(
+				array = @ArraySchema(
+						schema = @Schema(implementation = ChatSessionResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":47,\"member\":37,\"created_at\":\"2025-03-13T14:09:06.679719\",\"updated_at\":\"2025-03-13T14:09:06.665218\",\"status\":0,\"count\":0,\"lastQuestion\":null},{\"id\":46,\"member\":37,\"created_at\":\"2025-03-13T09:32:52.674851\",\"updated_at\":\"2025-03-13T09:32:52.671372\",\"status\":0,\"count\":0,\"lastQuestion\":null}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-공개 세션 조회 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
 	@GetMapping("/sessions/public")
 	public ResponseEntity<?> getPublicSessions(
 			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
@@ -373,12 +398,14 @@ public class ChatSessionController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
+		List<ChatSessionDto> publicSessions = null;
 		//공개 세션 조회
-		List<ChatSessionDto> publicSessions = chatSessionService.findPublics(p,ol);
+		if(p > 0)
+			publicSessions = chatSessionService.findPublics(p,ol);
+		else 
+			publicSessions = chatSessionService.findPublics();
 		
-		
-		return null;
-		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( publicSessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
 	}
 	
 	/**
