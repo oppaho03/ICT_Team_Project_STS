@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.member.MemberTempJoinDto;
 import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.membersnslogins.MemberSnsDto;
@@ -58,7 +59,7 @@ public class MemberSnsLoginsController {
 		
 		//회원 메타 정보들
 		List<MemberMetaResponseDto> metas = null;
-		
+
 		//[sns회원 존재시]
 		if(snsDto != null) {
 			
@@ -84,7 +85,6 @@ public class MemberSnsLoginsController {
 				
 			}
 			
-//			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( snsDto ));
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto(snsDto,findedMember,metas) ));
 		}
 		
@@ -101,18 +101,23 @@ public class MemberSnsLoginsController {
 				picture = snsReqDto.getPicture();
 			
 			//회원 테이블에 저장
-			findedMember = MemberDto.builder()
-									.email(snsReqDto.getEmail().trim())
-									.name(name)
-									.password(EncryptAES256.encrypt(snsReqDto.getProvider_id()) )
-									.nickname( snsReqDto.getEmail().trim().split("@")[0] )
-									.created_at(LocalDateTime.now())
-									.updated_at(LocalDateTime.now())
-									.status(1) //status를 1로(가입상태)
-									.build();
+
+			MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
+												.email(snsReqDto.getEmail().trim())
+												.name(name)
+												.role(Commons.ROLE_USER)
+												.password(EncryptAES256.encrypt(snsReqDto.getProvider_id()))
+												.nickname( snsReqDto.getEmail().trim().split("@")[0] )
+												.created_at(LocalDateTime.now())
+												.updated_at(LocalDateTime.now())
+												.status(9)
+												.build();
+
+			findedMember = memberService.tempJoin(tempJoinDto);
 			
 			findedMember = memberService.join(findedMember);
 			
+
 			//토큰 설정
 			String token = null;
 			Map<String, Object> claims = new HashMap<>();
@@ -120,7 +125,8 @@ public class MemberSnsLoginsController {
 			claims.put( "role" , findedMember.getRole());
 			token = jwtutil.CreateToken(findedMember.getId().toString(), claims);
 			findedMember.setToken(token);
-			memberService.updateMember(findedMember);
+			
+			findedMember = memberService.updateMember(findedMember);
 			
 			//회원 메타 테이블에 사진 정보 저장
 			ObjectMetaRequestDto metaInfo = ObjectMetaRequestDto.builder()
@@ -129,11 +135,10 @@ public class MemberSnsLoginsController {
 												.meta_value(picture)
 												.build();
 			memberMetaService.save(metaInfo);
-			
+		
 			metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
 			
 		}
-		
 		else { //회원 테이블에 있을 때
 			if(findedMember.getStatus() != 1) {
 				//토큰 설정
@@ -166,8 +171,8 @@ public class MemberSnsLoginsController {
 								.provider_id(snsReqDto.getProvider_id()) 
 								.build();
 		
-		memberSnsLoginsService.save(snsDto);
-//		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+		snsDto = memberSnsLoginsService.save(snsDto);
+		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto( snsDto,findedMember,metas ) ));
 		
 	}

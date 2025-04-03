@@ -131,7 +131,7 @@ public class MemberService {
 		if(Commons.isNull(nickname)) {
 			nickname = Commons.getAutoNickname(tempJoinDto.getEmail(), nickname);
 		}
-		
+	
 		//회원 저장
 		MemberEntity entity = memberRepository.save(MemberEntity.builder()
 								.email(joinDto.getEmail())
@@ -166,6 +166,7 @@ public class MemberService {
 		
 		//회원 저장		
 		try {
+			
 			entity = memberRepository.save(MemberEntity.builder()
 							.id(joinDto.getId()) //임시회원가입된 회원 정보 수정시 PK값 지정 필요
 							.email(joinDto.getEmail())
@@ -185,7 +186,7 @@ public class MemberService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		}
+		}		
 		return MemberDto.toDto(entity);
 		
 	}////
