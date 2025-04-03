@@ -1,4 +1,4 @@
-package com.ict.vita.service.posts;
+package com.ict.vita.service.postmeta;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +20,9 @@ public class PostMetaResponseDto {
 	//PostMetaDto를 PostMetaResponseDto로 변환
 	public static PostMetaResponseDto toResponseDto(PostMetaDto dto) {
 		return PostMetaResponseDto.builder()
-				.id(dto.getId())
-				.key(dto.getKey())
-				.value(dto.getValue())
+				.id(dto.getMeta_id())
+				.key(dto.getMeta_key())
+				.value(dto.getMeta_value())
 				.build();
 	}
 }

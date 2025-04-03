@@ -25,7 +25,7 @@ public class PostMetaService {
 	private final PostsRepository postsRepository;
 	
 	/**
-	 * 전체 검색 (카테고리 ID)
+	 * 전체 검색 (게시글 ID)
 	 * @param post TermDto
 	 * @return 메타 리스트 반환
 	 */	

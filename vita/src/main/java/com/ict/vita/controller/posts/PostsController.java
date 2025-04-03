@@ -26,6 +26,8 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
+import com.ict.vita.service.postmeta.PostMetaResponseDto;
+import com.ict.vita.service.postmeta.PostMetaService;
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.posts.PostsRequestDto;
 import com.ict.vita.service.posts.PostsResponseDto;
@@ -57,6 +59,7 @@ public class PostsController {
 	private final MemberService memberService;
 	private final TermsService termService;
 	private final PostCategoryRelationshipsService pcrService;
+	private final PostMetaService postMetaService;
 	
 	private final MessageSource messageSource;
 	
@@ -132,7 +135,7 @@ public class PostsController {
 						schema = @Schema(implementation = PostsResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]}]}}"
 				)
 			) 
 		),
@@ -173,12 +176,20 @@ public class PostsController {
 			if(!Commons.isNull(status)) {
 				//status에 해당하는 회원의 게시글 조회
 				List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
-											.stream().map(dto -> PostsResponseDto.toDto(dto.toEntity(), List.of(TermsResponseDto.toDto(category)) )).toList();
+											.stream()
+											.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+													List.of(TermsResponseDto.toDto(category)),
+													postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+											.toList();
 				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 			}
 			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
 			List<PostsResponseDto> postsList = postsService.getPostsByMember(cid, uid)
-											.stream().map(dto -> PostsResponseDto.toDto(dto.toEntity(), List.of(TermsResponseDto.toDto(category)) )).toList();
+											.stream()
+											.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+													List.of(TermsResponseDto.toDto(category)),
+													postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+											.toList();
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}	
 		
@@ -190,7 +201,11 @@ public class PostsController {
 		
 		else {
 			List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
-						.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList();
+						.stream()
+						.map(dto->PostsResponseDto.toDto(dto.toEntity(),
+								List.of(TermsResponseDto.toDto(category)),
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+						.toList();
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}
 
@@ -215,7 +230,7 @@ public class PostsController {
 						schema = @Schema(implementation = PostsResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]},{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}]}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]}]}}"
 				)
 			) 
 		)
@@ -238,7 +253,14 @@ public class PostsController {
 			if( !Commons.isNull(title) ) postsList = postsService.getPostsByTitle(cid,title);
 			else postsList = postsService.getPostsByNickname(cid, nickname);
 			
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList.stream().map(dto->PostsResponseDto.toDto(dto.toEntity(),List.of(TermsResponseDto.toDto(category)) )).toList()));
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body(ResultUtil.success(postsList
+							.stream()
+							.map(dto->PostsResponseDto.toDto(dto.toEntity(),
+									List.of(TermsResponseDto.toDto(category)),
+									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+							.toList()));
 			
 		}
 
@@ -262,7 +284,7 @@ public class PostsController {
 			content = @Content(	
 				schema = @Schema(implementation = PostsResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":71,\"author\":49,\"post_title\":\"우하하하하\",\"post_content\":\"글글글\",\"post_summary\":\"우하하하글\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-21T11:52:10.7016797\",\"post_modified_at\":\"2025-03-21T11:52:10.7016797\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":830,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":825}]}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":76,\"author\":47,\"post_title\":\"글을작성합니당ㅇㅇㅇ\",\"post_content\":\"크크크크\",\"post_summary\":\"큭글\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-04-03T12:46:47.4929123\",\"post_modified_at\":\"2025-04-03T12:46:47.4929123\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":830,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":825}],\"meta\":[]}}}"
 				)
 			) 
 		),
@@ -312,7 +334,12 @@ public class PostsController {
 		if(savedPost != null && pcrService.save(savedPost, categories)) {		 			
 			 List<TermCategoryDto> termCategoryDtos = termService.findById(categories);
 			 List<TermsResponseDto> termCategoryResponseDtos = termCategoryDtos.stream().map(dto->TermsResponseDto.toDto(dto)).toList();
-			return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity(), termCategoryResponseDtos ) ));
+			return ResponseEntity
+					.status(HttpStatus.CREATED)
+					.body(
+							ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity(),
+							termCategoryResponseDtos,
+							postMetaService.findAll(savedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() )));
 		}
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 등록 실패했습니다"));	
@@ -334,7 +361,7 @@ public class PostsController {
 			content = @Content(	
 				schema = @Schema(implementation = PostsResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":70,\"author\":47,\"post_title\":\"수수정22\",\"post_content\":\"22수contents입니다\",\"post_summary\":\"22수정글요약이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-19T21:02:49.671588\",\"post_modified_at\":\"2025-03-21T11:58:44.2114677\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}]}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":76,\"author\":47,\"post_title\":\"수퍼노바\",\"post_content\":\"수수수정\",\"post_summary\":\"글요약이지롱\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-04-03T12:46:47.524757\",\"post_modified_at\":\"2025-04-03T12:48:18.3288702\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]}}}"
 				)
 			) 
 		),
@@ -402,7 +429,12 @@ public class PostsController {
 			if ( savedPost != null ) {
 				List<PostCategoryRelationshipsDto> pcrDtos = pcrService.update(savedPost, categories);
 				List<TermsResponseDto> termsResponseDto = pcrDtos.stream().map( pcrDto->TermsResponseDto.toDto(pcrDto.getTermCategoryDto()) ).toList();
-				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity(), termsResponseDto)));
+				return ResponseEntity
+						.status(HttpStatus.OK)
+						.body(ResultUtil.success(
+								PostsResponseDto.toDto(savedPost.toEntity(),
+										termsResponseDto,
+										postMetaService.findAll(savedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() )));
 			}		
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 수정 실패했습니다"));
@@ -425,7 +457,7 @@ public class PostsController {
 				content = @Content(	
 					schema = @Schema(implementation = PostsResponseDto.class),
 					examples = @ExampleObject(
-						value = "{\"success\":1,\"response\":{\"data\":{\"id\":63,\"author\":29,\"post_title\":\"글제목2\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:06:55.460514\",\"post_modified_at\":\"2025-03-11T21:06:55.450154\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[]}}}"
+						value = "{\"success\":1,\"response\":{\"data\":{\"id\":76,\"author\":47,\"post_title\":\"수퍼노바\",\"post_content\":\"수수수정\",\"post_summary\":\"글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-04-03T12:46:47.524757\",\"post_modified_at\":\"2025-04-03T12:48:18.32887\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]}}}"
 					)
 				) 
 			),
@@ -476,7 +508,13 @@ public class PostsController {
 		
 		List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
 		List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(PostsResponseDto.toDto(deletedPost.toEntity(),responses )) );
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success(
+						PostsResponseDto.toDto(
+								deletedPost.toEntity(),
+								responses,
+								postMetaService.findAll(deletedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() )) );
 
 	}
 	

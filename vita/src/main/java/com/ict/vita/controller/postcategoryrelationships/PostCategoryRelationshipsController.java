@@ -7,6 +7,9 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
+import com.ict.vita.service.postmeta.PostMetaDto;
+import com.ict.vita.service.postmeta.PostMetaResponseDto;
+import com.ict.vita.service.postmeta.PostMetaService;
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
@@ -56,6 +59,7 @@ public class PostCategoryRelationshipsController {
 	private final PostsService postsService;
 	private final MemberService memberService;
 	private final TermCategoryService categoryService;
+	private final PostMetaService postMetaService;
 
 	/**
 	 * 카테고리 목록 가져오기
@@ -111,7 +115,7 @@ public class PostCategoryRelationshipsController {
 	 */		
 	@Operation(summary = "포스트 목록 가져오기", description = "포스트 목록 가져오기")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = PostsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":1,\"author\":1,\"post_title\":\"테스트글\",\"post_content\":\"\",\"post_summary\":\"\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-05T15:42:18\",\"post_modified_at\":\"2025-03-05T15:42:18\",\"comment_status\":\"OPEN\",\"comment_count\":0}]}}"))),
+		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = PostsResponseDto.class), examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[{\"id\":5,\"author\":29,\"post_title\":\"글제목\",\"post_content\":\"글내용\",\"post_summary\":\"요약\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-10T20:29:38.386\",\"post_modified_at\":\"2025-03-10T20:29:38.386\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":23,\"author\":29,\"post_title\":\"글제목2\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T20:57:31.119668\",\"post_modified_at\":\"2025-03-11T20:57:31.104365\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":65,\"author\":29,\"post_title\":\"글제목3\",\"post_content\":\"글내용2\",\"post_summary\":\"요약2\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-11T21:13:12.195243\",\"post_modified_at\":\"2025-03-11T21:13:12.190857\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":67,\"author\":47,\"post_title\":\"title123\",\"post_content\":\"contents입니다\",\"post_summary\":\"글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-17T20:52:30.204812\",\"post_modified_at\":\"2025-03-17T20:52:30.194811\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":68,\"author\":47,\"post_title\":\"수수title123\",\"post_content\":\"수수contents입니다\",\"post_summary\":\"수수정글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-17T20:53:32.206184\",\"post_modified_at\":\"2025-03-17T21:11:59.990984\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":69,\"author\":47,\"post_title\":\"글하고질병글입니다.\",\"post_content\":\"contents입니다\",\"post_summary\":\"황조롱이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-18T17:42:18.876855\",\"post_modified_at\":\"2025-03-18T17:42:18.721348\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":70,\"author\":47,\"post_title\":\"수수정22\",\"post_content\":\"22수contents입니다\",\"post_summary\":\"22수정글요약이지롱\",\"post_status\":\"DELETE\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-19T21:02:49.671588\",\"post_modified_at\":\"2025-03-21T11:58:44.211468\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]},{\"id\":71,\"author\":49,\"post_title\":\"우하하하하\",\"post_content\":\"글글글\",\"post_summary\":\"우하하하글\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-03-21T11:52:10.71168\",\"post_modified_at\":\"2025-03-21T11:52:10.70168\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[]}]}}" ))),
 		@ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(examples = @ExampleObject(value = "{\"success\":1,\"response\":{\"data\":[]}}")))
 	})
 	@GetMapping("/category/{id}")
@@ -129,10 +133,13 @@ public class PostCategoryRelationshipsController {
 
 		if ( relDtos != null && ! relDtos.isEmpty() ) {
 			TermCategoryDto category = categoryService.findById(id);
-			
+
 			List<PostsResponseDto> postsDtos = relDtos.stream()
-					.map( dto -> PostsResponseDto.toDto(dto.getPostsDto().toEntity(),List.of(TermsResponseDto.toDto(category)) ) )
-					.toList();
+					.map( dto -> PostsResponseDto.toDto(
+							dto.getPostsDto().toEntity(), 
+							List.of(TermsResponseDto.toDto(category)),
+							postMetaService.findAll(dto.getPostsDto()).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ) )
+					.toList();		
 
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( postsDtos ));
 		}

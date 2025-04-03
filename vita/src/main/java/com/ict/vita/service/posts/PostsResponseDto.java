@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.postmeta.PostMetaResponseDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -31,14 +32,14 @@ public class PostsResponseDto {
 	private String post_mime_type; //글 타입(글/미디어파일)
 	private LocalDateTime post_created_at; //글 생성일
 	private LocalDateTime post_modified_at; //글 수정일
-	
 	private String comment_status; //댓글 허용 상태
 	private long comment_count; //댓글 개수
 	
 	private List<TermsResponseDto> categories; //응답시 카테고리 목록 보여주기 위한 필드
-
+	private List<PostMetaResponseDto> meta; //글 메타 정보들
+	
 	// PostsEntity -> PostsResponseDto 변환 
-	public static PostsResponseDto toDto(PostsEntity entity,List<TermsResponseDto> categories) {
+	public static PostsResponseDto toDto(PostsEntity entity,List<TermsResponseDto> categories,List<PostMetaResponseDto> meta) {
 		return PostsResponseDto.builder()
 			.id(entity.getId())
 			.author(MemberDto.toDto(entity.getMemberEntity()).getId())
@@ -54,6 +55,7 @@ public class PostsResponseDto {
 			.comment_status(entity.getCommentStatus())
 			.comment_count(entity.getCommentCount())
 			.categories(categories)
+			.meta(meta)
 			.build();
 	}
 }
