@@ -35,7 +35,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 //[회원 SNS 로그인]
-public class MemberSnsLoginsEntity {
+public class MemberSnsEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "APP_MEMBER_SNS_LOGINS_SEQ")
 	@SequenceGenerator(name = "APP_MEMBER_SNS_LOGINS_SEQ",sequenceName = "APP_MEMBER_SNS_LOGINS_SEQ",initialValue = 1,allocationSize = 1)

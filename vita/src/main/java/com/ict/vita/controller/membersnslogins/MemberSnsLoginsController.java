@@ -2,6 +2,7 @@ package com.ict.vita.controller.membersnslogins;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.membermeta.MemberMetaService;
-import com.ict.vita.service.membersnslogins.MemberSnsLoginsDto;
+import com.ict.vita.service.membersnslogins.MemberSnsDto;
 import com.ict.vita.service.membersnslogins.MemberSnsRequestDto;
+import com.ict.vita.service.membersnslogins.MemberSnsResponseDto;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
 import com.ict.vita.service.membersnslogins.MemberSnsLoginsService;
 import com.ict.vita.util.Commons;
@@ -48,9 +52,12 @@ public class MemberSnsLoginsController {
 		System.out.println(String.format("[sns]이메일:%s, 인증토큰:%s", snsReqDto.getEmail(), snsReqDto.getAccess_token()));
 		
 		//<sns회원 테이블에서 조회>
-		MemberSnsLoginsDto snsDto = memberSnsLoginsService.getSnsMemberByEmail(snsReqDto.getEmail().trim());
+		MemberSnsDto snsDto = memberSnsLoginsService.getSnsMemberByEmail(snsReqDto.getEmail().trim());
 		//<회원 테이블에서 이메일 조회>
 		MemberDto findedMember = memberService.findMemberByEmail(snsReqDto.getEmail().trim());
+		
+		//회원 메타 정보들
+		List<MemberMetaResponseDto> metas = null;
 		
 		//[sns회원 존재시]
 		if(snsDto != null) {
@@ -69,11 +76,16 @@ public class MemberSnsLoginsController {
 				claims.put( "role" , findedMember.getRole());
 				token = jwtutil.CreateToken(findedMember.getId().toString(), claims);
 				
+				metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+				
 				findedMember.setStatus(1); //status를 1로(가입상태)
 				findedMember.setToken(token);
 				memberService.updateMember(findedMember);
+				
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+			
+//			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( snsDto ));
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto(snsDto,findedMember,metas) ));
 		}
 		
 		//[sns회원 미존재시]
@@ -118,6 +130,8 @@ public class MemberSnsLoginsController {
 												.build();
 			memberMetaService.save(metaInfo);
 			
+			metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+			
 		}
 		
 		else { //회원 테이블에 있을 때
@@ -134,14 +148,17 @@ public class MemberSnsLoginsController {
 				findedMember.setPassword(EncryptAES256.encrypt(snsReqDto.getProvider_id()));
 				
 				findedMember = memberService.updateMember(findedMember);
+				
+				metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
 			}
 		}
 		
 		//sns회원 테이블에 저장
-		snsDto = MemberSnsLoginsDto.builder()
-								.memberDto(findedMember)
+		snsDto = MemberSnsDto.builder()
+								.member( findedMember )
 								.login_id( snsReqDto.getEmail().trim() )
 								.access_token(snsReqDto.getAccess_token().trim())
+								.refresh_token(null)
 								.status(1) //status를 1로
 								.login_created_at(LocalDateTime.now())
 								.login_modified_at(LocalDateTime.now())
@@ -150,8 +167,8 @@ public class MemberSnsLoginsController {
 								.build();
 		
 		memberSnsLoginsService.save(snsDto);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+//		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(snsDto));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto( snsDto,findedMember,metas ) ));
 		
 	}
 	

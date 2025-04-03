@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MemberSnsLoginsRepository extends JpaRepository<MemberSnsLoginsEntity, Long> {
+public interface MemberSnsLoginsRepository extends JpaRepository<MemberSnsEntity, Long> {
 
 	@Query(value = """
 			select s.*
@@ -16,6 +16,6 @@ public interface MemberSnsLoginsRepository extends JpaRepository<MemberSnsLogins
 			join APP_MEMBER m on s.member_id = m.id
 			where s.login_id = :email
 			""", nativeQuery = true)
-	Optional<MemberSnsLoginsEntity> findByEmail(@Param("email") String email);
+	Optional<MemberSnsEntity> findByEmail(@Param("email") String email);
 
 }
