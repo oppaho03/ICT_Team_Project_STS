@@ -45,8 +45,17 @@ public class AuthCodeController {
 	//비동기 작업을 위한 WebClient 객체 생성
 	private WebClient webClient = WebClient.builder().build();
 	
-	@Value("${url.python}")
-	String pythonServer;
+	@Value("${PYTHON_SERVER_SSL}")
+	String ssl;
+	
+	@Value("${PYTHON_SERVER_HOST}")
+	String host;
+	
+	@Value("${PYTHON_SERVER_PORT}")
+	String port;
+	
+	String pythonServer = (ssl.trim().equals("0") ? "http://" : "https://" )
+		+ host + (!Commons.isNull(port) ? ":" + port : "");
 	
 	//서비스 주입
 	private final MemberService memberService;
