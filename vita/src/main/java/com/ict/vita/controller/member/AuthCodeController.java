@@ -1,8 +1,8 @@
 package com.ict.vita.controller.member;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -199,7 +199,7 @@ public class AuthCodeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("auth.invalid", null, new Locale("ko"))));
 		}
 		//성공시
-		Map<String, Boolean> result = new HashMap<>();
+		Map <String, Boolean> result = new HashMap<>();
 		result.put("isAuth", true);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));

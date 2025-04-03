@@ -92,7 +92,7 @@ public class MemberSnsLoginsController {
 			findedMember = MemberDto.builder()
 									.email(snsReqDto.getEmail().trim())
 									.name(name)
-									.password(EncryptAES256.encrypt(snsReqDto.getAccess_token()) )
+									.password(EncryptAES256.encrypt(snsReqDto.getProvider_id()) )
 									.nickname( snsReqDto.getEmail().trim().split("@")[0] )
 									.created_at(LocalDateTime.now())
 									.updated_at(LocalDateTime.now())
@@ -131,7 +131,7 @@ public class MemberSnsLoginsController {
 				findedMember.setToken(token);
 				
 				findedMember.setStatus(1); //status를 1로(가입상태)
-				findedMember.setPassword(EncryptAES256.encrypt(snsReqDto.getAccess_token()));
+				findedMember.setPassword(EncryptAES256.encrypt(snsReqDto.getProvider_id()));
 				
 				findedMember = memberService.updateMember(findedMember);
 			}
