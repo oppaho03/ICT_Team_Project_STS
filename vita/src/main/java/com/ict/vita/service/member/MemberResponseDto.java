@@ -2,8 +2,10 @@ package com.ict.vita.service.member;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.ict.vita.repository.member.MemberEntity;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.posts.PostsDto;
 
 import lombok.AllArgsConstructor;
@@ -31,8 +33,10 @@ public class MemberResponseDto {
 	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
 	private long status; //상태(1:가입/0:탈퇴/9:대기)
 	
+	private List<MemberMetaResponseDto> meta;
+	
 	//[MemberDto 를 MemberResponseDto로]
-	public static MemberResponseDto toDto(MemberDto memberDto) {
+	public static MemberResponseDto toDto(MemberDto memberDto, List<MemberMetaResponseDto> meta) {
 		return MemberResponseDto.builder()
 								.id(memberDto.getId())
 								.email(memberDto.getEmail())
@@ -45,11 +49,12 @@ public class MemberResponseDto {
 								.created_at(memberDto.getCreated_at())
 								.updated_at(memberDto.getUpdated_at())
 								.status(memberDto.getStatus())
+								.meta(meta)
 								.build();
 	}
 	
 	//[MemberEntity 를 MemberResponseDto로]
-	public static MemberResponseDto toDto(MemberEntity memberEntity) {
+	public static MemberResponseDto toDto(MemberEntity memberEntity, List<MemberMetaResponseDto> meta) {
 		return MemberResponseDto.builder()
 				.id(memberEntity.getId())
 				.email(memberEntity.getEmail())
@@ -62,6 +67,7 @@ public class MemberResponseDto {
 				.created_at(memberEntity.getCreated_at())
 				.updated_at(memberEntity.getUpdated_at())
 				.status(memberEntity.getStatus())
+				.meta(meta)
 				.build();
 	}
 }

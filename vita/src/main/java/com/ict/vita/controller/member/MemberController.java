@@ -40,6 +40,8 @@ import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberTempJoinDto;
 import com.ict.vita.service.member.MemberUpdateDto;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
 import com.ict.vita.service.postmeta.PostMetaDto;
@@ -77,6 +79,7 @@ public class MemberController {
 	private final PostsService postsService;
 	private final PostCategoryRelationshipsService pcrService;
 	private final PostMetaService postMetaService;
+	private final MemberMetaService memberMetaService;
 	
 	private final JwtUtil jwtutil; // Constructor Injection, JwtUtil
 	private final MessageSource messageSource;
@@ -131,7 +134,13 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		//관리자인 경우
-		List<MemberResponseDto> members = memberService.getAllMembers().stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
+		List<MemberResponseDto> members = memberService.getAllMembers()
+											.stream()
+											.map(dto -> 
+												MemberResponseDto.toDto( 
+														dto, 
+														memberMetaService.findAll(dto).stream().map( meta -> MemberMetaResponseDto.toResponseDto(meta) ).toList() ))
+											.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(members));
 	}
 	
@@ -171,7 +180,13 @@ public class MemberController {
 		if ( findedMember == null )
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberResponseDto.toDto(findedMember) ));
+		List <MemberMetaResponseDto> metaList = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+		
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success( 
+						MemberResponseDto.toDto(findedMember, metaList ) 
+						));
 	}
 	
 	/**
@@ -224,7 +239,14 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		//관리자인 경우
-		List<MemberResponseDto> members = memberService.findMemberByRole(Commons.ROLE_USER).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
+		List<MemberResponseDto> members = memberService.findMemberByRole(Commons.ROLE_USER)
+											.stream()
+											.map(user -> 
+												MemberResponseDto.toDto(
+														user, 
+														memberMetaService.findAll(user).stream()
+															.map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList() ) )
+											.collect(Collectors.toList() );
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(members));
 	}
 	
@@ -282,7 +304,16 @@ public class MemberController {
 		
 		
 		//관리자인 경우
-		List<MemberResponseDto> findedMembers = memberService.findMemberByStatus(status).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
+		List<MemberResponseDto> findedMembers = memberService.findMemberByStatus(status)
+												.stream()
+												.map(mem -> 
+													MemberResponseDto.toDto(
+															mem, 
+															memberMetaService.findAll(mem)
+																.stream()
+																.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																.toList() ) )
+												.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
 	}
 	
@@ -339,7 +370,11 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		
 		//관리자인 경우
-		List<MemberResponseDto> findedMembers = memberService.findMemberByRole(role).stream().map(dto -> MemberResponseDto.toDto(dto)).collect(Collectors.toList());
+		List<MemberResponseDto> findedMembers = memberService.findMemberByRole(role)
+												.stream()
+												.map(mem -> 
+													MemberResponseDto.toDto(mem, memberMetaService.findAll(mem).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList() ))
+												.collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(findedMembers));
 	}
 	
@@ -539,8 +574,19 @@ public class MemberController {
 		
 		MemberDto memberDto = memberService.join(findedMember);
 		
-		return memberDto != null ? ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(MemberResponseDto.toDto(memberDto))) :
-					ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
+		return memberDto != null ? 
+				ResponseEntity
+					.status(HttpStatus.CREATED)
+					.body(ResultUtil.success(
+							MemberResponseDto.toDto(
+									memberDto, 
+									memberMetaService.findAll(memberDto)
+										.stream()
+										.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+										.toList() ))) :
+				ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(ResultUtil.fail(messageSource.getMessage("user.join_fail", null, new Locale("ko"))));
 	}
 	
 	/**
@@ -702,7 +748,16 @@ public class MemberController {
 		findedMember.setUpdated_at(LocalDateTime.now());
 		//변경된 회원 정보로 회원 수정
 		MemberDto updatedMember = memberService.updateMember(findedMember);
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success(
+						MemberResponseDto.toDto(
+								updatedMember, 
+								memberMetaService.findAll(updatedMember)
+									.stream()
+									.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+									.toList() )
+				));
 		
 	}
 	
@@ -769,7 +824,16 @@ public class MemberController {
 		MemberDto updatedMember = memberService.updateMember(findedMember);
 		System.out.println("비번 수정 후:"+updatedMember.getPassword());
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(MemberResponseDto.toDto(updatedMember)));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success(
+						MemberResponseDto.toDto(
+								updatedMember, 
+								memberMetaService.findAll(updatedMember)
+									.stream()
+									.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+									.toList() )
+				));
 		
 	}
 	
@@ -832,7 +896,13 @@ public class MemberController {
 		//<<탈퇴 가능한 경우>>
 		//<회원 정보 수정>
 		MemberDto withdrawnMember = memberService.withdrawMember(mid);
-		MemberResponseDto respMember = MemberResponseDto.toDto(withdrawnMember);
+		MemberResponseDto respMember = MemberResponseDto.toDto(
+										withdrawnMember, 
+										memberMetaService.findAll(withdrawnMember)
+											.stream()
+											.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+											.toList() 
+										);
 		
 		//회원이 작성한 모든 글 조회
 		List <PostsDto> selectedPosts = postsService.getPostsByMember(withdrawnMember.getId());
