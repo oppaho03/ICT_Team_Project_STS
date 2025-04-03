@@ -18,10 +18,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 //[회원 SNS 로그인 요청 DTO]
-public class MemberSnsLoginsRequestDto {
-	
+public class MemberSnsRequestDto {
+	//[필수값]
 	private String email; //이메일
-	private String token; //SNS 인증 토큰
+	private String access_token; //SNS 인증 토큰
+	private String provider; //인증서버
+	private String provider_id; //인증서버 발급id(UNIQUE)
+	
+	//[옵션값]
+	private String name; //이름
+	private String picture; //사진url
 	
 	/*
 	private Long member; //회원
