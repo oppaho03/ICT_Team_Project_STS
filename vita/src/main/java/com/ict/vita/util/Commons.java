@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
 
+import com.ict.vita.config.VitaConfig;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 
@@ -28,7 +31,6 @@ public class Commons {
 	public static final String POST_STATUS_DELETE = "DELETE"; //글 삭제
 	//<댓글 관련> - 사용할지 말지 결정 안됨
 	public static final String COMMENT_STATUS_OPEN = "OPEN"; //댓글 허용
-	
 
 	/**
 	 * 문자열이 null 또는 빈문자열인지 판단하는 함수
@@ -137,5 +139,18 @@ public class Commons {
 		}
 		
 		return autoNickname;
+	}
+
+	/**
+	 * [서버 주소 받기]
+	 * @param ssl
+	 * @param host ip주소
+	 * @param port 포트번호
+	 * @return
+	 */
+	public static String getServerPath(String ssl,String host,String port,String path) {
+		String pythonServer = (ssl.equals("0") ? "http://" : "https://") + host +
+				(!isNull(port) ? ":" + port + path : "");
+		return pythonServer;
 	}
 }

@@ -29,6 +29,7 @@ public class MemberResponseDto {
 	private char gender; //성별
 	private String contact; //전화번호
 	private String address; //주소
+	private String token; //활성화 토큰
 	private LocalDateTime created_at = LocalDateTime.now(); //가입일
 	private LocalDateTime updated_at = LocalDateTime.now(); //수정일
 	private long status; //상태(1:가입/0:탈퇴/9:대기)
@@ -46,6 +47,7 @@ public class MemberResponseDto {
 								.gender(memberDto.getGender())
 								.contact(memberDto.getContact())
 								.address(memberDto.getAddress())
+								.token(memberDto.getToken())
 								.created_at(memberDto.getCreated_at())
 								.updated_at(memberDto.getUpdated_at())
 								.status(memberDto.getStatus())
@@ -64,6 +66,7 @@ public class MemberResponseDto {
 				.gender(memberEntity.getGender())
 				.contact(memberEntity.getContact())
 				.address(memberEntity.getAddress())
+				.token(memberEntity.getToken())
 				.created_at(memberEntity.getCreated_at())
 				.updated_at(memberEntity.getUpdated_at())
 				.status(memberEntity.getStatus())

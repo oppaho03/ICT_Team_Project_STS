@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import org.aspectj.weaver.ast.Instanceof;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -45,21 +46,17 @@ public class AuthCodeController {
 	//비동기 작업을 위한 WebClient 객체 생성
 	private WebClient webClient = WebClient.builder().build();
 	
-	@Value("${PYTHON_SERVER_SSL}")
-	String ssl;
-	
-	@Value("${PYTHON_SERVER_HOST}")
-	String host;
-	
-	@Value("${PYTHON_SERVER_PORT}")
-	String port;
-	
-	String pythonServer = (ssl.trim().equals("0") ? "http://" : "https://" )
-		+ host + (!Commons.isNull(port) ? ":" + port : "");
-	
 	//서비스 주입
 	private final MemberService memberService;
 	private final MessageSource messageSource;
+	
+	//url관련
+	@Value("${PYTHON_SERVER_SSL}")
+	public String ssl;
+	@Value("${PYTHON_SERVER_HOST}")
+	public String host;
+	@Value("${PYTHON_SERVER_PORT}")
+	public String port;
 	
 	/**
 	 * [파이썬 서버로 이메일 인증 코드 전송하는 메서드] - 비동기
@@ -126,14 +123,14 @@ public class AuthCodeController {
 		}
 		
 		//파이썬 서버 url 설정
-		String pythonServerUrl = pythonServer;
+		String pythonServerUrl = Commons.getServerPath(ssl,host,port,"/auth/email/send/");
 		System.out.println("python server:"+pythonServerUrl);
 		
 		authInfo.put("email", email);
 		authInfo.put("code", authCode);
 		
 		//파이썬으로 인증 코드 전달
-		sendAuthCodeToPython(pythonServerUrl,authInfo);
+//		sendAuthCodeToPython(pythonServerUrl,authInfo);
 		
 		//리액트로 이메일 인증 코드 반환
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(authInfo));
