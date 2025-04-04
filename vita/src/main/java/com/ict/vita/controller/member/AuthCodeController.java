@@ -29,6 +29,7 @@ import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -76,10 +77,41 @@ public class AuthCodeController {
 	}
 	
 	/**
-	 * [이메일 인증코드 발급 및 임시 회원가입 처리 메서드]
+	 * [이메일 인증코드 발급 및 임시 회원가입 처리]
 	 * @param parameters 리액트에서 스프링 서버로 넘어온 정보 ( email )
 	 * @return 
 	 */
+	@Operation( summary = "이메일 인증코드 발급 및 임시 회원가입 처리", description = "이메일 인증코드 발급 및 임시 회원가입 처리 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-이메일 인증코드 발급 및 임시 회원가입 처리 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = Map.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"code\":\"220950\",\"email\":\"wowwow@naver.com\"}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-이메일 인증코드 발급 및 임시 회원가입 처리 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"잘못된이메일입니다.\"}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "409-이메일 인증코드 발급 및 임시 회원가입 처리 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"사용중인이메일입니다.\"}}"
+					)
+				) 
+			)
+	})
 	@PostMapping("/temporary-registration")
 	public ResponseEntity<?> initiateEmailVerification(@Parameter(description = "서버로 넘어온 정보(email)") @RequestBody Map<String, String> parameters){
 		

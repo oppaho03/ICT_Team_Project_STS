@@ -29,6 +29,13 @@ import com.ict.vita.util.EncryptAES256;
 import com.ict.vita.util.JwtUtil;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -48,6 +55,19 @@ public class MemberSnsLoginsController {
 	 * @param infos SNS로그인요청 정보
 	 * @return ResponseEntity
 	 */
+	@Operation( summary = "SNS 로그인", description = "SNS 로그인 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-SNS 로그인 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = MemberSnsResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":24,\"member\":{\"id\":101,\"email\":\"user01@gmail.com\",\"name\":\"박윤성\",\"nickname\":\"user01\",\"birth\":null,\"gender\":\""
+				)
+			) 
+		)
+	})
 	@PostMapping("/api/sns/login")
 	public ResponseEntity<?> snsLogin(@RequestBody MemberSnsRequestDto snsReqDto){
 	
