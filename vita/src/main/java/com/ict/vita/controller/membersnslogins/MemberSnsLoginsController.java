@@ -16,6 +16,7 @@ import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberTempJoinDto;
+import com.ict.vita.service.membermeta.MemberMetaDto;
 import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.membersnslogins.MemberSnsDto;
@@ -65,6 +66,7 @@ public class MemberSnsLoginsController {
 		
 		//[sns회원 존재시]
 		if(snsDto != null) {	
+
 			snsDto.setLogin_modified_at(LocalDateTime.now());
 			snsDto.setProvider_id(snsReqDto.getProvider_id()); 
 			snsDto.setAccess_token(snsReqDto.getAccess_token().trim());
@@ -72,19 +74,20 @@ public class MemberSnsLoginsController {
 			updatedSnsDto = memberSnsLoginsService.update(snsDto);
 			
 			//회원 테이블에 존재
-			if(findedMember.getStatus() != 1) { 
+			if(findedMember != null && findedMember.getStatus() == 1) { 
+
 				String token = null;
 				Map<String, Object> claims = new HashMap<>();
 				claims.put( "email" , findedMember.getEmail());
 				claims.put( "role" , findedMember.getRole());
-				token = jwtutil.CreateToken(findedMember.getId().toString(), claims);
-				
-				metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+				token = jwtutil.CreateToken(findedMember.getId().toString(), claims);	
 				
 				findedMember.setStatus(1); //status를 1로(가입상태)
 				findedMember.setToken(token);
 				updatedDto = memberService.updateMember(findedMember);
 				
+				metas = memberMetaService.findAll(updatedDto).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+
 			}
 			
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto(updatedSnsDto,updatedDto,metas) ));
@@ -136,6 +139,7 @@ public class MemberSnsLoginsController {
 												.meta_key("picture")
 												.meta_value(picture)
 												.build();
+			
 			memberMetaService.save(metaInfo);
 		
 			metas = memberMetaService.findAll(updatedDto).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
@@ -161,7 +165,7 @@ public class MemberSnsLoginsController {
 		}
 		
 		//sns회원 테이블에 저장
-		snsDto = MemberSnsDto.builder()
+		MemberSnsDto newSnsDto = MemberSnsDto.builder()
 								.member( updatedDto )
 								.login_id( snsReqDto.getEmail().trim() )
 								.access_token(snsReqDto.getAccess_token().trim())
@@ -173,7 +177,7 @@ public class MemberSnsLoginsController {
 								.provider_id(snsReqDto.getProvider_id()) 
 								.build();
 		
-		updatedSnsDto = memberSnsLoginsService.save(snsDto);
+		updatedSnsDto = memberSnsLoginsService.save(newSnsDto);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto( updatedSnsDto,updatedDto,metas ) ));
 		
