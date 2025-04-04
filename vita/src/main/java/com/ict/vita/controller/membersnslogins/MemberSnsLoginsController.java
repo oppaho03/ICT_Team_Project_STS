@@ -60,14 +60,16 @@ public class MemberSnsLoginsController {
 		//회원 메타 정보들
 		List<MemberMetaResponseDto> metas = null;
 
+		MemberSnsDto updatedSnsDto = snsDto;
+		MemberDto updatedDto = findedMember;
+		
 		//[sns회원 존재시]
-		if(snsDto != null) {
-			
+		if(snsDto != null) {	
 			snsDto.setLogin_modified_at(LocalDateTime.now());
 			snsDto.setProvider_id(snsReqDto.getProvider_id()); 
 			snsDto.setAccess_token(snsReqDto.getAccess_token().trim());
 			
-			memberSnsLoginsService.update(snsDto);
+			updatedSnsDto = memberSnsLoginsService.update(snsDto);
 			
 			//회원 테이블에 존재
 			if(findedMember.getStatus() != 1) { 
@@ -81,11 +83,11 @@ public class MemberSnsLoginsController {
 				
 				findedMember.setStatus(1); //status를 1로(가입상태)
 				findedMember.setToken(token);
-				memberService.updateMember(findedMember);
+				updatedDto = memberService.updateMember(findedMember);
 				
 			}
 			
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto(snsDto,findedMember,metas) ));
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto(updatedSnsDto,updatedDto,metas) ));
 		}
 		
 		//[sns회원 미존재시]
@@ -113,30 +115,30 @@ public class MemberSnsLoginsController {
 												.status(9)
 												.build();
 
-			findedMember = memberService.tempJoin(tempJoinDto);
+			MemberDto tempDto = memberService.tempJoin(tempJoinDto);
 			
-			findedMember = memberService.join(findedMember);
+			MemberDto joinedDto = memberService.join(tempDto);
 			
 
 			//토큰 설정
 			String token = null;
 			Map<String, Object> claims = new HashMap<>();
-			claims.put( "email" , findedMember.getEmail());
-			claims.put( "role" , findedMember.getRole());
-			token = jwtutil.CreateToken(findedMember.getId().toString(), claims);
-			findedMember.setToken(token);
+			claims.put( "email" , joinedDto.getEmail());
+			claims.put( "role" , joinedDto.getRole());
+			token = jwtutil.CreateToken(joinedDto.getId().toString(), claims);
+			joinedDto.setToken(token);
 			
-			findedMember = memberService.updateMember(findedMember);
+			updatedDto = memberService.updateMember(joinedDto);
 			
 			//회원 메타 테이블에 사진 정보 저장
 			ObjectMetaRequestDto metaInfo = ObjectMetaRequestDto.builder()
-												.id(findedMember.getId())
+												.id(updatedDto.getId())
 												.meta_key("picture")
 												.meta_value(picture)
 												.build();
 			memberMetaService.save(metaInfo);
 		
-			metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+			metas = memberMetaService.findAll(updatedDto).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
 			
 		}
 		else { //회원 테이블에 있을 때
@@ -152,15 +154,15 @@ public class MemberSnsLoginsController {
 				findedMember.setStatus(1); //status를 1로(가입상태)
 				findedMember.setPassword(EncryptAES256.encrypt(snsReqDto.getProvider_id()));
 				
-				findedMember = memberService.updateMember(findedMember);
+				updatedDto = memberService.updateMember(findedMember);
 				
-				metas = memberMetaService.findAll(findedMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+				metas = memberMetaService.findAll(updatedDto).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
 			}
 		}
 		
 		//sns회원 테이블에 저장
 		snsDto = MemberSnsDto.builder()
-								.member( findedMember )
+								.member( updatedDto )
 								.login_id( snsReqDto.getEmail().trim() )
 								.access_token(snsReqDto.getAccess_token().trim())
 								.refresh_token(null)
@@ -171,9 +173,9 @@ public class MemberSnsLoginsController {
 								.provider_id(snsReqDto.getProvider_id()) 
 								.build();
 		
-		snsDto = memberSnsLoginsService.save(snsDto);
+		updatedSnsDto = memberSnsLoginsService.save(snsDto);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto( snsDto,findedMember,metas ) ));
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto( updatedSnsDto,updatedDto,metas ) ));
 		
 	}
 	

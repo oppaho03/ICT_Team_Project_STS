@@ -31,26 +31,10 @@ public class MemberSnsResponseDto {
 	private LocalDateTime login_modified_at; //로그인 일시
 	private LocalDateTime login_created_at; //생성일시(최초)
 	
-	//[MemberSnsDto를 MemberSnsResponseDto로 변환]
-//	public static MemberSnsResponseDto toResponseDto(MemberSnsDto snsDto) {
-//		return MemberSnsResponseDto.builder()
-//				.id(snsDto.getId())
-//				.member(null) //**************
-//				.login_id(snsDto.getLogin_id())
-//				.provider(snsDto.getProvider())
-//				.provider_id(snsDto.getProvider_id())
-//				.access_token(snsDto.getAccess_token())
-//				.refresh_token(snsDto.getRefresh_token())
-//				.status(snsDto.getStatus())
-//				.login_created_at(snsDto.getLogin_created_at())
-//				.login_modified_at(snsDto.getLogin_modified_at())
-//				.build();
-//	}
-	
 	public static MemberSnsResponseDto toResponseDto(MemberSnsDto snsDto,MemberDto memberDto,List<MemberMetaResponseDto> meta) {
 		return MemberSnsResponseDto.builder()
 				.id(snsDto.getId())
-				.member(MemberResponseDto.toDto(memberDto, meta)) //**************
+				.member(MemberResponseDto.toDto(memberDto, meta)) 
 				.login_id(snsDto.getLogin_id())
 				.provider(snsDto.getProvider())
 				.provider_id(snsDto.getProvider_id())
