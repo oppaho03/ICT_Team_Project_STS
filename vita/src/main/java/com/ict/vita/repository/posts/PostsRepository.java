@@ -44,7 +44,7 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 				where r.term_category_id = :cid and p.post_status = :status and p.post_author = :uid
 			"""
 			,nativeQuery = true)
-	List<PostsEntity> findByMemberAndStatus(@Param("cid") Long cid,@Param("uid") Long uid,@Param("status") String status); //해당 회원의 특정 조건에 해당하는 모든 글 조회용
+	List<PostsEntity> findByMemberAndStatus(@Param("cid") Long cid,@Param("uid") Long uid,@Param("status") String status); //해당 회원의 특정 조건에 해당하는 모든 글 조회용(페이징 미적용)
 	
 	@Query(value = """
 			select p.* 

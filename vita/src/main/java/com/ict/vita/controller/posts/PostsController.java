@@ -63,10 +63,71 @@ public class PostsController {
 	
 	private final MessageSource messageSource;
 	
+	/**
+	 * [게시글id로 게시글 조회]
+	 * @param pid 글id
+	 * @return
+	 */
+	@Operation( summary = "게시글id로 게시글 조회", description = "게시글id로 게시글 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-게시글id로 게시글 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = PostsResponseDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"id\":79,\"author\":47,\"post_title\":\"t1t1t1t1\",\"post_content\":\"크크크크\",\"post_summary\":\"큭글\",\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":null,\"post_mime_type\":null,\"post_created_at\":\"2025-04-04T13:24:40.477844\",\"post_modified_at\":\"2025-04-04T13:24:40.441676\",\"comment_status\":\"OPEN\",\"comment_count\":0,\"categories\":[{\"id\":816,\"name\":\"글\",\"slug\":\"post\",\"group_number\":0,\"category\":\"post\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":825,\"name\":\"감염성질환\",\"slug\":\"%EA%B0%90%EC%97%BC%EC%84%B1%EC%A7%88%ED%99%98\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":0},{\"id\":830,\"name\":\"구순염\",\"slug\":\"cheilitis\",\"group_number\":0,\"category\":\"disease\",\"description\":null,\"count\":0,\"parent\":825}],\"meta\":null}"
+				)
+			) 
+		)
+	})
+	@GetMapping("/{pid}")
+	public ResponseEntity<?> getPost(@PathVariable("pid") Long pid){
+		//게시글 조회
+		PostsDto findedPost = postsService.findById(pid);
+		
+		//글이 미존재
+		if(findedPost == null) {
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(List.of()));
+		}
+		
+		//글 존재시
+		
+		List <PostCategoryRelationshipsDto> rels = pcrService.findAllByPostId(pid);
+		
+		List<Long> cids = rels.stream().map(rel -> rel.getTermCategoryDto().getId()).toList();
+		List<TermCategoryDto> categoryDto = termService.findById(cids);
+		
+		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
+		
+		PostsResponseDto responseDto = PostsResponseDto.builder()
+										.id(findedPost.getId())
+										.author(findedPost.getMemberDto().getId())
+										.post_title(findedPost.getPost_title())
+										.post_content(findedPost.getPost_content())
+										.post_summary(findedPost.getPost_summary())
+										.post_status(findedPost.getPost_status())
+										.post_pass(findedPost.getPost_pass())
+										.post_name(findedPost.getPost_name())
+										.post_mime_type(findedPost.getPost_mime_type())
+										.post_created_at(findedPost.getPost_created_at())
+										.post_modified_at(findedPost.getPost_modified_at())
+										.comment_status(findedPost.getComment_status())
+										.comment_count(findedPost.getComment_count())
+										.categories( termsResponses )
+										.build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+	}
+	
 	
 	/**
-	 * [모든 회원의 공개글 조회] - 가입된 상태(status가 1)인 모든 회원들의 공개글(status가 PUBLISH) 조회 
+	 * [모든 회원의 공개글 조회] - 가입된 상태(status가 1)인 모든 회원들의 공개글(status가 PUBLISH) 조회 & 페이징
 	 * @param cid 카테고리 id로 필수값
+	 * @param p 페이지
+	 * @param ol 출력갯수
 	 * @return ResponseEntity
 	*/
 	@Operation( summary = "모든 회원 공개글 조회", description = "모든 회원의 공개글 조회 API" )
@@ -85,15 +146,24 @@ public class PostsController {
 		)
 	})
 	@GetMapping
-	public ResponseEntity<?> getAllPublicPosts(@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid){
+	public ResponseEntity<?> getAllPublicPosts(
+			@Parameter(description = "카테고리 id") @RequestParam("cid") List<Long> cid,
+			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol){
+		//카테고리 중복 제거
+		cid = cid.stream().distinct().toList();
 		
-		List<PostsDto> dtoList = postsService.getAllPublicPosts(cid, cid.size());
+		List<PostsDto> dtoList = null;
+		
+		if(p > 0) //페이징 적용
+			dtoList = postsService.getAllPublicPosts(cid, cid.size(),p,ol);
+		else //페이징 미적용
+			dtoList = postsService.getAllPublicPosts(cid, cid.size());
 		
 		List<TermCategoryDto> categoryDto = termService.findById(cid);
 		Set<TermCategoryDto> filter = categoryDto.stream().collect(Collectors.toSet());
 		categoryDto = filter.stream().toList();
 		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
-		
 		
 		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
 													.id(dto.getId())
@@ -112,17 +182,20 @@ public class PostsController {
 													.categories( termsResponses )
 													.build())
 			.collect(Collectors.toList());
+		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
 	}
 	
 	/**
-	 * [회원 및 공개/비공개 글 조회]
+	 * [회원 및 공개/비공개 글 조회] & 페이징
 	 *  <관리자> status 값이 없으면 해당 uid 회원이 작성한 모든 글(공개/비공개) 조회 가능 + status값 넘기면 해당하는 status의 글 조회 가능
 	 *  <회원> cid,uid만 값을 넘겨 본인의 공개/비공개 글 조회 가능 + status값 넘기면 해당하는 status의 글 조회 가능
-	 * @param cid 카테고리 id로 필수값
-	 * @param uid 회원id로 필수값
-	 * @param status 글의 status로 옵션값
-	 * @param token 로그인한 회원의 토큰값
+	 * @param cid 카테고리 id(필수값)
+	 * @param uid 회원id(필수값)
+	 * @param token 요청헤더로 전달된 로그인한 회원의 토큰값(필수값)
+	 * @param status 글의 status(옵션값)
+	 * @param p 페이지(옵션값)
+	 * @param ol 출력갯수(옵션값)
 	 * @return ResponseEntity
 	*/
 	@Operation( summary = "회원 및 공개/비공개 글 조회", description = "회원 및 공개/비공개 글 조회 API" )
@@ -154,7 +227,10 @@ public class PostsController {
 			@Parameter(description = "카테고리id") @RequestParam("cid") Long cid,
 			@Parameter(description = "조회할 회원id") @RequestParam("uid") Long uid,
 			@Parameter(description = "글의 상태") @RequestParam(value = "status",required = false) String status,
-			@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+			@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token,
+			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol
+			){
 		//[로그인한 사람이 관리자/일반회원인지 확인]
 		MemberDto loginMember = Commons.findMemberByToken(token, memberService);//로그인한 회원
 		//회원이 존재하지 않는 경우
@@ -171,25 +247,50 @@ public class PostsController {
 		
 		MemberDto searchMember = memberService.findMemberById(uid); //조회하고자 하는 회원
 		
+		List<PostsResponseDto> postsList = null;
+		
 		//<관리자거나 본인이 쓴 글 조회시>
 		if( (loginMember.getId() == searchMember.getId() || Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole()) ) ) {	
 			if(!Commons.isNull(status)) {
 				//status에 해당하는 회원의 게시글 조회
-				List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
-											.stream()
-											.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
-													List.of(TermsResponseDto.toDto(category)),
-													postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
-											.toList();
+				if(p > 0) { //페이징 적용
+					postsList = postsService.getPostsByMemberAndStatus(cid,uid,status,p,ol)
+							.stream()
+							.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+									List.of(TermsResponseDto.toDto(category)),
+									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+							.toList();
+				}
+				else { //페이징 미적용
+					postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
+							.stream()
+							.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+									List.of(TermsResponseDto.toDto(category)),
+									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+							.toList();
+				}
+				
+
 				return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 			}
 			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
-			List<PostsResponseDto> postsList = postsService.getPostsByMember(cid, uid)
-											.stream()
-											.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
-													List.of(TermsResponseDto.toDto(category)),
-													postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
-											.toList();
+			if(p > 0) { //페이징 적용
+				postsList = postsService.getPostsByMember(cid, uid,p,ol)
+						.stream()
+						.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+								List.of(TermsResponseDto.toDto(category)),
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+						.toList();
+			}
+			else { //페이징 미적용
+				postsList = postsService.getPostsByMember(cid, uid)
+						.stream()
+						.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+								List.of(TermsResponseDto.toDto(category)),
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+						.toList();
+			}
+			
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}	
 		
@@ -200,27 +301,40 @@ public class PostsController {
 		}
 		
 		else {
-			List<PostsResponseDto> postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
+			if(p > 0) { //페이징 적용
+				postsList = postsService.getPostsByMemberAndStatus(cid,uid,status,p,ol)
 						.stream()
 						.map(dto->PostsResponseDto.toDto(dto.toEntity(),
 								List.of(TermsResponseDto.toDto(category)),
 								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
 						.toList();
+			}
+			else { //페이징 미적용
+				postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
+						.stream()
+						.map(dto->PostsResponseDto.toDto(dto.toEntity(),
+								List.of(TermsResponseDto.toDto(category)),
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+						.toList();
+			}
+
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(postsList));
 		}
 
 	}
 	
 	/**
-	 * [제목 및 회원 아이디로 글 검색]
+	 * [제목 및 회원 닉네임으로 글 검색] & 페이징
 	 * title 전달시 제목으로 검색
 	 * nickname 전달시 닉네임으로 해당 회원의 모든 공개글 검색
 	 * @param cid 카테고리id(필수값)
 	 * @param title 검색하고자 하는 글 제목(옵션값)
 	 * @param nickname 검색하고자 하는 회원 닉네임(옵션값)
+	 * @param p 페이지(옵션값)
+	 * @param ol 출력갯수(옵션값)
 	 * @return ResponseEntity
 	 */
-	@Operation( summary = "제목 및 회원 아이디로 글 검색", description = "제목 및 회원 아이디로 글 검색 API" )
+	@Operation( summary = "제목 및 회원 닉네임으로 글 검색", description = "제목 및 회원 닉네임으로 글 검색 API" )
 	@ApiResponses({
 		@ApiResponse( 
 			responseCode = "200-조회 성공",
@@ -239,7 +353,9 @@ public class PostsController {
 	public ResponseEntity<?> searchByTitleOrMember(
 			@Parameter(description = "카테고리id") @RequestParam("cid") Long cid, 
 			@Parameter(description = "검색할 게시글 제목") @RequestParam(value = "title",required = false) String title, 
-			@Parameter(description = "검색할 회원 닉네임") @RequestParam(value = "nickname",required = false) String nickname){
+			@Parameter(description = "검색할 회원 닉네임") @RequestParam(value = "nickname",required = false) String nickname,
+			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
+			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol){
 		
 		TermCategoryDto category = termService.findById(cid);
 		//카테고리가 존재하지 않는 경우
@@ -250,8 +366,27 @@ public class PostsController {
 		//제목 또는 닉네임 전달시
 		if(!Commons.isNull(title) || !Commons.isNull(nickname)) {		
 			List<PostsDto> postsList = null;
-			if( !Commons.isNull(title) ) postsList = postsService.getPostsByTitle(cid,title);
-			else postsList = postsService.getPostsByNickname(cid, nickname);
+			
+			if( !Commons.isNull(title) ) { //제목 전달
+				
+				if(p > 0) { //페이징 적용
+					postsList = postsService.getPostsByTitle(cid,title,p,ol);
+				}
+				else { //페이징 미적용
+					postsList = postsService.getPostsByTitle(cid,title);
+				}
+				
+			}
+			else { //닉네임 전달
+				
+				if(p > 0) { //페이징 적용
+					postsList = postsService.getPostsByNickname(cid, nickname,p,ol);
+				}
+				else { //페이징 미적용
+					postsList = postsService.getPostsByNickname(cid, nickname);
+				}	
+				
+			}
 			
 			return ResponseEntity
 					.status(HttpStatus.OK)
@@ -264,9 +399,39 @@ public class PostsController {
 			
 		}
 
-		//제목 또는 닉네임 미전달시
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(List.of()));
+		//제목 또는 닉네임 미전달시 -> 전체 조회
 		
+		List<PostsDto> dtoList = null;
+		
+		if(p > 0) //페이징 적용
+			dtoList = postsService.getAllPublicPosts(List.of(cid), 1,p,ol);
+		else //페이징 미적용
+			dtoList = postsService.getAllPublicPosts(List.of(cid), 1);
+		
+		List<TermCategoryDto> categoryDto = List.of(termService.findById(cid));
+		Set<TermCategoryDto> filter = categoryDto.stream().collect(Collectors.toSet());
+		categoryDto = filter.stream().toList();
+		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
+		
+		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
+													.id(dto.getId())
+													.author(dto.getMemberDto().getId())
+													.post_title(dto.getPost_title())
+													.post_content(dto.getPost_content())
+													.post_summary(dto.getPost_summary())
+													.post_status(dto.getPost_status())
+													.post_pass(dto.getPost_pass())
+													.post_name(dto.getPost_name())
+													.post_mime_type(dto.getPost_mime_type())
+													.post_created_at(dto.getPost_created_at())
+													.post_modified_at(dto.getPost_modified_at())
+													.comment_status(dto.getComment_status())
+													.comment_count(dto.getComment_count())
+													.categories( termsResponses )
+													.build())
+			.collect(Collectors.toList());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
 		
 	}
 
