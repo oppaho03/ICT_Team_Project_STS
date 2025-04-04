@@ -130,7 +130,7 @@ public class AuthCodeController {
 		authInfo.put("code", authCode);
 		
 		//파이썬으로 인증 코드 전달
-//		sendAuthCodeToPython(pythonServerUrl,authInfo);
+		sendAuthCodeToPython(pythonServerUrl,authInfo);
 		
 		//리액트로 이메일 인증 코드 반환
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(authInfo));
