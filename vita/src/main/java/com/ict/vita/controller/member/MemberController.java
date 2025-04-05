@@ -883,7 +883,8 @@ public class MemberController {
 		MemberDto findedMember = memberService.findMemberById(mid); //탈퇴하고자 하는 회원
 		
 		//회원 미존재시
-		if(loginMember == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_token", null, new Locale("ko"))));
+		if(loginMember == null) 
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_token", null, new Locale("ko"))));
 		
 		//탈퇴할 회원이 자신이 아니면서 관리자도 아닌 경우 - 탈퇴 불가
 		if(loginMember.getId() != findedMember.getId() && !Commons.ROLE_ADMINISTRATOR.equals(loginMember.getRole())) {
@@ -891,7 +892,8 @@ public class MemberController {
 		}
 		
 		//탈퇴할 회원이 없거나 이미 탈퇴한 경우
-		if(findedMember == null || (findedMember != null && findedMember.getStatus() == 0) ) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
+		if(findedMember == null || (findedMember != null && findedMember.getStatus() == 0) ) 
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		
 		//<<탈퇴 가능한 경우>>
 		//<회원 정보 수정>

@@ -75,7 +75,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-27T17:53:40.439132\",\"status\":1,\"count\":0,\"lastQuestion\":\"하하하하하핳\"},{\"id\":45,\"member\":37,\"created_at\":\"2025-03-13T09:32:27.156683\",\"updated_at\":\"2025-03-27T15:50:18.658097\",\"status\":0,\"count\":0,\"lastQuestion\":\"질문이지렁\"},{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":58,\"member\":{\"id\":73,\"email\":\"admin@gmail.com\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-03-29\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiNzMiLCJpYXQiOjE3NDM1OTEyNDAsImV4cCI6MTc0MzU5MjE0MH0.lp4Lho1Ozm8oN-HfLqoLrsh_zdWbx2_nL8w3A3WoAK8\",\"created_at\":\"2025-03-29T18:41:15.915\",\"updated_at\":\"2025-03-29T18:41:15.915\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-29T18:46:25.290857\",\"updated_at\":\"2025-04-02T19:57:19.607347\",\"status\":1,\"count\":0,\"lastQuestion\":\"감염성질병\"},{\"id\":60,\"member\":{\"id\":73,\"email\":\"admin@gmail.com\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-03-29\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiNzMiLCJpYXQiOjE3NDM1OTEyNDAsImV4cCI6MTc0MzU5MjE0MH0.lp4Lho1Ozm8oN-HfLqoLrsh_zdWbx2_nL8w3A3WoAK8\",\"created_at\":\"2025-03-29T18:41:15.915\",\"updated_at\":\"2025-03-29T18:41:15.915\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-04-02T19:54:34.724171\",\"updated_at\":\"2025-04-02T19:55:14.60605\",\"status\":1,\"count\":0,\"lastQuestion\":\"눈이아파요\"},{\"id\":59,\"member\":{\"id\":73,\"email\":\"admin@gmail.com\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-03-29\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiNzMiLCJpYXQiOjE3NDM1OTEyNDAsImV4cCI6MTc0MzU5MjE0MH0.lp4Lho1Ozm8oN-HfLqoLrsh_zdWbx2_nL8w3A3WoAK8\",\"created_at\":\"2025-03-29T18:41:15.915\",\"updated_at\":\"2025-03-29T18:41:15.915\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-29T19:00:54.790221\",\"updated_at\":\"2025-03-29T19:00:54.787217\",\"status\":0,\"count\":0,\"lastQuestion\":null}]}}"
 				)
 			) 
 		),
@@ -165,7 +165,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":49,\"member\":46,\"created_at\":\"2025-03-14T18:45:23.850458\",\"updated_at\":\"2025-03-27T19:11:21.335883\",\"status\":1,\"count\":0,\"lastQuestion\":\"zzzzz\"},{\"id\":48,\"member\":46,\"created_at\":\"2025-03-14T18:45:23.113093\",\"updated_at\":\"2025-03-14T18:45:23.096088\",\"status\":1,\"count\":0,\"lastQuestion\":null}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":57,\"member\":{\"id\":46,\"email\":\"admin@naver.com\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-28T09:36:36.909724\",\"updated_at\":\"2025-03-28T09:36:36.906725\",\"status\":1,\"count\":0,\"lastQuestion\":null},{\"id\":56,\"member\":{\"id\":46,\"email\":\"admin@naver.com\",\"name\":\"관리자1\",\"nickname\":\"관리자nick\",\"birth\":null,\"gender\":\"M\",\"contact\":null,\"address\":null,\"token\":\"adminToken\",\"created_at\":\"2025-03-10T18:55:57.835\",\"updated_at\":\"2025-03-10T18:55:57.835\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-28T09:31:53.662648\",\"updated_at\":\"2025-03-28T09:31:53.890544\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"}]}}"
 				)
 			) 
 		),
@@ -236,7 +236,7 @@ public class ChatSessionController {
 			content = @Content(	
 				schema = @Schema(implementation = ChatSessionResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":43,\"member\":31,\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-27T17:53:40.439132\",\"status\":1,\"count\":0,\"lastQuestion\":\"하하하하하핳\"}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":43,\"member\":{\"id\":31,\"email\":\"hahaha12@naver.com\",\"name\":\"개명홍길동2\",\"nickname\":\"홍홍2\",\"birth\":\"2025-02-27\",\"gender\":\"M\",\"contact\":\"020211111\",\"address\":null,\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoiaGFoYWhhMTJAbmF2ZXIuY29tIiwic3ViIjoiMzEiLCJpYXQiOjE3NDEyMzc0NTcsImV4cCI6MTc0MTIzODM1N30.jjf9dHooubsSH0GbYa0C6Ed7q0pemn-rtrAbUyzPQEA\",\"created_at\":\"2025-02-28T20:16:05.570502\",\"updated_at\":\"2025-02-28T20:16:05.549038\",\"status\":9,\"meta\":[]},\"created_at\":\"2025-03-06T15:23:27.484277\",\"updated_at\":\"2025-03-27T17:53:40.439132\",\"status\":1,\"count\":0,\"lastQuestion\":\"하하하하하핳\"}}}"
 				)
 			) 
 		),
@@ -320,7 +320,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":45,\"member\":37,\"created_at\":\"2025-03-13T09:32:27.156683\",\"updated_at\":\"2025-03-27T15:50:18.658097\",\"status\":0,\"count\":0,\"lastQuestion\":\"질문이지렁\"},{\"id\":54,\"member\":37,\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":45,\"member\":{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-13T09:32:27.156683\",\"updated_at\":\"2025-03-27T15:50:18.658097\",\"status\":0,\"count\":0,\"lastQuestion\":\"질문이지렁\"},{\"id\":54,\"member\":{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-25T09:29:41.567352\",\"updated_at\":\"2025-03-25T09:29:41.566353\",\"status\":1,\"count\":0,\"lastQuestion\":\"질문내용\"}]}}"
 				)
 			) 
 		),
@@ -399,7 +399,7 @@ public class ChatSessionController {
 						schema = @Schema(implementation = ChatSessionResponseDto.class)
 				),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":47,\"member\":37,\"created_at\":\"2025-03-13T14:09:06.679719\",\"updated_at\":\"2025-03-13T14:09:06.665218\",\"status\":0,\"count\":0,\"lastQuestion\":null},{\"id\":46,\"member\":37,\"created_at\":\"2025-03-13T09:32:52.674851\",\"updated_at\":\"2025-03-13T09:32:52.671372\",\"status\":0,\"count\":0,\"lastQuestion\":null}]}}"
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":47,\"member\":{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-13T14:09:06.679719\",\"updated_at\":\"2025-03-13T14:09:06.665218\",\"status\":0,\"count\":0,\"lastQuestion\":null},{\"id\":46,\"member\":{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-13T09:32:52.674851\",\"updated_at\":\"2025-03-13T09:32:52.671372\",\"status\":0,\"count\":0,\"lastQuestion\":null}]}}"
 				)
 			) 
 		),
@@ -466,7 +466,7 @@ public class ChatSessionController {
 			content = @Content(
 				schema = @Schema(implementation = ChatSessionResponseDto.class),
 				examples = @ExampleObject(
-					value = "{\"success\":1,\"response\":{\"data\":{\"id\":59,\"member\":73,\"created_at\":\"2025-03-29T19:00:54.790221\",\"updated_at\":\"2025-03-29T19:00:54.787217\",\"status\":0,\"count\":0,\"lastQuestion\":null}}}"
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":59,\"member\":{\"id\":73,\"email\":\"admin@gmail.com\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-03-29\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiNzMiLCJpYXQiOjE3NDM1OTEyNDAsImV4cCI6MTc0MzU5MjE0MH0.lp4Lho1Ozm8oN-HfLqoLrsh_zdWbx2_nL8w3A3WoAK8\",\"created_at\":\"2025-03-29T18:41:15.915\",\"updated_at\":\"2025-03-29T18:41:15.915\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-29T19:00:54.790221\",\"updated_at\":\"2025-03-29T19:00:54.787217\",\"status\":0,\"count\":0,\"lastQuestion\":null}}}"
 				)
 			) 
 		),
