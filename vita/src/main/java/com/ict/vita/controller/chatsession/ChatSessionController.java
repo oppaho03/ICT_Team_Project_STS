@@ -427,29 +427,40 @@ public class ChatSessionController {
 		}
 		
 		List<ChatSessionDto> publicSessions = null;
+		
 		//공개 세션 조회
 		if(p > 0)
 			publicSessions = chatSessionService.findPublics(p,ol);
 		else 
 			publicSessions = chatSessionService.findPublics();
+
+		List<ChatSessionResponseDto> sessionResponses = new Vector<>();
 		
+		for(ChatSessionDto session : publicSessions) {
+
+			//세션의 마지막 질문내용 조회 로직
+			ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
+			ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
+			String qContent = question != null ? question.getContent() : null;
+			
+			//세션 주인 메타정보
+			MemberDto owner = session.getMemberDto();
+			List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
+												.stream()
+												.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+												.toList();
+			
+			ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session,metas);
+			
+			//마지막 질문 설정
+			responseSession.setLastQuestion( qContent );
+			
+			sessionResponses.add(responseSession);
+		}
+			
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(ResultUtil.success( 
-						publicSessions
-							.stream()
-							.map(session -> {
-								//세션 주인 메타정보
-								MemberDto owner = session.getMemberDto();
-								List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
-																	.stream()
-																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
-																	.toList();
-								
-								return ChatSessionResponseDto.toDto(session,metas);
-								} )
-							.toList() 
-				));
+				.body(ResultUtil.success(sessionResponses));
 	}
 	
 	/**
