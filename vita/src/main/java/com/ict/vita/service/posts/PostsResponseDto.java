@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.postmeta.PostMetaResponseDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 
@@ -22,7 +24,7 @@ import lombok.Setter;
 //[글(포스트) 응답 DTO]
 public class PostsResponseDto {
 	private Long id; //PK
-	private Long author; //글 작성자(MemberDto 대신 회원 아이디값)
+	private MemberResponseDto author; //글 작성자
 	private String post_title; //글 제목
 	private String post_content; //글 내용
 	private String post_summary; //글 요약
@@ -39,10 +41,15 @@ public class PostsResponseDto {
 	private List<PostMetaResponseDto> meta; //글 메타 정보들
 	
 	// PostsEntity -> PostsResponseDto 변환 
-	public static PostsResponseDto toDto(PostsEntity entity,List<TermsResponseDto> categories,List<PostMetaResponseDto> meta) {
+	public static PostsResponseDto toDto(
+			PostsEntity entity,
+			List<TermsResponseDto> categories,
+			List<PostMetaResponseDto> postMeta,
+			List <MemberMetaResponseDto> memberMeta) {
+		
 		return PostsResponseDto.builder()
 			.id(entity.getId())
-			.author(MemberDto.toDto(entity.getMemberEntity()).getId())
+			.author(MemberResponseDto.toDto(MemberDto.toDto(entity.getMemberEntity()), memberMeta) )
 			.post_title(entity.getPostTitle())
 			.post_content(entity.getPostContent())
 			.post_summary(entity.getPostSummary())
@@ -55,7 +62,7 @@ public class PostsResponseDto {
 			.comment_status(entity.getCommentStatus())
 			.comment_count(entity.getCommentCount())
 			.categories(categories)
-			.meta(meta)
+			.meta(postMeta)
 			.build();
 	}
 }

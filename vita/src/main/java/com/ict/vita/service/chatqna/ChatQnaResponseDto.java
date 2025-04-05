@@ -26,7 +26,6 @@ public class ChatQnaResponseDto {
 	private Long id; //PK
 	private ChatSessionResponseDto session; //세션
 	private ChatQuestionDto question; //질문
-	//private ChatAnswerDto answer; //답변
 	private ChatAnswerResponseDto answer; //답변
 	private long is_matched; //매칭여부(1:매칭됨,0:매칭X)
 	

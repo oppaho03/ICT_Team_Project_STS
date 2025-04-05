@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
 import com.ict.vita.service.postmeta.PostMetaResponseDto;
@@ -57,6 +60,7 @@ public class PostsController {
 	//서비스 주입
 	private final PostsService postsService;
 	private final MemberService memberService;
+	private final MemberMetaService memberMetaService;
 	private final TermsService termService;
 	private final PostCategoryRelationshipsService pcrService;
 	private final PostMetaService postMetaService;
@@ -102,9 +106,16 @@ public class PostsController {
 		
 		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
 		
+		//글 작성자 메타정보
+		MemberDto postMember = findedPost.getMemberDto();
+		List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+												.stream()
+												.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+												.toList();
+		
 		PostsResponseDto responseDto = PostsResponseDto.builder()
 										.id(findedPost.getId())
-										.author(findedPost.getMemberDto().getId())
+										.author( MemberResponseDto.toDto(findedPost.getMemberDto(), memberMeta) )
 										.post_title(findedPost.getPost_title())
 										.post_content(findedPost.getPost_content())
 										.post_summary(findedPost.getPost_summary())
@@ -165,23 +176,33 @@ public class PostsController {
 		categoryDto = filter.stream().toList();
 		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
 		
-		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
-													.id(dto.getId())
-													.author(dto.getMemberDto().getId())
-													.post_title(dto.getPost_title())
-													.post_content(dto.getPost_content())
-													.post_summary(dto.getPost_summary())
-													.post_status(dto.getPost_status())
-													.post_pass(dto.getPost_pass())
-													.post_name(dto.getPost_name())
-													.post_mime_type(dto.getPost_mime_type())
-													.post_created_at(dto.getPost_created_at())
-													.post_modified_at(dto.getPost_modified_at())
-													.comment_status(dto.getComment_status())
-													.comment_count(dto.getComment_count())
-													.categories( termsResponses )
-													.build())
-			.collect(Collectors.toList());
+		List<PostsResponseDto> responseDtoList = dtoList.stream()
+				.map(dto -> {
+					//글 작성자 메타정보
+					MemberDto postMember = dto.getMemberDto();
+					List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+															.stream()
+															.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+															.toList();
+					
+					return PostsResponseDto.builder()
+							.id(dto.getId())
+							.author( MemberResponseDto.toDto(dto.getMemberDto(), memberMeta) )
+							.post_title(dto.getPost_title())
+							.post_content(dto.getPost_content())
+							.post_summary(dto.getPost_summary())
+							.post_status(dto.getPost_status())
+							.post_pass(dto.getPost_pass())
+							.post_name(dto.getPost_name())
+							.post_mime_type(dto.getPost_mime_type())
+							.post_created_at(dto.getPost_created_at())
+							.post_modified_at(dto.getPost_modified_at())
+							.comment_status(dto.getComment_status())
+							.comment_count(dto.getComment_count())
+							.categories( termsResponses )
+							.build();
+				})
+				.collect(Collectors.toList());
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
 	}
@@ -256,17 +277,37 @@ public class PostsController {
 				if(p > 0) { //페이징 적용
 					postsList = postsService.getPostsByMemberAndStatus(cid,uid,status,p,ol)
 							.stream()
-							.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+							.map(dto -> {
+								//글 작성자 메타정보
+								MemberDto postMember = dto.getMemberDto();
+								List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																		.stream()
+																		.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																		.toList();
+								
+								return PostsResponseDto.toDto( dto.toEntity(), 
 									List.of(TermsResponseDto.toDto(category)),
-									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+									memberMeta) ;
+							})
 							.toList();
 				}
 				else { //페이징 미적용
 					postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
 							.stream()
-							.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+							.map(dto -> {
+								//글 작성자 메타정보
+								MemberDto postMember = dto.getMemberDto();
+								List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																		.stream()
+																		.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																		.toList();
+								
+								return PostsResponseDto.toDto(dto.toEntity(), 
 									List.of(TermsResponseDto.toDto(category)),
-									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+									memberMeta); 
+							})
 							.toList();
 				}
 				
@@ -277,17 +318,37 @@ public class PostsController {
 			if(p > 0) { //페이징 적용
 				postsList = postsService.getPostsByMember(cid, uid,p,ol)
 						.stream()
-						.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+						.map(dto -> {
+							//글 작성자 메타정보
+							MemberDto postMember = dto.getMemberDto();
+							List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+							
+							return PostsResponseDto.toDto(dto.toEntity(), 
 								List.of(TermsResponseDto.toDto(category)),
-								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+								memberMeta);
+						} )
 						.toList();
 			}
 			else { //페이징 미적용
 				postsList = postsService.getPostsByMember(cid, uid)
 						.stream()
-						.map(dto -> PostsResponseDto.toDto(dto.toEntity(), 
+						.map(dto -> {
+							//글 작성자 메타정보
+							MemberDto postMember = dto.getMemberDto();
+							List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+							
+							return PostsResponseDto.toDto(dto.toEntity(), 
 								List.of(TermsResponseDto.toDto(category)),
-								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+								memberMeta);
+						})
 						.toList();
 			}
 			
@@ -304,17 +365,37 @@ public class PostsController {
 			if(p > 0) { //페이징 적용
 				postsList = postsService.getPostsByMemberAndStatus(cid,uid,status,p,ol)
 						.stream()
-						.map(dto->PostsResponseDto.toDto(dto.toEntity(),
+						.map(dto -> {
+							//글 작성자 메타정보
+							MemberDto postMember = dto.getMemberDto();
+							List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+							
+							return PostsResponseDto.toDto(dto.toEntity(),
 								List.of(TermsResponseDto.toDto(category)),
-								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+								memberMeta);
+						} )
 						.toList();
 			}
 			else { //페이징 미적용
 				postsList = postsService.getPostsByMemberAndStatus(cid,uid,status)
 						.stream()
-						.map(dto->PostsResponseDto.toDto(dto.toEntity(),
+						.map(dto -> {
+							//글 작성자 메타정보
+							MemberDto postMember = dto.getMemberDto();
+							List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+							
+							return PostsResponseDto.toDto(dto.toEntity(),
 								List.of(TermsResponseDto.toDto(category)),
-								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+								postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+								memberMeta);
+						})
 						.toList();
 			}
 
@@ -392,9 +473,19 @@ public class PostsController {
 					.status(HttpStatus.OK)
 					.body(ResultUtil.success(postsList
 							.stream()
-							.map(dto->PostsResponseDto.toDto(dto.toEntity(),
+							.map(dto -> {
+								//글 작성자 메타정보
+								MemberDto postMember = dto.getMemberDto();
+								List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																		.stream()
+																		.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																		.toList();
+								
+								return PostsResponseDto.toDto(dto.toEntity(),
 									List.of(TermsResponseDto.toDto(category)),
-									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ))
+									postMetaService.findAll(dto).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+									memberMeta);
+							})
 							.toList()));
 			
 		}
@@ -413,23 +504,34 @@ public class PostsController {
 		categoryDto = filter.stream().toList();
 		List<TermsResponseDto> termsResponses = categoryDto.stream().map(cdto -> TermsResponseDto.toDto(cdto)).toList();
 		
-		List<PostsResponseDto> responseDtoList = dtoList.stream().map(dto -> PostsResponseDto.builder()
-													.id(dto.getId())
-													.author(dto.getMemberDto().getId())
-													.post_title(dto.getPost_title())
-													.post_content(dto.getPost_content())
-													.post_summary(dto.getPost_summary())
-													.post_status(dto.getPost_status())
-													.post_pass(dto.getPost_pass())
-													.post_name(dto.getPost_name())
-													.post_mime_type(dto.getPost_mime_type())
-													.post_created_at(dto.getPost_created_at())
-													.post_modified_at(dto.getPost_modified_at())
-													.comment_status(dto.getComment_status())
-													.comment_count(dto.getComment_count())
-													.categories( termsResponses )
-													.build())
-			.collect(Collectors.toList());
+		List<PostsResponseDto> responseDtoList = dtoList.stream()
+												.map( dto -> 
+												{
+													//글 작성자 메타정보
+													MemberDto postMember = dto.getMemberDto();
+													List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																							.stream()
+																							.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																							.toList();
+				
+													return PostsResponseDto.builder()
+														.id(dto.getId())
+														.author( MemberResponseDto.toDto(dto.getMemberDto(), memberMeta) )
+														.post_title(dto.getPost_title())
+														.post_content(dto.getPost_content())
+														.post_summary(dto.getPost_summary())
+														.post_status(dto.getPost_status())
+														.post_pass(dto.getPost_pass())
+														.post_name(dto.getPost_name())
+														.post_mime_type(dto.getPost_mime_type())
+														.post_created_at(dto.getPost_created_at())
+														.post_modified_at(dto.getPost_modified_at())
+														.comment_status(dto.getComment_status())
+														.comment_count(dto.getComment_count())
+														.categories( termsResponses )
+														.build();
+												} )
+												.collect(Collectors.toList());
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(responseDtoList));
 		
@@ -499,12 +601,26 @@ public class PostsController {
 		if(savedPost != null && pcrService.save(savedPost, categories)) {		 			
 			 List<TermCategoryDto> termCategoryDtos = termService.findById(categories);
 			 List<TermsResponseDto> termCategoryResponseDtos = termCategoryDtos.stream().map(dto->TermsResponseDto.toDto(dto)).toList();
-			return ResponseEntity
+			
+			 //글 작성자 메타 정보
+			List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(loginMember)
+													.stream()
+													.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+													.toList();
+			 
+			 return ResponseEntity
 					.status(HttpStatus.CREATED)
 					.body(
-							ResultUtil.success(PostsResponseDto.toDto(savedPost.toEntity(),
-							termCategoryResponseDtos,
-							postMetaService.findAll(savedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() )));
+							ResultUtil.success(
+								PostsResponseDto.toDto( 
+									savedPost.toEntity(),
+									termCategoryResponseDtos,
+									postMetaService.findAll(savedPost)
+										.stream()
+										.map(meta -> PostMetaResponseDto.toResponseDto(meta))
+										.toList() ,
+										memberMeta
+					)));
 		}
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 등록 실패했습니다"));	
@@ -572,8 +688,12 @@ public class PostsController {
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
+		
+		//글 작성자
+		MemberDto postMember = findedPost.getMemberDto();
+		
 		//글 작성자인 경우
-		if(findedPost.getMemberDto().getId() == loginMember.getId()) {
+		if(postMember.getId() == loginMember.getId()) {
 			findedPost.setPost_title(updateRequestDto.getPost_title());
 			findedPost.setPost_content(updateRequestDto.getPost_content());
 			findedPost.setPost_summary(updateRequestDto.getPost_summary());
@@ -594,12 +714,17 @@ public class PostsController {
 			if ( savedPost != null ) {
 				List<PostCategoryRelationshipsDto> pcrDtos = pcrService.update(savedPost, categories);
 				List<TermsResponseDto> termsResponseDto = pcrDtos.stream().map( pcrDto->TermsResponseDto.toDto(pcrDto.getTermCategoryDto()) ).toList();
+				
+				//글 작성자 메타정보
+				List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+				
 				return ResponseEntity
 						.status(HttpStatus.OK)
 						.body(ResultUtil.success(
 								PostsResponseDto.toDto(savedPost.toEntity(),
 										termsResponseDto,
-										postMetaService.findAll(savedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() )));
+										postMetaService.findAll(savedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+										memberMeta)));
 			}		
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail("글 수정 실패했습니다"));
@@ -658,6 +783,8 @@ public class PostsController {
 		}
 		//글 조회
 		PostsDto findedPost = postsService.findById(pid);
+		//글 작성자
+		MemberDto postMember = findedPost.getMemberDto();
 		
 		//글 존재하지 않거나 글이 삭제된 경우
 		if( findedPost == null || Commons.POST_STATUS_DELETE.equals(findedPost.getPost_status()) ) {
@@ -665,7 +792,7 @@ public class PostsController {
 		}
 	
 		//글 작성자가 아닌 경우
-		if(findedPost.getMemberDto().getId() != loginMember.getId()) {
+		if(postMember.getId() != loginMember.getId()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( "글 작성자만 삭제 가능합니다" ));
 		}
 		
@@ -673,13 +800,21 @@ public class PostsController {
 		
 		List<PostCategoryRelationshipsDto> pcrDtos = pcrService.findAllByPostId(pid);
 		List<TermsResponseDto> responses = pcrDtos.stream().map(dto -> TermsResponseDto.toDto(dto.getTermCategoryDto())).toList();
+		
+		//글 작성자 메타정보
+		List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+													.stream()
+													.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+													.toList();
+		
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(ResultUtil.success(
 						PostsResponseDto.toDto(
 								deletedPost.toEntity(),
 								responses,
-								postMetaService.findAll(deletedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() )) );
+								postMetaService.findAll(deletedPost).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList(),
+								memberMeta)) );
 
 	}
 	

@@ -913,13 +913,18 @@ public class MemberController {
 			
 			PostsDto deleted = postsService.deletePost(post.getId());
 			
+			//글 카테고리 정보
 			List <PostCategoryRelationshipsDto> pcrList = pcrService.findAllByPostId(deleted.getId());
 			List<TermsResponseDto> termsRespList = pcrList.stream().map(pcr -> TermsResponseDto.toDto( pcr.getTermCategoryDto() )).toList();
 			
+			//글 메타정보
 			List<PostMetaDto> metaList = postMetaService.findAll(post);
 			List<PostMetaResponseDto> metaResponses = metaList.stream().map(entity -> PostMetaResponseDto.toResponseDto(entity)).toList();
 			
-			PostsResponseDto respPost = PostsResponseDto.toDto(deleted.toEntity(), termsRespList,metaResponses);
+			//글 작성자 메타정보
+			List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(deleted.getMemberDto()).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+			
+			PostsResponseDto respPost = PostsResponseDto.toDto(deleted.toEntity(), termsRespList,metaResponses,memberMeta);
 			deletedPosts.add(respPost);
 		}
 		

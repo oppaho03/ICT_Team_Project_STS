@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
 import com.ict.vita.service.postmeta.PostMetaDto;
@@ -60,6 +62,7 @@ public class PostCategoryRelationshipsController {
 	private final MemberService memberService;
 	private final TermCategoryService categoryService;
 	private final PostMetaService postMetaService;
+	private final MemberMetaService memberMetaService;
 
 	/**
 	 * 카테고리 목록 가져오기
@@ -135,10 +138,20 @@ public class PostCategoryRelationshipsController {
 			TermCategoryDto category = categoryService.findById(id);
 
 			List<PostsResponseDto> postsDtos = relDtos.stream()
-					.map( dto -> PostsResponseDto.toDto(
-							dto.getPostsDto().toEntity(), 
-							List.of(TermsResponseDto.toDto(category)),
-							postMetaService.findAll(dto.getPostsDto()).stream().map(meta -> PostMetaResponseDto.toResponseDto(meta)).toList() ) )
+					.map( rel -> {
+							//글 작성자 메타정보
+							MemberDto postMember = rel.getPostsDto().getMemberDto();
+							List<MemberMetaResponseDto> memberMeta = memberMetaService.findAll(postMember)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+						
+							return PostsResponseDto.toDto(
+										rel.getPostsDto().toEntity(), 
+										List.of(TermsResponseDto.toDto(category)),
+										postMetaService.findAll(rel.getPostsDto()).stream().map( meta -> PostMetaResponseDto.toResponseDto(meta) ).toList(),
+										memberMeta); 
+					})
 					.toList();		
 
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( postsDtos ));
