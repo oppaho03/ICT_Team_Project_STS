@@ -7,6 +7,7 @@ import com.ict.vita.service.chatanswer.ChatAnswerResponseDto;
 import com.ict.vita.service.chatquestion.ChatQuestionDto;
 import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -30,8 +31,15 @@ public class ChatQnaResponseDto {
 	private long is_matched; //매칭여부(1:매칭됨,0:매칭X)
 	
 	//[ChatQnaDto 를 ChatQnaResponseDto로 변환]
-	public static ChatQnaResponseDto toDto(ChatQnaDto qna, ChatSessionDto session, String qContent,List<TermsResponseDto> categories) {
-		ChatSessionResponseDto sessionResponse = ChatSessionResponseDto.toDto(qna.getChatSessionDto());
+	public static ChatQnaResponseDto toDto(
+			ChatQnaDto qna, 
+			ChatSessionDto session, 
+			String qContent,
+			List<TermsResponseDto> categories,
+			List<MemberMetaResponseDto> meta
+			) {
+		
+		ChatSessionResponseDto sessionResponse = ChatSessionResponseDto.toDto(qna.getChatSessionDto(), meta );
 		sessionResponse.setLastQuestion(qContent);
 		
 		return ChatQnaResponseDto.builder()

@@ -24,7 +24,11 @@ import com.ict.vita.service.chatquestion.ChatQuestionDto;
 import com.ict.vita.service.chatquestion.ChatQuestionService;
 import com.ict.vita.service.chatsession.ChatSessionDto;
 import com.ict.vita.service.chatsession.ChatSessionService;
+import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.membermeta.MemberMetaDto;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.terms.TermsResponseDto;
 import com.ict.vita.util.Commons;
@@ -51,6 +55,7 @@ public class ChatQnaController {
 	private final ChatSessionService chatSessionService;
 	private final ChatQuestionService chatQuestionService;
 	private final AncService ancService;
+	private final MemberMetaService memberMetaService;
 	
 	private final MessageSource messageSource;
 	
@@ -81,7 +86,7 @@ public class ChatQnaController {
 				description = "FAIL", 
 				content = @Content(					
 						examples = @ExampleObject(
-							value = ""
+							value = "{\"success\":0,\"response\":{\"message\":\"세션을찾을수없습니다.\"}}"
 						)
 				) 
 			),
@@ -93,7 +98,16 @@ public class ChatQnaController {
 					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 				)
 			) 
-		)
+		),
+		@ApiResponse( 
+				responseCode = "403-조회 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
+					)
+				) 
+			)
 	})
 	@GetMapping("/qna")
 	public ResponseEntity<?> getQna(
@@ -101,16 +115,33 @@ public class ChatQnaController {
 			@Parameter(description = "세션 아이디") @RequestParam(name = "sid") Long sid,
 			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
 			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol) {
+		
+		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
+		
 		//<찾은 회원이 존재하지 않는 경우>
-		if(Commons.findMemberByToken(token, memberService) == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail(messageSource.getMessage("user.invalid_token", null, new Locale("ko"))));
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		}
 		
-		//<찾은 회원이 존재하는 경우>
+		//<찾은 회원이 존재하는 경우>		
 		ChatSessionDto session = chatSessionService.findById(sid);
+		
 		//세션 존재하지 않을때
 		if(session == null)
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( "세션이 존재하지 않습니다." ));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("session.notfound", null, new Locale("ko")) ));
+		
+		MemberDto sessionMember = session.getMemberDto(); //세션 주인
+		
+		//본인 세션이 아니거나 비공개 세션인 경우
+		if( (loginMember.getId() != sessionMember.getId()) && (session.getStatus() == 1) ) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
+		}
+		
+		if(p < 2) {
+			//세션의 count 증가
+			session.setCount(session.getCount() + 1);
+			session = chatSessionService.updateSession(session);
+		}
 		
 		//세션id에 해당하는 qna
 		List<ChatQnaDto> findedQna;
@@ -120,6 +151,10 @@ public class ChatQnaController {
 		else findedQna = chatQnaService.findAllBySession(sid);		
 		
 		List<ChatQnaResponseDto> result = new Vector<>(); //반환값
+		
+		//세션 주인의 메타정보
+		List <MemberMetaDto> metas = memberMetaService.findAll(sessionMember);
+		List<MemberMetaResponseDto> metaResponses = metas.stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
 		
 		for(ChatQnaDto dto: findedQna) {
 			
@@ -133,7 +168,7 @@ public class ChatQnaController {
 			List <TermCategoryDto> categoryDtos = ancService.findAllByAnswerId(dto.getChatAnswerDto().getId()).stream().map(anc -> anc.getTermCategoryDto()).toList();
 			categories = categoryDtos.stream().map(cate -> TermsResponseDto.toDto(cate)).toList();
 
-			ChatQnaResponseDto responseSession = ChatQnaResponseDto.toDto(dto,session,qContent,categories);
+			ChatQnaResponseDto responseSession = ChatQnaResponseDto.toDto(dto,session,qContent,categories, metaResponses);
 
 			result.add(responseSession);	
 			

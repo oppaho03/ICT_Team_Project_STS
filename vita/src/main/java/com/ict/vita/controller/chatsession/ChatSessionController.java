@@ -29,6 +29,8 @@ import com.ict.vita.service.chatsession.ChatSessionService;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.util.Commons;
 import com.ict.vita.util.ResultUtil;
 
@@ -50,6 +52,7 @@ public class ChatSessionController {
 	//서비스 주입
 	private final ChatSessionService chatSessionService;
 	private final MemberService memberService;
+	private final MemberMetaService memberMetaService;
 	private final ChatQnaService chatQnaService;
 	private final ChatQuestionService chatQuestionService;
 	
@@ -124,7 +127,14 @@ public class ChatSessionController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(ResultUtil.success(sessions.stream()
 						.map(session -> {
-								ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session);
+								//세션 주인 메타정보
+								MemberDto owner = session.getMemberDto();
+								List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+							
+								ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session, metas );
 								
 								//세션의 마지막 질문내용 조회 로직
 								ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
@@ -192,7 +202,14 @@ public class ChatSessionController {
 				.status(HttpStatus.OK)
 				.body(ResultUtil.success(sessions.stream()
 						.map(session -> {
-								ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session);
+								//세션 주인 메타정보
+								MemberDto owner = session.getMemberDto();
+								List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+							
+								ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session, metas);
 								
 								//세션의 마지막 질문내용 조회 로직
 								ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
@@ -250,22 +267,26 @@ public class ChatSessionController {
 		//세션 미존재시
 		if(sessionDto == null) return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		
+		//세션 주인 메타정보
+		MemberDto owner = sessionDto.getMemberDto();
+		List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
+											.stream()
+											.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+											.toList();
+		
 		//<관리자거나 자신의 세션인 경우> - 공개/비공개 세션 조회 가능
 		if(loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) || loginMember.getId() == sessionDto.getMemberDto().getId() ) {
-			//세션 조회(공개/비공개)
-			ChatSessionDto session = chatSessionService.findById(sid);
 			
 			ChatSessionResponseDto response = null;
-			if(session != null) {
-				response = ChatSessionResponseDto.toDto(session);
-				
-				//세션의 마지막 질문내용 조회 로직
-				ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
-				ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
-				String qContent = question != null ? question.getContent() : null;
-				
-				response.setLastQuestion( qContent );
-			}
+			
+			response = ChatSessionResponseDto.toDto(sessionDto, metas);
+			
+			//세션의 마지막 질문내용 조회 로직
+			ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(sessionDto.getId());
+			ChatQuestionDto question = qna != null ? chatQuestionService.getQuestion(qna.getChatQuestionDto().getId()) : null;
+			String qContent = question != null ? question.getContent() : null;
+			
+			response.setLastQuestion( qContent );
 			
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( response ));
 		}
@@ -277,7 +298,7 @@ public class ChatSessionController {
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(null));
 		
 		//공개 세션인 경우
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(ChatSessionResponseDto.toDto(findedSession)));
+		return ResponseEntity.status(HttpStatus.OK).body( ResultUtil.success( ChatSessionResponseDto.toDto(findedSession,metas) ) );
 
 	}
 	
@@ -342,7 +363,14 @@ public class ChatSessionController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body( ResultUtil.success( sessions.stream()
 						.map(session -> {
-							ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session);
+							//세션 주인 메타정보
+							MemberDto owner = session.getMemberDto();
+							List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
+																.stream()
+																.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																.toList();
+							
+							ChatSessionResponseDto responseSession = ChatSessionResponseDto.toDto(session, metas);
 							
 							//세션의 마지막 질문내용 조회 로직
 							ChatQnaDto qna = chatQnaService.findLastQuestionOfSession(session.getId());
@@ -405,7 +433,23 @@ public class ChatSessionController {
 		else 
 			publicSessions = chatSessionService.findPublics();
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( publicSessions.stream().map(dto -> ChatSessionResponseDto.toDto(dto)).toList() ));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResultUtil.success( 
+						publicSessions
+							.stream()
+							.map(session -> {
+								//세션 주인 메타정보
+								MemberDto owner = session.getMemberDto();
+								List<MemberMetaResponseDto> metas = memberMetaService.findAll(owner)
+																	.stream()
+																	.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																	.toList();
+								
+								return ChatSessionResponseDto.toDto(session,metas);
+								} )
+							.toList() 
+				));
 	}
 	
 	/**
@@ -482,7 +526,16 @@ public class ChatSessionController {
 		findedSession.setStatus(status);
 		ChatSessionDto updatedSession = chatSessionService.updateSession(findedSession);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(ChatSessionResponseDto.toDto(updatedSession)));
+		//세션 주인 메타정보
+		List<MemberMetaResponseDto> metas = memberMetaService.findAll(updatedSession.getMemberDto())
+											.stream()
+											.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+											.toList();
+		
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(
+						ResultUtil.success(ChatSessionResponseDto.toDto(updatedSession,metas)));
 	}
 	
 }
