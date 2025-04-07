@@ -402,29 +402,12 @@ public class ChatSessionController {
 					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":47,\"member\":{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-13T14:09:06.679719\",\"updated_at\":\"2025-03-13T14:09:06.665218\",\"status\":0,\"count\":0,\"lastQuestion\":null},{\"id\":46,\"member\":{\"id\":37,\"email\":\"abab@naver.com\",\"name\":\"홍길동\",\"nickname\":\"TEMPORARY\",\"birth\":\"2025-03-01\",\"gender\":\"F\",\"contact\":null,\"address\":null,\"token\":\"testtoken\",\"created_at\":\"2025-03-07T18:50:04.665174\",\"updated_at\":\"2025-03-07T18:50:04.665174\",\"status\":1,\"meta\":[]},\"created_at\":\"2025-03-13T09:32:52.674851\",\"updated_at\":\"2025-03-13T09:32:52.671372\",\"status\":0,\"count\":0,\"lastQuestion\":null}]}}"
 				)
 			) 
-		),
-		@ApiResponse( 
-			responseCode = "401-공개 세션 조회 실패",
-			description = "FAIL", 
-			content = @Content(					
-				examples = @ExampleObject(
-					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
-				)
-			) 
 		)
 	})
 	@GetMapping("/sessions/public")
 	public ResponseEntity<?> getPublicSessions(
-			@Parameter(description = "로그인한 회원 토큰") @RequestHeader("Authorization") String token,
 			@Parameter(description = "페이지") @RequestParam(required = false, defaultValue = "0") int p, 
 			@Parameter(description = "출력 개수 제한") @RequestParam(required = false, defaultValue = "50") int ol){
-		//로그인한 회원 조회
-		MemberDto loginMember = Commons.findMemberByToken(token, memberService);
-		
-		//회원이 존재하지 않는 경우
-		if(loginMember == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
-		}
 		
 		List<ChatSessionDto> publicSessions = null;
 		
