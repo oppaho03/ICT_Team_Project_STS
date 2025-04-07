@@ -1,4 +1,4 @@
-package com.ict.vita.util;
+package com.ict.vita.test;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.member.MemberTempJoinDto;
+import com.ict.vita.util.AuthUtil;
+import com.ict.vita.util.Commons;
+import com.ict.vita.util.ResultUtil;
 
 import lombok.RequiredArgsConstructor;
 
