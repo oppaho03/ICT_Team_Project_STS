@@ -84,6 +84,16 @@ public class MemberSnsLoginsController {
 		MemberSnsDto updatedSnsDto = snsDto;
 		MemberDto updatedDto = findedMember;
 		
+		//서버로 넘어온 옵션값들
+		String name = null;
+		if(!Commons.isNull(snsReqDto.getName())) 
+			name = snsReqDto.getName();
+		
+		String picture = null;
+		if(!Commons.isNull(snsReqDto.getPicture())) 
+			picture = snsReqDto.getPicture();
+		
+		
 		//[sns회원 존재시]
 		if(snsDto != null) {	
 
@@ -108,6 +118,17 @@ public class MemberSnsLoginsController {
 				
 				metas = memberMetaService.findAll(updatedDto).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
 
+				//사진 업데이트
+				for(MemberMetaDto meta : memberMetaService.findAll(updatedDto)) {
+					if(meta != null && meta.getMeta_key().equals("picture")) {
+						ObjectMetaRequestDto metaReq = ObjectMetaRequestDto.builder()
+														.id(meta.getMemberDto().getId())
+														.meta_key("picture")
+														.meta_value(picture)
+														.build();
+						memberMetaService.save(metaReq);
+					}
+				}
 			}
 			
 			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( MemberSnsResponseDto.toResponseDto(updatedSnsDto,updatedDto,metas) ));
@@ -116,15 +137,6 @@ public class MemberSnsLoginsController {
 		//[sns회원 미존재시]
 		//회원 테이블에 없을 때
 		if(findedMember == null) {
-			//서버로 넘어온 옵션값들
-			String name = null;
-			if(!Commons.isNull(snsReqDto.getName())) 
-				name = snsReqDto.getName();
-			
-			String picture = null;
-			if(!Commons.isNull(snsReqDto.getPicture())) 
-				picture = snsReqDto.getPicture();
-			
 			//회원 테이블에 저장
 
 			MemberTempJoinDto tempJoinDto = MemberTempJoinDto.builder()
@@ -181,6 +193,18 @@ public class MemberSnsLoginsController {
 				updatedDto = memberService.updateMember(findedMember);
 				
 				metas = memberMetaService.findAll(updatedDto).stream().map(meta -> MemberMetaResponseDto.toResponseDto(meta)).toList();
+			
+				//사진 업데이트
+				for(MemberMetaDto meta : memberMetaService.findAll(updatedDto)) {
+					if(meta != null && meta.getMeta_key().equals("picture")) {
+						ObjectMetaRequestDto metaReq = ObjectMetaRequestDto.builder()
+														.id(meta.getMemberDto().getId())
+														.meta_key("picture")
+														.meta_value(picture)
+														.build();
+						memberMetaService.save(metaReq);
+					}
+				}
 			}
 		}
 		

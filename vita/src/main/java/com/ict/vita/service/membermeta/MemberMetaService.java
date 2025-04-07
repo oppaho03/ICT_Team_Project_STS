@@ -51,7 +51,6 @@ public class MemberMetaService {
 	/**
 	 * TermsDto AND 메타 키 검색
 	 * @param metaDto TermsDto
-	 * @param meta_key 메타 키
 	 * @return 메타 또는 NULL 반환
 	 */	
 	@Transactional(readOnly = true)
@@ -102,6 +101,6 @@ public class MemberMetaService {
 		}
 		else return null;
 	}
-	
+
 	
 }

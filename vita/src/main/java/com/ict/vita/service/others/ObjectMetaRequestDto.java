@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ObjectMetaRequestDto {
 
-	private Long id; // 오브젝트 ID
+	private Long id; // 오브젝트 ID (meta 아이디 아님)
 	private String meta_key; //메타 키
 	private String meta_value; //메타 값
 
