@@ -1,4 +1,4 @@
-package com.ict.vita.test.hjh;
+package com.ict.vita.service.posts;
 
 import java.time.LocalDateTime;
 
