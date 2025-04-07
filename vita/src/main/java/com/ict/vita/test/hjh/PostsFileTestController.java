@@ -195,10 +195,12 @@ public class PostsFileTestController {
         PostMetaDto savedPostMeta = postMetaService.save(postMeta);
         
         //4.파일을 APP_RESOURCES_SEC 테이블에 저장
+        String ext = newFileName.substring( newFileName.lastIndexOf(".") + 1 );
+        
         ResourcesSecDto resourcesSecDto = ResourcesSecDto.builder()
 									        .postsDto(savedPost)
 									        .file_name(EncryptAES256.encrypt(newFileName))
-									        .file_ext( fileInfo.getFile().getContentType() )
+									        .file_ext( ext )
 									        .file_url(fileUrl) 
 									        .enc_key(null)
 									        .enc_status(1) //암호화o
