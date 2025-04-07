@@ -32,6 +32,7 @@ import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
 import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
+import com.ict.vita.service.postmeta.PostMetaDto;
 import com.ict.vita.service.postmeta.PostMetaResponseDto;
 import com.ict.vita.service.postmeta.PostMetaService;
 import com.ict.vita.service.posts.PostsDto;
@@ -88,29 +89,32 @@ public class PostsFileTestController {
 		if(loginMember == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
 		} 
-
-		System.out.println("[파일업로드]");
-		System.out.println("파일명:"+fileInfo.getFile().getOriginalFilename());
-		System.out.println("파일타입:"+fileInfo.getFile().getContentType());
 		
-		//***** 파일 업로드 저장 위치를 C:/upload-dir/계정아이디 폴더가 생성되고 거기다가 각 회원의 파일이 저장되게 하고싶어서 아래 추가해봄
+		//파일 미첨부시
+		if(fileInfo.getFile() == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("file.upload.fail", null, new Locale("ko")) ));
+		}
+		
+		//* 파일 업로드 저장 위치를 C:/upload-dir/계정아이디 폴더가 생성되고 거기다가 각 회원의 파일이 저장되게 하고싶어서 아래 추가해봄
 		
 		//업로드 디렉터리 경로에 회원id 추가
 		String memberUploadDir = uploadDir + String.valueOf(loginMember.getId());
 		
-		// 업로드 디렉터리가 없으면 디렉터리 생성
+		//업로드 디렉터리가 없으면 디렉터리 생성
         Path uploadDirectory = Paths.get(memberUploadDir);
         if (!Files.exists(uploadDirectory)) {
             try {
+            	System.out.println("===== 디렉터리 생성 =====");
             	uploadDirectory = Files.createDirectories(uploadDirectory);
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("[파일 업로드]업로드 디렉터리 생성 실패");
 			}
-        } 
+        }       
         
         //새 파일명
         String newFileName = FileUtil.getNewFileName(uploadDirectory.toString(), fileInfo.getFile().getOriginalFilename());
+        System.out.println("새 파일명:"+newFileName);
         
         //글 객체 생성
 		PostsDto post = PostsDto.builder()
@@ -133,32 +137,32 @@ public class PostsFileTestController {
         
         //2.파일을 글-카테고리 관계 테이블에 저장 (카테고리명: media)
         TermCategoryDto category = termService.findBySlugByCategory("media", "media"); 
-        pcrService.save(post, List.of(category.getId()));
+        pcrService.save(savedPost, List.of(category.getId()));
         
         //3.글 메타 테이블에 저장 
+        String fileUrl = "/api/files/upload/" + String.valueOf(loginMember.getId()) + "/" + newFileName;
         ObjectMetaRequestDto postMeta = ObjectMetaRequestDto.builder()
 								        .id(post.getId())
 								        .meta_key("url") //파일 경로 저장
-								        .meta_value( uploadDirectory.toUri().toString() ) //*************
+								        .meta_value( fileUrl ) 
 								        .build();
-        postMetaService.save(postMeta);
-        
+        System.out.println("파일 url:" + fileUrl );
+        PostMetaDto savedPostMeta = postMetaService.save(postMeta);
+        /*
         //4.파일을 APP_RESOURCES_SEC 테이블에 저장
         ResourcesSecDto resourcesSecDto = ResourcesSecDto.builder()
 									        .postsDto(savedPost)
 									        .file_name(EncryptAES256.encrypt(newFileName))
 									        .file_ext( fileInfo.getFile().getContentType() )
-									        .file_url(null) //**********??
+									        .file_url(fileUrl) 
 									        .enc_key(null)
 									        .enc_status(1) //암호화o
 									        .build();
-        
         resourcesSecService.save(resourcesSecDto);
     	
         //5.File 업로드
         //File객체 생성
   		File f = new File(uploadDirectory + File.separator + newFileName);
-  		//업로드
   		try {
   			fileInfo.getFile().transferTo(f); //파일 업로드
   		} catch (Exception e) {
@@ -182,6 +186,8 @@ public class PostsFileTestController {
   		PostsResponseDto postResponse = PostsResponseDto.toDto(savedPost.toEntity(), categories, postMetas, memberMetas);
   		
   		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success( postResponse ));
+      */
+        return null;
     }
     
 
