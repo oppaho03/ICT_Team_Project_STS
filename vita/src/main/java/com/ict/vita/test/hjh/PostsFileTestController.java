@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.yaml.snakeyaml.util.UriEncoder;
 
 import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.membermeta.MemberMetaResponseDto;
 import com.ict.vita.service.membermeta.MemberMetaService;
@@ -48,6 +49,13 @@ import com.ict.vita.util.EncryptAES256;
 import com.ict.vita.util.FileUtil;
 import com.ict.vita.util.ResultUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -69,7 +77,44 @@ public class PostsFileTestController {
     @Value("${file.upload-dir}") //application.yml에 설정
     private String uploadDir; //업로드 디렉터리
   
+    /**
+     * [파일 업로드]
+     * @param token 회원 토큰값
+     * @param fileInfo 파일
+     * @return
+     */
     @PostMapping("/upload")
+    @Operation( summary = "파일 업로드", description = "파일 업로드 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "201-파일 업로드 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = PostsResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":{\"id\":97,\"author\":{\"id\":102,\"email\":\"wowwow@naver.com\",\"name\":\"우수정\",\"nickname\":\"와우\",\"birth\":\"2020-03-26\",\"gender\":\"F\",\"contact\":null,\"address\":\"서울시서초구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoid293d293QG5hdmVyLmNvbSIsInN1YiI6IjEwMiIsImlhdCI6MTc0MzczNjExOSwiZXhwIjoxNzQzNzM3MDE5fQ.PvyzKJQWBcAjwg5yDli2Sy44K3RMyCO36btZ5mLK-h8\",\"created_at\":\"2025-04-04T12:06:00.070694\",\"updated_at\":\"2025-04-04T12:09:51.541382\",\"status\":1,\"meta\":[]},\"post_title\":\"바다.jpg\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"%EB%B0%94%EB%8B%A4.jpg\",\"post_mime_type\":\"image/jpeg\",\"post_created_at\":\"2025-04-07T19:03:59.1278669\",\"post_modified_at\":\"2025-04-07T19:03:59.1278669\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":2,\"key\":\"url\",\"value\":\"/api/files/upload/102/바다.jpg\"}]}}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "400-파일 업로드 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"파일업로드에실패했습니다.\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+			responseCode = "401-파일 업로드 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
     public ResponseEntity<?> uploadFile(
     		@RequestHeader(name = Commons.AUTHORIZATION) String token,
     		FileUploadDto fileInfo) { //가능한 경우1
