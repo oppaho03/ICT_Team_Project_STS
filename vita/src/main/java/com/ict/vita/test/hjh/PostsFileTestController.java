@@ -142,13 +142,13 @@ public class PostsFileTestController {
         //3.글 메타 테이블에 저장 
         String fileUrl = "/api/files/upload/" + String.valueOf(loginMember.getId()) + "/" + newFileName;
         ObjectMetaRequestDto postMeta = ObjectMetaRequestDto.builder()
-								        .id(post.getId())
+								        .id(savedPost.getId())
 								        .meta_key("url") //파일 경로 저장
 								        .meta_value( fileUrl ) 
 								        .build();
         System.out.println("파일 url:" + fileUrl );
         PostMetaDto savedPostMeta = postMetaService.save(postMeta);
-        /*
+        
         //4.파일을 APP_RESOURCES_SEC 테이블에 저장
         ResourcesSecDto resourcesSecDto = ResourcesSecDto.builder()
 									        .postsDto(savedPost)
@@ -186,8 +186,7 @@ public class PostsFileTestController {
   		PostsResponseDto postResponse = PostsResponseDto.toDto(savedPost.toEntity(), categories, postMetas, memberMetas);
   		
   		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success( postResponse ));
-      */
-        return null;
+
     }
     
 
