@@ -23,6 +23,7 @@ import lombok.Setter;
 public class MemberResponseDto {
 	private Long id; //PK
 	private String email; //이메일
+	private String role; // 역할
 	private String name; //이름
 	private String nickname; //닉네임
 	private LocalDate birth; //생년월일
@@ -41,6 +42,7 @@ public class MemberResponseDto {
 		return MemberResponseDto.builder()
 								.id(memberDto.getId())
 								.email(memberDto.getEmail())
+								.role(memberDto.getRole())
 								.name(memberDto.getName())
 								.nickname(memberDto.getNickname())
 								.birth(memberDto.getBirth())
@@ -60,6 +62,7 @@ public class MemberResponseDto {
 		return MemberResponseDto.builder()
 				.id(memberEntity.getId())
 				.email(memberEntity.getEmail())
+				.role(memberEntity.getRole())
 				.name(memberEntity.getName())
 				.nickname(memberEntity.getNickname())
 				.birth(memberEntity.getBirth())
