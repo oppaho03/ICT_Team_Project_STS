@@ -1,4 +1,4 @@
-package com.ict.vita.test;
+package com.ict.vita.test.hjh;
 
 import java.util.HashMap;
 import java.util.Map;

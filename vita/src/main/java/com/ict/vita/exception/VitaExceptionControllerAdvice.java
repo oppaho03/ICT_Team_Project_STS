@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import com.ict.vita.test.PostsFileTestController;
+import com.ict.vita.test.hjh.PostsFileTestController;
 
 
 //<<모든 컨트롤러의 예외 처리시>>

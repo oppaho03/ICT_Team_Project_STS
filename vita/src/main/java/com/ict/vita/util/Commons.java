@@ -31,6 +31,7 @@ public class Commons {
 	public static final String POST_STATUS_DELETE = "DELETE"; //글 삭제
 	//<댓글 관련> - 사용할지 말지 결정 안됨
 	public static final String COMMENT_STATUS_OPEN = "OPEN"; //댓글 허용
+	public static final String COMMENT_STATUS_CLOSE = "CLOSE"; //댓글 허용X
 
 	/**
 	 * 문자열이 null 또는 빈문자열인지 판단하는 함수

@@ -47,7 +47,7 @@ spring:
       max-request-size: 20MB #멀티파일 업로드시 총 합계 용량
 
 file:
-  upload-dir: src/main/resources/static/uploads/ #업로드 디렉터리 지정
+  upload-dir: C:/upload-dir/ #업로드 디렉터리 지정
 
 logging:
   level:
