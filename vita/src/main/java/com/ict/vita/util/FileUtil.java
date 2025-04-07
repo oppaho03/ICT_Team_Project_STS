@@ -22,40 +22,37 @@ public class FileUtil {
 		String extension = fileName.substring( dotIndex + 1 ).trim(); //확장자 ex) jpg
 		String fileNameExcludeExt = fileName.substring(0,dotIndex).trim(); // .확장자 앞부분 ex) 사진_5
 		
-		StringBuilder newFileName = new StringBuilder("");
+		String newFileName;
 		
 		while (true) {
-			// 파일명에 _가 포함된 경우
-			if (fileNameExcludeExt.indexOf("_") != -1) { // ex) 사진_5.jpg
-				String[] arrFiles = fileNameExcludeExt.split("_"); // 사진_5.jpg -> [0]:사진, [1]:5
-				String lastName = arrFiles[arrFiles.length - 1]; // 5
-				
+			newFileName = "";
+			if (fileNameExcludeExt.indexOf("_") != -1) {// 파일명에 _가 포함됨
+				String[] arrFiles = fileNameExcludeExt.split("_");
+				String lastName = arrFiles[arrFiles.length - 1];
 				try {
 					int index = Integer.parseInt(lastName);
-					for (int i = 0; i < arrFiles.length; i++) { 
+					for (int i = 0; i < arrFiles.length; i++) {
 						if (i != arrFiles.length - 1)
-							newFileName.append(arrFiles[i] + "_");
+							newFileName += arrFiles[i] + "_";
 						else
-							newFileName.append(String.valueOf(index + 1)); // 6
+							newFileName += String.valueOf(index + 1);
 					}
-					newFileName.append("." + extension);
-				} catch (Exception e) { // _ 뒤에 숫자가 아닌 경우
-					newFileName.append(fileNameExcludeExt + "_1." + extension);
+					newFileName += "." + extension;
+				} catch (Exception e) {
+					newFileName += fileNameExcludeExt + "_1." + extension;
 				}
-			} else {// _가 없는 경우
-				newFileName.append(fileNameExcludeExt + "_1." + extension);
+			} else {// _가 없음
+				newFileName += fileNameExcludeExt + "_1." + extension;
 			}
-			
 			File f = new File(path + File.separator + newFileName);
-			
 			if (f.exists()) {
-				fileNameExcludeExt = newFileName.toString().substring(0, newFileName.lastIndexOf("."));
+				fileNameExcludeExt = newFileName.substring(0, newFileName.lastIndexOf("."));
 				continue;
 			} else
 				break;
 		} //////////// while
 
-		return newFileName.toString();
+		return newFileName;
 		
 	}
 	
