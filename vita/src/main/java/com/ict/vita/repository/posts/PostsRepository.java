@@ -1,5 +1,6 @@
 package com.ict.vita.repository.posts;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -64,4 +65,15 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 			"""
 			,nativeQuery = true)
 	List<PostsEntity> findByNickname(@Param("cid") Long cid,@Param("nickname") String nickname); //닉네임으로 글 검색
+	
+	@Query(value = """
+			SELECT p.* 
+			FROM APP_POSTS p 
+			WHERE p.post_mime_type LIKE '%' || :type || '%'
+			AND p.post_created_at BETWEEN :start AND :end 
+			ORDER BY p.post_created_at DESC 
+			""",
+			nativeQuery = true)
+	List<PostsEntity> findAllByPeriod(@Param("start") LocalDateTime start,@Param("end") LocalDateTime end,@Param("type") String type); //월별 검색
+
 }

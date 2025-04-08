@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.yaml.snakeyaml.util.UriEncoder;
 
+import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.service.member.MemberDto;
 import com.ict.vita.service.member.MemberResponseDto;
 import com.ict.vita.service.member.MemberService;
@@ -41,6 +43,7 @@ import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.posts.PostsFileService;
 import com.ict.vita.service.posts.PostsRequestDto;
 import com.ict.vita.service.posts.PostsResponseDto;
+import com.ict.vita.service.posts.PostsService;
 import com.ict.vita.service.resourcessec.ResourcesSecDto;
 import com.ict.vita.service.resourcessec.ResourcesSecService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
@@ -62,10 +65,11 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/files")
+@RequestMapping("/api")
 @CrossOrigin
 public class PostsFileController {
-	 // 서비스 주입
+	// 서비스 주입
+	private final PostsService postsService;
     private final PostsFileService postsFileService;
     private final MemberService memberService;
     private final PostCategoryRelationshipsService pcrService;
@@ -85,7 +89,6 @@ public class PostsFileController {
      * @param fileInfo 파일
      * @return
      */
-    @PostMapping("/upload")
     @Operation( summary = "파일 업로드", description = "파일 업로드 API" )
 	@ApiResponses({
 		@ApiResponse( 
@@ -117,6 +120,7 @@ public class PostsFileController {
 			) 
 		)
 	})
+    @PostMapping("/files/upload")
     public ResponseEntity<?> uploadFile(
     		@RequestHeader(name = Commons.AUTHORIZATION) String token,
     		FileUploadDto fileInfo) { //가능한 경우1
@@ -180,7 +184,7 @@ public class PostsFileController {
 							.build();  
 							
 		//1.파일을 APP_POSTS 테이블에 저장
-        PostsDto savedPost = postsFileService.savePostFile(post); 
+		PostsDto savedPost = postsService.savePost(post);
         
         //2.파일을 글-카테고리 관계 테이블에 저장 (카테고리명: media)
         TermCategoryDto category = termService.findBySlugByCategory("media", "media"); 
@@ -238,6 +242,87 @@ public class PostsFileController {
 
     }
     
+    /**
+     * [음성파일 월별 검색] - 관리자는 전체 검색, 일반회원은 본인것만 검색 가능
+     * @param token 회원 토큰값
+     * @param period 기간 ex."2025-04"
+     * @return
+     */
+    @Operation( summary = "음성파일 월별 검색", description = "음성파일 월별 검색 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-음성파일 월별 검색 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = PostsResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":105,\"author\":{\"id\":102,\"email\":\"wowwow@naver.com\",\"role\":\"USER\",\"name\":\"우수정\",\"nickname\":\"와우\",\"birth\":\"2020-03-26\",\"gender\":\"F\",\"contact\":null,\"address\":\"서울시서초구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoid293d293QG5hdmVyLmNvbSIsInN1YiI6IjEwMiIsImlhdCI6MTc0MzczNjExOSwiZXhwIjoxNzQzNzM3MDE5fQ.PvyzKJQWBcAjwg5yDli2Sy44K3RMyCO36btZ5mLK-h8\",\"created_at\":\"2025-04-04T12:06:00.070694\",\"updated_at\":\"2025-04-04T12:09:51.541382\",\"status\":1,\"meta\":[]},\"post_title\":\"5e2ac6f85807b852d9e01ffe.wav\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"5e2ac6f85807b852d9e01ffe.wav\",\"post_mime_type\":\"audio/wave\",\"post_created_at\":\"2025-04-08T11:13:23.050945\",\"post_modified_at\":\"2025-04-08T11:13:23.042935\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":10,\"key\":\"url\",\"value\":\"/api/files/upload/102/5e2ac6f85807b852d9e01ffe.wav\"}]},{\"id\":104,\"author\":{\"id\":102,\"email\":\"wowwow@naver.com\",\"role\":\"USER\",\"name\":\"우수정\",\"nickname\":\"와우\",\"birth\":\"2020-03-26\",\"gender\":\"F\",\"contact\":null,\"address\":\"서울시서초구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImVtYWlsIjoid293d293QG5hdmVyLmNvbSIsInN1YiI6IjEwMiIsImlhdCI6MTc0MzczNjExOSwiZXhwIjoxNzQzNzM3MDE5fQ.PvyzKJQWBcAjwg5yDli2Sy44K3RMyCO36btZ5mLK-h8\",\"created_at\":\"2025-04-04T12:06:00.070694\",\"updated_at\":\"2025-04-04T12:09:51.541382\",\"status\":1,\"meta\":[]},\"post_title\":\"5e2ac52c5807b852d9e01fe4.wav\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"5e2ac52c5807b852d9e01fe4.wav\",\"post_mime_type\":\"audio/wave\",\"post_created_at\":\"2025-04-08T11:11:58.316716\",\"post_modified_at\":\"2025-04-08T11:11:58.277709\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":9,\"key\":\"url\",\"value\":\"/api/files/upload/102/5e2ac52c5807b852d9e01fe4.wav\"}]}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+			responseCode = "401-음성파일 월별 검색 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
+    @GetMapping("/voice-files")
+    public ResponseEntity<?> getMonthlyVoiceFiles(
+    		@RequestHeader(name = Commons.AUTHORIZATION) String token,
+    		@RequestParam("period") String period){
+    	//토큰으로 회원 조회
+    	MemberDto loginMember = memberService.findMemberByToken(token); 
+    	//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		} 
+		
+		//검색할 미디어 타입
+		String type = "audio";
+		//월별 음성 파일 검색
+		List<PostsDto> monthlyFiles = postsFileService.getMonthlyVoiceFiles(period, type);
+		
+		List<PostsResponseDto> result = null;
+		
+		result = monthlyFiles
+				.stream()
+				.map( postDto -> {
+					PostsEntity entity = postDto.toEntity();
+					
+					TermCategoryDto category = termService.findBySlugByCategory("media", "media"); 
+					List<TermsResponseDto> categories = List.of(TermsResponseDto.toDto(category));
+					
+					List<PostMetaResponseDto> postMeta = postMetaService.findAll(postDto)
+															.stream()
+															.map(meta -> PostMetaResponseDto.toResponseDto(meta))
+															.toList();
+					
+					List <MemberMetaResponseDto> memberMeta = memberMetaService.findAll(MemberDto.toDto(entity.getMemberEntity()))
+																.stream()
+																.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+																.toList();
+					
+					//관리자가 아니면서 본인 글이 아닌 경우
+					if(!loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) 
+							&& postDto.getMemberDto().getId() != loginMember.getId())
+						return null;
+					
+					return PostsResponseDto.toDto(entity, categories, postMeta, memberMeta);
+				})
+				.toList();
+		
+		result = result
+				.stream()
+				.filter(Objects::nonNull) // null 제거
+				.toList();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
+		
+    }
 
 }
 

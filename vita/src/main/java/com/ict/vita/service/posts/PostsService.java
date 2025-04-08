@@ -301,7 +301,7 @@ public class PostsService {
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " WHERE r.termCategoryEntity.id = :cid "
-				+ " and p.postTitle LIKE CONCAT('%', :title, '%') "
+				+ " and p.postTitle LIKE '%' || :title || '%' "
 				+ " and p.postStatus = 'PUBLISH' "
 				);
 		

@@ -1,5 +1,10 @@
 package com.ict.vita.service.posts;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,11 +31,21 @@ public class PostsFileService {
     private static final String SENTIMENT_API_URL = "http://127.0.0.1:8000/uploadfiles/upload_result";  // Sentiment API URL
     private static final String SPRINGBOOT_API_URL = "http://localhost:8080/api/files/upload_result"; // 스프링부트에서 결과 받는 API URL
     
-    //APP_POSTS 테이블에 저장
-    public PostsDto savePostFile(PostsDto post) {
-    	PostsEntity savedPost = postsRepository.save( post.toEntity() );
-    	return PostsDto.toDto(savedPost);
-    }
-    
+    /**
+     * [월별 음성파일 조회]
+     * @param period 기간 ex."2025-04"
+     * @param type 검색할 파일 타입
+     * @return
+     */
+	public List<PostsDto> getMonthlyVoiceFiles(String period, String type) {
+		YearMonth yearMonth = YearMonth.parse(period); //string에서 년월 얻기
+		LocalDateTime start = yearMonth.atDay(1).atStartOfDay(); //달의 시작 시간 ex)2025-04-01 00:00:00
+		LocalDateTime end = yearMonth.atEndOfMonth().atTime(LocalTime.MAX); //달의 끝 시간 ex)2025-04-30 23:59:59.999999999
+		
+		List<PostsEntity> finded = postsRepository.findAllByPeriod(start, end, type);
+		
+		return finded.stream().map(entity -> PostsDto.toDto(entity)).toList();
+	}
+   
     
 }
