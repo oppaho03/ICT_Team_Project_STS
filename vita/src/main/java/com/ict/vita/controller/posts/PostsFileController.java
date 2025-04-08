@@ -213,7 +213,7 @@ public class PostsFileController {
 									        .build();
         resourcesSecService.save(resourcesSecDto);
     	
-        //5.File 업로드
+        //5.File 업로드 : 파일 업로드는 C드라이브의 upload-dir 폴더 안의 회원id폴더 안에 파일이 업로드됨
         //File객체 생성
   		File f = new File(uploadDirectory + File.separator + newFileName);
   		try {
