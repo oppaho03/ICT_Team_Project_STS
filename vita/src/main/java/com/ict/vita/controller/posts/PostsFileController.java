@@ -2,6 +2,7 @@ package com.ict.vita.controller.posts;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -44,6 +46,7 @@ import com.ict.vita.service.posts.PostsFileService;
 import com.ict.vita.service.posts.PostsRequestDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
+import com.ict.vita.service.posts.SpeechAnalysisResultDto;
 import com.ict.vita.service.resourcessec.ResourcesSecDto;
 import com.ict.vita.service.resourcessec.ResourcesSecService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
@@ -322,6 +325,96 @@ public class PostsFileController {
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
 		
+    }
+    
+    /**
+     * [음성 감정 분석 결과 저장]
+     * @param token 회원 토큰값
+     * @param sarDto 음성 감정 분석 결과 객체
+     * @return
+     */
+    @Operation( summary = "음성 감정 분석 결과 저장", description = "음성 감정 분석 결과 저장 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "201-음성 감정 분석 결과 저장 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				schema = @Schema(implementation = PostsResponseDto.class),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"id\":12,\"key\":\"sar_file_name\",\"value\":\"5e2ac52c5807b852d9e01fe4.wav\"},{\"id\":13,\"key\":\"sar_transcribed_text\",\"value\":\"어쩌라고\"},{\"id\":14,\"key\":\"sar_overall_sentiment\",\"value\":\"NEGATIVE\"},{\"id\":15,\"key\":\"sar_overall_score\",\"value\":\"0.5\"},{\"id\":16,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"}]}}"
+				)
+			) 
+		),@ApiResponse( 
+				responseCode = "400-음성 감정 분석 결과 저장 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"컨텐츠를찾을수없습니다.\"}}"
+					)
+				) 
+			),
+		@ApiResponse( 
+			responseCode = "401-음성 감정 분석 결과 저장 실패",
+			description = "FAIL", 
+			content = @Content(					
+				examples = @ExampleObject(
+					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
+				)
+			) 
+		)
+	})
+    @PostMapping("/file-metas")
+    public ResponseEntity<?> saveFileMetas(
+    		@RequestHeader(name = Commons.AUTHORIZATION) String token,
+    		@RequestBody SpeechAnalysisResultDto sarDto){
+    	//토큰으로 회원 조회
+    	MemberDto loginMember = memberService.findMemberByToken(token); 
+    	//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		} 
+		
+		PostsDto findedPost = postsService.findById(sarDto.getPost_id());
+		
+		//존재하는 글이 아닐 경우
+		if(findedPost == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("post.notfound", null, new Locale("ko")) ));
+		}
+		
+		int fieldCount = SpeechAnalysisResultDto.class.getDeclaredFields().length;
+		
+		List<PostMetaDto> metaList = new Vector<>();
+				
+		for(int i=1; i <= fieldCount - 1 ; i++) {
+			Field field = SpeechAnalysisResultDto.class.getDeclaredFields()[i];
+			field.setAccessible(true); // private 필드 접근 가능하게 설정
+			Object value = null; //필드의 값
+			
+			try {
+				value = field.get(sarDto); //sarDto에서 field 값 가져오기
+			} catch (Exception e) {
+				System.out.println("필드 값 가져오기 실패");
+				e.printStackTrace();
+			} 
+			
+			ObjectMetaRequestDto metaReq = ObjectMetaRequestDto.builder()
+					.id(findedPost.getId())
+					.meta_key("sar_" + field.getName() )
+					.meta_value( value != null ? value.toString() : null )
+					.build();
+
+			//글 메타 테이블에 저장
+			PostMetaDto postMetaDto = postMetaService.save(metaReq);
+			metaList.add(postMetaDto);
+		}
+		
+		List<PostMetaResponseDto> metaResponses = metaList
+													.stream()
+													.map(dto -> PostMetaResponseDto.toResponseDto(dto))
+													.toList();
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResultUtil.success(metaResponses));
+    	
     }
 
 }
