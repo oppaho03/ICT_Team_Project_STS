@@ -185,7 +185,9 @@ public class TermsController {
 		else if ( parent >= 0 ) {
 			// << 검색 2. 부모 카테고리 Id >>
 			// - 카테고리 ID -> Term ID 로 변환
-			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termsService.findByParent( parent ) )); 
+			List<TermCategoryDto> termCategoryDtos = termsService.findByParent( parent );
+
+			return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( termCategoryDtos.stream().map( dto->TermsResponseDto.toDto(dto) ).collect(Collectors.toList()) ) ); 
 		}
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(  "Invalid values..." )); 
