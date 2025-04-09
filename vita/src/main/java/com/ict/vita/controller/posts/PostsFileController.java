@@ -395,7 +395,7 @@ public class PostsFileController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		}
 		
-		int fieldCount = SpeechAnalysisResultDto.class.getDeclaredFields().length;
+		int fieldCount = SpeechAnalysisResultDto.class.getDeclaredFields().length; //음성감정분석결과 객체 필드수
 		
 		List<PostMetaDto> metaList = new Vector<>();
 				
@@ -405,7 +405,7 @@ public class PostsFileController {
 			Object value = null; //필드의 값
 			
 			try {
-				value = field.get(sarDto); //sarDto에서 field 값 가져오기
+				value = field.get(sarDto); //sarDto에서 해당 field의 값 가져오기
 			} catch (Exception e) {
 				System.out.println("필드 값 가져오기 실패");
 				e.printStackTrace();
@@ -413,7 +413,7 @@ public class PostsFileController {
 			
 			ObjectMetaRequestDto metaReq = ObjectMetaRequestDto.builder()
 					.id(findedPost.getId())
-					.meta_key("sar_" + field.getName() )
+					.meta_key( "sar_" + field.getName() )
 					.meta_value( value != null ? value.toString() : null )
 					.build();
 
