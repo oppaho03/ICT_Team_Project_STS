@@ -16,9 +16,9 @@ public interface ChatAnswerRepository extends JpaRepository<ChatAnswerEntity, Lo
                 SELECT a.id, a.file_name, a.intro, a.body, a.conclusion, SCORE(1) + SCORE(2) + SCORE(3)  AS scores
                 FROM APP_CHAT_ANSWER a
                 WHERE
-                    CONTAINS(a.intro, :keywords, 1) > 0
-                    OR CONTAINS(a.body, :keywords, 2) > 0
-                    OR CONTAINS(a.conclusion, :keywords, 3) > 0
+                    CONTAINS(a.intro, :keywords, 1) > 25
+                    OR CONTAINS(a.body, :keywords, 2) > 25
+                    OR CONTAINS(a.conclusion, :keywords, 3) > 25
                 ORDER BY scores DESC
             ) aa
             WHERE ROWNUM <= 1
