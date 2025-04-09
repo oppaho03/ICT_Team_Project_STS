@@ -361,7 +361,16 @@ public class PostsFileController {
 					value = "{\"success\":0,\"response\":{\"message\":\"접근권한이없습니다.\"}}"
 				)
 			) 
-		)
+		),
+		@ApiResponse( 
+				responseCode = "403-음성 감정 분석 결과 저장 실패",
+				description = "FAIL", 
+				content = @Content(					
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"이작업을수행할권한이없습니다.\"}}"
+					)
+				) 
+			)
 	})
     @PostMapping("/file-metas")
     public ResponseEntity<?> saveFileMetas(
@@ -379,6 +388,11 @@ public class PostsFileController {
 		//존재하는 글이 아닐 경우
 		if(findedPost == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("post.notfound", null, new Locale("ko")) ));
+		}
+		
+		//관리자가 아니거나 본인 글이 아닌 경우
+		if(!loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) && (findedPost.getMemberDto().getId() != loginMember.getId())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null, new Locale("ko")) ));
 		}
 		
 		int fieldCount = SpeechAnalysisResultDto.class.getDeclaredFields().length;
