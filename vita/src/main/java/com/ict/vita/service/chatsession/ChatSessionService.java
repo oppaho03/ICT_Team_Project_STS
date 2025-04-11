@@ -94,15 +94,6 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAllByMember(Long mid,int p, int ol) {
-		//Pageable pageable = PageRequest.of(p - 1, ol, Sort.by(Sort.Order.asc("id")) );
-		
-		//Page<ChatSessionEntity> page = chatSessionRepository.findAllByMember(mid,pageable);
-		
-		/*
-		Page<ChatSessionEntity> page = chatSessionRepository.findAllByMemberEntity_id(mid,pageable);
-		
-		List<ChatSessionEntity> sessions = page.getContent();
-		return sessions.stream().map(entity -> ChatSessionDto.toDto(entity)).toList(); */
 		
 		// 현재 사용 중인 DB 종류 확인
 	    String databaseProductName = Commons.getDatabaseProductName(dataSource);
@@ -152,7 +143,6 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findAllByMember(Long mid) {
-//		List <ChatSessionEntity> sessions = chatSessionRepository.findAllByMember( mid, Sort.by(Sort.Order.desc("updatedAt")));
 		
 		List <ChatSessionEntity> sessions = null;
 		String sql = "SELECT * FROM APP_CHAT_SESSION s WHERE s.member_id = :mid ORDER BY s.updated_at desc";
@@ -172,10 +162,6 @@ public class ChatSessionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<ChatSessionDto> findPublicsByMember(Long mid, int p, int ol) {
-		/*
-		Pageable pageable = PageRequest.of(p - 1, ol, Sort.by(Sort.Order.asc("id")));
-		Page<ChatSessionEntity> page = chatSessionRepository.findAllByMemberAndStatus(mid,pageable);
-		List<ChatSessionEntity> list = page.getContent(); */
 		
 		// 현재 사용 중인 DB 종류 확인
 	    String databaseProductName = Commons.getDatabaseProductName(dataSource);
