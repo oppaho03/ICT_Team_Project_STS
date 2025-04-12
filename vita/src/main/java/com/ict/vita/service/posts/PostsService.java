@@ -47,7 +47,7 @@ public class PostsService {
 		System.out.println("카테고리 ids(cids):"+cids.toString());
 		
 		//JPQL문 작성
-		StringBuilder jpql = new StringBuilder("SELECT p.id "
+		StringBuilder jpql = new StringBuilder("SELECT p.id , MAX(p.postCreatedAt) as createdAt "
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " WHERE p.postStatus = 'PUBLISH' "
@@ -63,10 +63,12 @@ public class PostsService {
 		jpql.append(" GROUP BY p.id ");
 		jpql.append(" HAVING COUNT(DISTINCT r.termCategoryEntity.id) = :size ");
 
+		jpql.append(" ORDER BY createdAt DESC ");
+		
 		System.out.println("jpql:"+jpql);
 
 		//createQuery() 메서드 이용해 JPQL로 Query 생성
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Object[]> query = em.createQuery(jpql.toString(), Object[].class);
 		
 		//파라미터 바인딩
 		for(int i=0;i<cids.size();i++) {
@@ -80,13 +82,12 @@ public class PostsService {
 		query.setMaxResults(ol);
 		
 		//JPQL 결과 리스트를 반환
-		List<Long> results = query.getResultList(); //조회한 글 목록 id값들
-		System.out.println("post ids:" + results.toString());
+		List<Object[]> results = query.getResultList(); //조회한 글 목록 id값들
 		
 		//글id로 글 목록 조회
 		List<PostsEntity> entities = new Vector<>();
-		for(Long pid:results) {
-			PostsDto dto = findById(pid);
+		for(Object[] object:results) {
+			PostsDto dto = findById((Long)(object[0]));
 			if(dto != null) { 
 				entities.add(dto.toEntity());
 				System.out.println("post:"+dto.toEntity().getId());
@@ -108,7 +109,7 @@ public class PostsService {
 		System.out.println("카테고리 ids(cids):"+cids.toString());
 		
 		//JPQL문 작성
-		StringBuilder jpql = new StringBuilder("SELECT p.id "
+		StringBuilder jpql = new StringBuilder("SELECT p.id , MAX(p.postCreatedAt) as createdAt "
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " WHERE p.postStatus = 'PUBLISH' "
@@ -123,11 +124,13 @@ public class PostsService {
 
 		jpql.append(" GROUP BY p.id ");
 		jpql.append(" HAVING COUNT(DISTINCT r.termCategoryEntity.id) = :size ");
+		
+		jpql.append(" ORDER BY createdAt DESC ");
 
 		System.out.println("jpql:"+jpql);
 
 		//createQuery() 메서드 이용해 JPQL로 Query 생성
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Object[]> query = em.createQuery(jpql.toString(), Object[].class);
 		
 		//파라미터 바인딩
 		for(int i=0;i<cids.size();i++) {
@@ -137,13 +140,12 @@ public class PostsService {
 		query.setParameter("size", size);
 		
 		//JPQL 결과 리스트를 반환
-		List<Long> results = query.getResultList(); //조회한 글 목록 id값들
-		System.out.println("post ids:" + results.toString());
+		List<Object[]> results = query.getResultList(); //조회한 글 목록 id값들
 		
 		//글id로 글 목록 조회
 		List<PostsEntity> entities = new Vector<>();
-		for(Long pid:results) {
-			PostsDto dto = findById(pid);
+		for(Object[] object:results) {
+			PostsDto dto = findById((Long)object[0]);
 			if(dto != null) { 
 				entities.add(dto.toEntity());
 				System.out.println("post:"+dto.toEntity().getId());
@@ -164,19 +166,19 @@ public class PostsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<PostsDto> getPostsByMember(Long cid,Long uid,int p,int ol){
-//		List<PostsEntity> entityList = postsRepository.findByMember(cid,uid);
-		
+	
 		List<PostsEntity> entityList = new Vector<>();
 		
 		//JPQL문 작성
-		StringBuilder jpql = new StringBuilder("SELECT p.id "
+		StringBuilder jpql = new StringBuilder("SELECT p.id , p.postCreatedAt as createdAt "
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " WHERE r.termCategoryEntity.id = :cid and p.memberEntity.id = :uid "
+				+ " ORDER BY createdAt DESC "
 				);
 		
 		//createQuery() 메서드 이용해 JPQL로 Query 생성
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Object[]> query = em.createQuery(jpql.toString(), Object[].class);
 		
 		query.setParameter("cid", cid);
 		query.setParameter("uid", uid);
@@ -184,12 +186,13 @@ public class PostsService {
 		//페이징 적용
 		query.setFirstResult((p - 1) * ol);
 		query.setMaxResults(ol);
-				
-		//JPQL 결과 리스트를 반환
-		List<Long> results = query.getResultList(); //조회한 글 목록 id값들
 		
-		for(Long pid:results) {
-			PostsDto dto = findById(pid);
+		//JPQL 결과 리스트를 반환
+		List<Object[]> results = query.getResultList(); //조회한 글 목록 id값들
+		
+		for(Object[] object:results) {
+			
+			PostsDto dto = findById((Long)object[0]);
 			if(dto != null) { 
 				entityList.add(dto.toEntity());
 				System.out.println("post:"+dto.toEntity().getId());
@@ -297,16 +300,17 @@ public class PostsService {
 		List<PostsEntity> postsList = new Vector<>();
 		
 		//JPQL문 작성
-		StringBuilder jpql = new StringBuilder("SELECT p.id "
+		StringBuilder jpql = new StringBuilder("SELECT p.id , p.postCreatedAt as createdAt "
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " WHERE r.termCategoryEntity.id = :cid "
 				+ " and p.postTitle LIKE '%' || :title || '%' "
 				+ " and p.postStatus = 'PUBLISH' "
+				+ " order by createdAt DESC "
 				);
 		
 		//createQuery() 메서드 이용해 JPQL로 Query 생성
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Object[]> query = em.createQuery(jpql.toString(), Object[].class);
 		
 		query.setParameter("cid", cid);
 		query.setParameter("title", title);
@@ -316,11 +320,11 @@ public class PostsService {
 		query.setMaxResults(ol);
 		
 		//JPQL 결과 리스트를 반환
-		List<Long> results = query.getResultList();
+		List<Object[]> results = query.getResultList();
 		
 		//글id로 글 목록 조회
-		for(Long pid:results) {
-			PostsDto dto = findById(pid);
+		for(Object[] object:results) {
+			PostsDto dto = findById((Long)object[0]);
 			if(dto != null) { 
 				postsList.add(dto.toEntity());
 			}
@@ -355,17 +359,18 @@ public class PostsService {
 		List<PostsEntity> postsList = new Vector<>();
 		
 		//JPQL문 작성
-		StringBuilder jpql = new StringBuilder("SELECT p.id "
+		StringBuilder jpql = new StringBuilder("SELECT p.id , p.postCreatedAt as createdAt "
 				+ " FROM PostsEntity p"
 				+ " JOIN PostCategoryRelationshipsEntity r ON p.id = r.postsEntity.id "
 				+ " JOIN MemberEntity m ON m.id = p.memberEntity.id "
 				+ " WHERE r.termCategoryEntity.id = :cid "
 				+ " and m.nickname = :nickname "
 				+ " and p.postStatus = 'PUBLISH' "
+				+ " order by createdAt desc "
 				);
 		
 		//createQuery() 메서드 이용해 JPQL로 Query 생성
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Object[]> query = em.createQuery(jpql.toString(), Object[].class);
 		
 		query.setParameter("cid", cid);
 		query.setParameter("nickname", nickname);
@@ -375,11 +380,11 @@ public class PostsService {
 		query.setMaxResults(ol);
 		
 		//JPQL 결과 리스트를 반환
-		List<Long> results = query.getResultList();
+		List<Object[]> results = query.getResultList();
 		
 		//글id로 글 목록 조회
-		for(Long pid:results) {
-			PostsDto dto = findById(pid);
+		for(Object[] object:results) {
+			PostsDto dto = findById((Long)object[0]);
 			if(dto != null) { 
 				postsList.add(dto.toEntity());
 			}

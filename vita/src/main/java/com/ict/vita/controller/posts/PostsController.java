@@ -316,6 +316,7 @@ public class PostsController {
 			}
 			//status값을 넘기지 않은 경우 - 공개/비공개 모든 글 조회
 			if(p > 0) { //페이징 적용
+
 				postsList = postsService.getPostsByMember(cid, uid,p,ol)
 						.stream()
 						.map(dto -> {
