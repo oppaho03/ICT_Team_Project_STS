@@ -513,7 +513,7 @@ public class ChatSessionController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail( messageSource.getMessage("session.notfound", null,new Locale("ko")) ));
 		}
 		//관리자나 본인 세션이 아닌 경우
-		if( ( !loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) && findedSession.getMemberDto().getId() != loginMember.getId() ) || !loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) ) {
+		if( !loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) && findedSession.getMemberDto().getId() != loginMember.getId() ) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.fail( messageSource.getMessage("user.invalid_role", null,new Locale("ko")) ));
 		}
 		
