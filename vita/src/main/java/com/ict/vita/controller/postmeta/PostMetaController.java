@@ -23,8 +23,11 @@ import com.ict.vita.service.member.MemberService;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
 import com.ict.vita.service.others.ObjectMetaResponseDto;
 import com.ict.vita.service.postmeta.PostMetaDto;
+import com.ict.vita.service.postmeta.PostMetaResponseDto;
 import com.ict.vita.service.postmeta.PostMetaService;
+import com.ict.vita.service.postmeta.SarResultDto;
 import com.ict.vita.service.posts.PostsDto;
+import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
 import com.ict.vita.service.termcategory.TermCategoryDto;
 import com.ict.vita.service.termmeta.TermMetaDto;
@@ -33,6 +36,7 @@ import com.ict.vita.util.ResultUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -163,6 +167,48 @@ public class PostMetaController {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.fail(errmsg  ));	
 	}
-
+	
+	/**
+	 * [음성분석결과 관련 글 메타 정보 조회]
+	 * @param token 회원 토큰값
+	 * @return
+	 */
+	@Operation( summary = "음성분석결과 관련 글 메타 정보 조회", description = "음성분석결과 관련 글 메타 정보 조회 API" )
+	@ApiResponses({
+		@ApiResponse( 
+			responseCode = "200-음성분석결과 관련 글 메타 정보 조회 성공",
+			description = "SUCCESS",
+			content = @Content(	
+				array = @ArraySchema(
+						schema = @Schema(implementation = SarResultDto.class)
+				),
+				examples = @ExampleObject(
+					value = "{\"success\":1,\"response\":{\"data\":[{\"post\":{\"id\":213,\"author\":{\"id\":110,\"email\":\"admin@gmail.com\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-04-13\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiMTEwIiwiaWF0IjoxNzQ0NjAzOTc1LCJleHAiOjE3NDQ2MDQ4NzV9.fP9bEfywEj0CdyNhRjrGJSyOMV1-uSqNvNTE36G9DDs\",\"created_at\":\"2025-04-13T12:00:55.646\",\"updated_at\":\"2025-04-13T12:00:55.646\",\"status\":1,\"meta\":[{\"meta_id\":11,\"meta_key\":\"picture\",\"meta_value\":\"https://yt3.googleusercontent.com/HCv0fXFEEcD0HRyF0_qR1K7b7qO3KCzmIoyH1DEJYB94CIUFhIE5i2t2IDIPX97W1-DK4hegww=s160-c-k-c0x00ffffff-no-rj\"}]},\"post_title\":\"20250413131106_1HZeVp6Jry.ogg\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"20250413131106_1HZeVp6Jry.ogg\",\"post_mime_type\":\"audio/ogg;codecs=opus\",\"post_created_at\":\"2025-04-13T13:11:05.232067\",\"post_modified_at\":\"2025-04-13T13:11:05.229177\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":536,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131106_1HZeVp6Jry.ogg\"},{\"id\":537,\"key\":\"sar_file_name\",\"value\":\"20250413131106_1HZeVp6Jry.ogg\"},{\"id\":538,\"key\":\"sar_transcribed_text\",\"value\":\"기듬의주요정상은무엇인가요?\"},{\"id\":539,\"key\":\"sar_overall_sentiment\",\"value\":\"POSITIVE\"},{\"id\":540,\"key\":\"sar_overall_score\",\"value\":\"0.53311396\"},{\"id\":541,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"}]},\"meta\":[{\"id\":536,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131106_1HZeVp6Jry.ogg\"},{\"id\":537,\"key\":\"sar_file_name\",\"value\":\"20250413131106_1HZeVp6Jry.ogg\"},{\"id\":538,\"key\":\"sar_transcribed_text\",\"value\":\"기듬의주요정상은무엇인가요?\"},{\"id\":539,\"key\":\"sar_overall_sentiment\",\"value\":\"POSITIVE\"},{\"id\":540,\"key\":\"sar_overall_score\",\"value\":\"0.53311396\"},{\"id\":541,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"}]},{\"post\":{\"id\":214,\"author\":{\"id\":110,\"email\":\"admin@gmail.com\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-04-13\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiMTEwIiwiaWF0IjoxNzQ0NjAzOTc1LCJleHAiOjE3NDQ2MDQ4NzV9.fP9bEfywEj0CdyNhRjrGJSyOMV1-uSqNvNTE36G9DDs\",\"created_at\":\"2025-04-13T12:00:55.646\",\"updated_at\":\"2025-04-13T12:00:55.646\",\"status\":1,\"meta\":[{\"meta_id\":11,\"meta_key\":\"picture\",\"meta_value\":\"https://yt3.googleusercontent.com/HCv0fXFEEcD0HRyF0_qR1K7b7qO3KCzmIoyH1DEJYB94CIUFhIE5i2t2IDIPX97W1-DK4hegww=s160-c-k-c0x00ffffff-no-rj\"}]},\"post_title\":\"20250413131323_6oXpOQU5ms.ogg\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"20250413131323_6oXpOQU5ms.ogg\",\"post_mime_type\":\"audio/ogg;codecs=opus\",\"post_created_at\":\"2025-04-13T13:13:22.555184\",\"post_modified_at\":\"2025-04-13T13:13:22.547401\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":542,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131323_6oXpOQU5ms.ogg\"},{\"id\":543,\"key\":\"sar_file_name\",\"value\":\"20250413131323_6oXpOQU5ms.ogg\"},{\"id\":544,\"key\":\"sar_transcribed_text\",\"value\":\"비둔의주요정상은무엇인가요?\"},{\"id\":545,\"key\":\"sar_overall_sentiment\",\"value\":\"NEGATIVE\"},{\"id\":546,\"key\":\"sar_overall_score\",\"value\":\"0.65529716\"},{\"id\":547,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"}]},\"meta\":[{\"id\":542,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131323_6oXpOQU5ms.ogg\"},{\"id\":543,\"key\":\"sar_file_name\",\"value\":\"20250413131323_6oXpOQU5ms.ogg\"},{\"id\":544,\"key\":\"sar_transcribed_text\",\"value\":\"비둔의주요정상은무엇인가요?\"},{\"id\":545,\"key\":\"sar_overall_sentiment\",\"value\":\"NEGATIVE\"},{\"id\":546,\"key\":\"sar_overall_score\",\"value\":\"0.65529716\"},{\"id\":547,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"}]},{\"post\":{\"id\":215,\"author\":{\"id\":110,\"email\":\"admin@gmail.com\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-04-13\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiMTEwIiwiaWF0IjoxNzQ0NjAzOTc1LCJleHAiOjE3NDQ2MDQ4NzV9.fP9bEfywEj0CdyNhRjrGJSyOMV1-uSqNvNTE36G9DDs\",\"created_at\":\"2025-04-13T12:00:55.646\",\"updated_at\":\"2025-04-13T12:00:55.646\",\"status\":1,\"meta\":[{\"meta_id\":11,\"meta_key\":\"picture\",\"meta_value\":\"https://yt3.googleusercontent.com/HCv0fXFEEcD0HRyF0_qR1K7b7qO3KCzmIoyH1DEJYB94CIUFhIE5i2t2IDIPX97W1-DK4hegww=s160-c-k-c0x00ffffff-no-rj\"}]},\"post_title\":\"20250413131423_DdzV9GD2yL.ogg\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"20250413131423_DdzV9GD2yL.ogg\",\"post_mime_type\":\"audio/ogg;codecs=opus\",\"post_created_at\":\"2025-04-13T13:14:22.651803\",\"post_modified_at\":\"2025-04-13T13:14:22.64281\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":549,\"key\":\"sar_file_name\",\"value\":\"20250413131423_DdzV9GD2yL.ogg\"},{\"id\":550,\"key\":\"sar_transcribed_text\",\"value\":\"비듬의주요정상은무엇인가요?\"},{\"id\":551,\"key\":\"sar_overall_sentiment\",\"value\":\"NEGATIVE\"},{\"id\":552,\"key\":\"sar_overall_score\",\"value\":\"0.59957916\"},{\"id\":553,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"},{\"id\":548,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131423_DdzV9GD2yL.ogg\"}]},\"meta\":[{\"id\":549,\"key\":\"sar_file_name\",\"value\":\"20250413131423_DdzV9GD2yL.ogg\"},{\"id\":550,\"key\":\"sar_transcribed_text\",\"value\":\"비듬의주요정상은무엇인가요?\"},{\"id\":551,\"key\":\"sar_overall_sentiment\",\"value\":\"NEGATIVE\"},{\"id\":552,\"key\":\"sar_overall_score\",\"value\":\"0.59957916\"},{\"id\":553,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"},{\"id\":548,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131423_DdzV9GD2yL.ogg\"}]},{\"post\":{\"id\":216,\"author\":{\"id\":110,\"email\":\"admin@gmail.com\",\"role\":\"ADMINISTRATOR\",\"name\":\"관리자\",\"nickname\":\"admin\",\"birth\":\"2025-04-13\",\"gender\":\"F\",\"contact\":\"01000000000\",\"address\":\"서울시강남구\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwic3ViIjoiMTEwIiwiaWF0IjoxNzQ0NjAzOTc1LCJleHAiOjE3NDQ2MDQ4NzV9.fP9bEfywEj0CdyNhRjrGJSyOMV1-uSqNvNTE36G9DDs\",\"created_at\":\"2025-04-13T12:00:55.646\",\"updated_at\":\"2025-04-13T12:00:55.646\",\"status\":1,\"meta\":[{\"meta_id\":11,\"meta_key\":\"picture\",\"meta_value\":\"https://yt3.googleusercontent.com/HCv0fXFEEcD0HRyF0_qR1K7b7qO3KCzmIoyH1DEJYB94CIUFhIE5i2t2IDIPX97W1-DK4hegww=s160-c-k-c0x00ffffff-no-rj\"}]},\"post_title\":\"20250413131510_Be9f67SpeS.ogg\",\"post_content\":null,\"post_summary\":null,\"post_status\":\"PUBLISH\",\"post_pass\":null,\"post_name\":\"20250413131510_Be9f67SpeS.ogg\",\"post_mime_type\":\"audio/ogg;codecs=opus\",\"post_created_at\":\"2025-04-13T13:15:09.528023\",\"post_modified_at\":\"2025-04-13T13:15:09.519023\",\"comment_status\":\"CLOSE\",\"comment_count\":0,\"categories\":[{\"id\":818,\"name\":\"미디어\",\"slug\":\"media\",\"group_number\":0,\"category\":\"media\",\"description\":null,\"count\":0,\"parent\":0}],\"meta\":[{\"id\":555,\"key\":\"sar_file_name\",\"value\":\"20250413131510_Be9f67SpeS.ogg\"},{\"id\":556,\"key\":\"sar_transcribed_text\",\"value\":\"지루성피부염의증상중부피의비름과가려움그리고각질이생기는것이일반적으로나타나는증상인가요?\"},{\"id\":557,\"key\":\"sar_overall_sentiment\",\"value\":\"POSITIVE\"},{\"id\":558,\"key\":\"sar_overall_score\",\"value\":\"0.6184943\"},{\"id\":559,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"},{\"id\":554,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131510_Be9f67SpeS.ogg\"}]},\"meta\":[{\"id\":555,\"key\":\"sar_file_name\",\"value\":\"20250413131510_Be9f67SpeS.ogg\"},{\"id\":556,\"key\":\"sar_transcribed_text\",\"value\":\"지루성피부염의증상중부피의비름과가려움그리고각질이생기는것이일반적으로나타나는증상인가요?\"},{\"id\":557,\"key\":\"sar_overall_sentiment\",\"value\":\"POSITIVE\"},{\"id\":558,\"key\":\"sar_overall_score\",\"value\":\"0.6184943\"},{\"id\":559,\"key\":\"sar_keyword_sentiment\",\"value\":\"{}\"},{\"id\":554,\"key\":\"url\",\"value\":\"/api/files/upload/110/20250413131510_Be9f67SpeS.ogg\"}]}]}}"
+				)
+			) 
+		),
+		@ApiResponse( 
+				responseCode = "400-음성분석결과 관련 글 메타 정보 조회 실패",
+				description = "SUCCESS",
+				content = @Content(	
+					examples = @ExampleObject(
+						value = "{\"success\":0,\"response\":{\"message\":\"회원을찾을수없습니다.\"}}"
+					)
+				) 
+			)
+	})
+	@GetMapping("/sar")
+	public ResponseEntity<?> getSarMetas(@Parameter(description = "로그인한 회원 토큰값") @RequestHeader("Authorization") String token){
+		MemberDto findedMember = memberService.findMemberByToken(token);
+		//회원 미존재시
+		if(findedMember == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( ResultUtil.fail( messageSource.getMessage("member.notfound", null, new Locale("ko")) ) );
+		}
+		
+		List <SarResultDto> sarMetas = postMetaService.findAllSarMetas(findedMember.getId());
+		
+		return ResponseEntity.status(HttpStatus.OK).body( ResultUtil.success(sarMetas));
+		
+	}
 
 }

@@ -3,7 +3,10 @@ package com.ict.vita.service.postmeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +14,15 @@ import com.ict.vita.repository.postmeta.PostMetaEntity;
 import com.ict.vita.repository.postmeta.PostMetaRepository;
 import com.ict.vita.repository.posts.PostsEntity;
 import com.ict.vita.repository.posts.PostsRepository;
+import com.ict.vita.service.member.MemberDto;
+import com.ict.vita.service.membermeta.MemberMetaResponseDto;
+import com.ict.vita.service.membermeta.MemberMetaService;
 import com.ict.vita.service.others.ObjectMetaRequestDto;
+import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsService;
 import com.ict.vita.service.posts.PostsDto;
+import com.ict.vita.service.posts.PostsResponseDto;
+import com.ict.vita.service.terms.TermsResponseDto;
+import com.ict.vita.util.ResultUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +33,8 @@ public class PostMetaService {
 	//리포지토리 주입
 	private final PostMetaRepository postMetaRepository;
 	private final PostsRepository postsRepository;
+	private final PostCategoryRelationshipsService pcrService;
+	private final MemberMetaService memberMetaService;
 	
 	/**
 	 * 전체 검색 (게시글 ID)
@@ -96,4 +108,52 @@ public class PostMetaService {
 		}
 		else return null;
 	}
+
+	/**
+	 * [회원의 음성분석결과 글 메타 정보 목록 조회]
+	 * @param id 회원id
+	 * @return
+	 */
+	public List<SarResultDto> findAllSarMetas(Long id) {
+		//글 조회
+		List<PostsEntity> posts = postsRepository.findByMember(id);
+		
+		List<SarResultDto> result = new Vector<>();
+		
+		for(PostsEntity post : posts) {
+			if( post.getPostMimeType().contains("audio/ogg") ) {
+				List<TermsResponseDto> categories = pcrService.findAllByPostId(post.getId())
+													.stream()
+													.map(rel -> TermsResponseDto.toDto(rel.getTermCategoryDto()))
+													.toList();
+				
+				List<PostMetaResponseDto> postMeta = findAll(PostsDto.toDto(post))
+													.stream()
+													.map(meta -> PostMetaResponseDto.toResponseDto(meta))
+													.toList();
+				
+				List <MemberMetaResponseDto> memberMeta = memberMetaService.findAll(MemberDto.toDto(post.getMemberEntity()))
+														.stream()
+														.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+														.toList();
+				
+				PostsResponseDto postResponse = PostsResponseDto.toDto(post, categories, postMeta, memberMeta);
+				
+				List <PostMetaResponseDto> postMetas = findAll(PostsDto.toDto(post))
+						.stream()
+						.map(meta -> PostMetaResponseDto.toResponseDto(meta))
+						.toList();
+				
+				SarResultDto sarResult = SarResultDto.builder()
+										.post(postResponse)
+										.meta(postMetas)
+										.build();
+				
+				result.add(sarResult);
+			}
+		}
+		
+		return result;
+	}
+	
 }
