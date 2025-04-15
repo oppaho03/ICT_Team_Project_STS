@@ -121,7 +121,7 @@ public class PostMetaService {
 		List<SarResultDto> result = new Vector<>();
 		
 		for(PostsEntity post : posts) {
-			if( post.getPostMimeType().contains("audio/ogg") ) {
+			if( post.getPostMimeType()!= null && post.getPostMimeType().contains("audio/ogg") ) {
 				List<TermsResponseDto> categories = pcrService.findAllByPostId(post.getId())
 													.stream()
 													.map(rel -> TermsResponseDto.toDto(rel.getTermCategoryDto()))
