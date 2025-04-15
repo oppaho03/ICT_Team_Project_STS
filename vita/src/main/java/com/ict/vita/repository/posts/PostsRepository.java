@@ -47,7 +47,7 @@ public interface PostsRepository extends JpaRepository<PostsEntity, Long>{
 			order by p.id ASC
 		"""
 		,nativeQuery = true)
-	List<PostsEntity> findByMemberForSar(@Param("uid") Long uid); //해당 회원의 모든 글 조회용(카테고리id 미존재)
+	List<PostsEntity> findByMemberForSar(@Param("uid") Long uid); //해당 회원의 모든 글 조회용(카테고리id 미존재) (음성감정분석결과 처리용)
 	
 	@Query(value = """
 				select p.* 
