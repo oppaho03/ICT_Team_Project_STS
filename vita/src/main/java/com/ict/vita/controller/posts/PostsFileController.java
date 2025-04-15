@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -17,6 +19,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResultUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,12 +43,14 @@ import com.ict.vita.service.postcategoryrelationships.PostCategoryRelationshipsS
 import com.ict.vita.service.postmeta.PostMetaDto;
 import com.ict.vita.service.postmeta.PostMetaResponseDto;
 import com.ict.vita.service.postmeta.PostMetaService;
+import com.ict.vita.service.postmeta.SarResultDto;
 import com.ict.vita.service.posts.FileUploadDto;
 import com.ict.vita.service.posts.PostsDto;
 import com.ict.vita.service.posts.PostsFileService;
 import com.ict.vita.service.posts.PostsRequestDto;
 import com.ict.vita.service.posts.PostsResponseDto;
 import com.ict.vita.service.posts.PostsService;
+import com.ict.vita.service.posts.SarMonthlyDto;
 import com.ict.vita.service.posts.SpeechAnalysisResultDto;
 import com.ict.vita.service.resourcessec.ResourcesSecDto;
 import com.ict.vita.service.resourcessec.ResourcesSecService;
@@ -326,6 +331,128 @@ public class PostsFileController {
 		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
 		
     }
+    
+    //////////////////////////////
+    @GetMapping("/voice-files2")
+    public ResponseEntity<?> getMonthlyVoiceFiles2(
+    		@RequestHeader(name = Commons.AUTHORIZATION) String token){
+    	//토큰으로 회원 조회
+    	MemberDto loginMember = memberService.findMemberByToken(token); 
+    	//회원이 존재하지 않는 경우
+		if(loginMember == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultUtil.fail( messageSource.getMessage("user.invalid_token", null, new Locale("ko")) ));
+		} 
+		
+		//검색할 미디어 타입
+		String type = "audio";
+		//월별 음성 파일 검색
+		Map<String, List> map = postsFileService.getMonthlyVoiceFiles2(type);
+		
+		List<PostsEntity> findedPosts = map.get("all"); //모든
+		List<SarMonthlyDto> monthlyDtos = map.get("monthly"); //월별
+		
+		Map<String, Object> returnResult = new HashMap<>();
+		
+		List<PostsDto> postsDtos = new Vector<>();
+		List<SpeechAnalysisResultDto> sarResult = new Vector<>();
+		
+		for(int i=0;i<monthlyDtos.size();i++) {
+			PostsDto post = PostsDto.toDto(findedPosts.get(i));
+			postsDtos.add(post);
+			
+			List<PostMetaDto> postMetas = postMetaService.findAll(post);
+			
+			String file_name = null;
+			String transcribed_text = null;
+			String overall_sentiment = null;
+			float overall_score = 0;
+			Map<String, Object> keyword_sentiment = null;
+			
+			for(PostMetaDto meta:postMetas) {			
+				if(meta.getMeta_key().equals("sar_file_name")) file_name = meta.getMeta_value();
+				else if(meta.getMeta_key().equals("sar_transcribed_text")) transcribed_text = meta.getMeta_value();
+				else if(meta.getMeta_key().equals("sar_overall_sentiment")) overall_sentiment = meta.getMeta_value();
+				else if(meta.getMeta_key().equals("sar_overall_score")) overall_score = Float.parseFloat(meta.getMeta_value());	
+			}
+			
+			SpeechAnalysisResultDto resultDto = SpeechAnalysisResultDto.builder()
+								.post_id(monthlyDtos.get(i).getPostId())
+								.file_name(file_name)
+								.transcribed_text(transcribed_text)
+								.overall_sentiment(overall_sentiment)
+								.overall_score(overall_score)
+								.keyword_sentiment(keyword_sentiment)
+								.build();
+			sarResult.add(resultDto);	
+			
+			monthlyDtos.get(i).setSarResult(sarResult);	
+			
+			List<PostsResponseDto> postResResult = postsDtos.stream().map(p -> {
+				List<TermsResponseDto> categories = pcrService.findAllByPostId(p.getId()).stream().map(rel -> {
+														TermCategoryDto category = rel.getTermCategoryDto();
+														return TermsResponseDto.toDto(category);
+													}).toList();
+				
+				List<PostMetaResponseDto> postMeta = postMetaService.findAll(p)
+													.stream()
+													.map(meta -> PostMetaResponseDto.toResponseDto(meta))
+													.toList();
+				
+				List <MemberMetaResponseDto> memberMeta = memberMetaService.findAll(p.getMemberDto())
+															.stream()
+															.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+															.toList();
+				
+				PostsResponseDto postResDto = PostsResponseDto.toDto(p.toEntity(), categories, postMeta, memberMeta);
+				return postResDto;
+			}).toList();
+			
+			returnResult.put("sarResult", sarResult);
+			returnResult.put("post", postResResult);
+		}
+		
+//		List<PostsResponseDto> result = null;
+//		
+//		result = monthlyFiles
+//				.stream()
+//				.map( postDto -> {
+//					PostsEntity entity = postDto.toEntity();
+//					
+//					TermCategoryDto category = termService.findBySlugByCategory("media", "media"); 
+//					List<TermsResponseDto> categories = List.of(TermsResponseDto.toDto(category));
+//					
+//					List<PostMetaResponseDto> postMeta = postMetaService.findAll(postDto)
+//															.stream()
+//															.map(meta -> PostMetaResponseDto.toResponseDto(meta))
+//															.toList();
+//					
+//					List <MemberMetaResponseDto> memberMeta = memberMetaService.findAll(MemberDto.toDto(entity.getMemberEntity()))
+//																.stream()
+//																.map(meta -> MemberMetaResponseDto.toResponseDto(meta))
+//																.toList();
+//					
+//					//관리자가 아니면서 본인 글이 아닌 경우
+//					if(!loginMember.getRole().equals(Commons.ROLE_ADMINISTRATOR) 
+//							&& postDto.getMemberDto().getId() != loginMember.getId())
+//						return null;
+//					
+//					return PostsResponseDto.toDto(entity, categories, postMeta, memberMeta);
+//				})
+//				.toList();
+//		
+//		result = result
+//				.stream()
+//				.filter(Objects::nonNull) // null 제거
+//				.toList();
+//		
+//		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success( result ));
+		
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ResultUtil.success(returnResult));
+		
+    }
+    
+    
     
     /**
      * [음성 감정 분석 결과 저장]
