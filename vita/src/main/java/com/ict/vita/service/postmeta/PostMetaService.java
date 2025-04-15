@@ -116,7 +116,7 @@ public class PostMetaService {
 	 */
 	public List<SarResultDto> findAllSarMetas(Long id) {
 		//글 조회
-		List<PostsEntity> posts = postsRepository.findByMember(id);
+		List<PostsEntity> posts = postsRepository.findByMemberForSar(id);
 		
 		List<SarResultDto> result = new Vector<>();
 		
